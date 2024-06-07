@@ -1,0 +1,125 @@
+live_config_reload = true
+
+import = ["~/.config/alacritty/themes/themes/solarized_dark.toml"]
+
+
+[shell]
+program = "/bin/zsh"
+args = ["-l"]
+[env]
+TERM = "xterm-256color"
+
+
+[cursor.style]
+shape = "Beam"
+
+[font]
+size = 17.0
+
+[font.bold]
+family = "JetBrainsMono Nerd Font"
+style = "Regular"
+
+[font.bold_italic]
+family = "JetBrainsMono Nerd Font"
+style = "Italic"
+
+[font.glyph_offset]
+x = 0
+y = 3
+
+[font.italic]
+family = "JetBrainsMono Nerd Font"
+style = "Italic"
+
+[font.normal]
+family = "JetBrainsMono Nerd Font"
+style = "Regular"
+
+[font.offset]
+x = 0
+y = 8
+
+[[keyboard.bindings]]
+chars = "\f"
+key = "R"
+mode = "~Vi|~Search"
+mods = "Command"
+
+[[keyboard.bindings]]
+action = "ClearHistory"
+key = "R"
+mode = "~Vi|~Search"
+mods = "Command"
+
+[[keyboard.bindings]]
+action = "Hide"
+key = "W"
+mods = "Command"
+
+[[keyboard.bindings]]
+action = "Quit"
+key = "W"
+mods = "Command|Shift"
+
+[[keyboard.bindings]]
+action = "SpawnNewInstance"
+key = "N"
+mods = "Command"
+
+[[keyboard.bindings]]
+action = "CreateNewWindow"
+key = "T"
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u001Bb"
+key = "Left"
+mods = "Alt"
+
+[[keyboard.bindings]]
+chars = "\u001Bf"
+key = "Right"
+mods = "Alt"
+
+[[keyboard.bindings]]
+chars = "\u0001"
+key = "Left"
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0005"
+key = "Right"
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u0015"
+key = "Back"
+mods = "Command"
+
+[[keyboard.bindings]]
+chars = "\u001B\u007F"
+key = "Back"
+mods = "Alt"
+
+[scrolling]
+history = 100000
+multiplier = 4
+
+[selection]
+save_to_clipboard = true
+semantic_escape_chars = ",│`|:\"' ()[]{}<>"
+
+[window]
+decorations = "Transparent"
+opacity = 0.99
+title = "Alacritty"
+dynamic_title = true
+dynamic_padding = true
+[window.dimensions]
+columns = 106
+lines = 25
+
+[window.padding]
+y = 8
+x = 0
