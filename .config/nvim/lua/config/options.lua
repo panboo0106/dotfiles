@@ -3,6 +3,10 @@
 -- Add any additional options here
 --
 
+vim.opt.encoding = "utf-8"
+vim.opt.shell = "zsh"
+vim.opt.shiftwidth = 2
+
 vim.env.PATH = "~/.nvm/versions/node/v18.17.1/bin:" .. vim.env.PATH
 vim.filetype.add({
   pattern = {
