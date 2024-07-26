@@ -23,6 +23,8 @@ return {
       ["markdown.mdx"] = { { "prettier" } },
       graphql = { { "prettier" } },
       handlebars = { { "prettier" } },
+      python = { { "ruff", "isort" } },
+      rust = { { "rustfmt" } },
     },
   },
 }

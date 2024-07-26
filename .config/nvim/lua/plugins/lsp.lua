@@ -18,7 +18,15 @@ return {
         "typescript-language-server",
         "css-lsp",
         "prettierd",
+        "ruff-lsp",
+        "isort",
       })
     end,
+  },
+  {
+    "nvim-lspconfig",
+    opts = {
+      inlay_hints = { enabled = false },
+    },
   },
 }
