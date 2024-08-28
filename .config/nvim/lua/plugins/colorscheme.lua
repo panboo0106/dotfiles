@@ -7,13 +7,12 @@ return {
       return {
         transparent = false,
         on_colors = function(colors)
-          colors.bg = colors.base03
           colors.hint = colors.orange
           colors.error = "#ff0000"
         end,
         sidebars = { "qf", "vista_kind", "terminal", "packer" },
         styles = {
-          keywords = { italic = false },
+          keywords = { italic = true },
           sidebars = "transparent",
           floats = "transparent",
         },
