@@ -5,7 +5,7 @@ alias dotfiles='git --git-dir $HOME/.dotfiles --work-tree $HOME'
 eval "$(starship init zsh)"
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.config/oh-my-zsh"
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=10'
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
