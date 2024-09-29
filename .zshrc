@@ -135,3 +135,8 @@ if [[ -n $(alias g 2>/dev/null) ]]; then
 fi
 
 [ -s "${HOME}/.g/env" ] && \. "${HOME}/.g/env"  # g shell setup
+
+
+precmd () {
+    print -Pn "\e]0;%m:%~\a"
+}
