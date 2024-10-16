@@ -40,7 +40,17 @@ return {
       ---@type boolean
       logging = true,
 
-      injector = {}, ---@type table<lc.lang, lc.inject>
+      injector = {
+        ["cpp"] = {
+          before = { "#include <bits/stdc++.h>", "using namespace std;" },
+          after = "int main() {}",
+        },
+        before = true,
+        ["golang"] = {
+          before = { "package main" },
+          after = "func main() {}",
+        },
+      }, ---@type table<lc.lang, lc.inject>
 
       cache = {
         update_interval = 60 * 60 * 24 * 7, ---@type integer 7 days

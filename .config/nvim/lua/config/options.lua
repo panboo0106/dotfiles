@@ -9,6 +9,7 @@ opt.shiftwidth = 2
 opt.relativenumber = false
 vim.g.lazyvim_python_lsp = "pyright"
 vim.g.lazyvim_python_ruff = "ruff_lsp"
+vim.g.codeium_enabled = true
 
 vim.env.PATH = "~/.nvm/versions/node/v18.17.1/bin:/Users/leo/.g/go/bin:" .. vim.env.PATH
 vim.filetype.add({
