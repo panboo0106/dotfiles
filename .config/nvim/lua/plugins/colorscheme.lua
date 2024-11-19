@@ -6,8 +6,10 @@ return {
     opts = function()
       return {
         transparent = false,
+        on_highlights = function(hl, c)
+          hl.Title = { fg = c.blue, bold = true }
+        end,
         on_colors = function(colors)
-          colors.hint = colors.orange
           colors.error = "#ff0000"
         end,
         sidebars = { "qf", "vista_kind", "terminal", "packer" },
