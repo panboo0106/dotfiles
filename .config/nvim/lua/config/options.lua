@@ -7,6 +7,7 @@ opt.encoding = "utf-8"
 opt.shell = "zsh"
 opt.shiftwidth = 2
 opt.relativenumber = false
+opt.laststatus = 3
 vim.g.lazyvim_python_lsp = "pyright"
 vim.g.lazyvim_python_ruff = "ruff_lsp"
 vim.env.PATH = "~/.nvm/versions/node/v18.17.1/bin:/Users/leo/.g/go/bin:" .. vim.env.PATH
@@ -15,3 +16,6 @@ vim.filetype.add({
     [".*/templates/.*%.yaml"] = "helm",
   },
 })
+vim.treesitter.language.register("markdown", "Avante")
+local leet_arg = "leetcode.nvim"
+return leet_arg

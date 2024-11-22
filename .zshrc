@@ -140,3 +140,7 @@ fi
 precmd () {
     print -Pn "\e]0;%m:%~\a"
 }
+
+## vscode
+[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
+

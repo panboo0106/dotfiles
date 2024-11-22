@@ -1,7 +1,6 @@
 return {
   {
     "kawre/leetcode.nvim",
-    cmd = "Leet",
     build = ":TSUpdate html",
     dependencies = {
       "nvim-telescope/telescope.nvim",
@@ -10,7 +9,7 @@ return {
 
       -- optional
       "nvim-treesitter/nvim-treesitter",
-      "rcarriga/nvim-notify",
+      "folke/noice.nvim",
       "nvim-tree/nvim-web-devicons",
     },
     opts = {
