@@ -7,7 +7,7 @@ return {
     },
     config = function()
       require("codeium").setup({
-        enable_cmp_source = not (vim.bo.filetype == "leetcode"),
+        enable_cmp_source = not string.find(vim.fn.expand("%:p"), "leetcode"),
         virtual_text = {
           enabled = false,
         },
