@@ -8,10 +8,14 @@ return {
         transparent = false,
         on_highlights = function(hl, c)
           hl.Title = { fg = c.blue, bold = true }
+          hl.CursorLine = {
+            bg = c.base03,
+          }
         end,
         on_colors = function(colors)
           colors.error = "#ff0000"
-          colors.bg = "#001419"
+          -- colors.bg = "#002b36"
+          colors.bg = "#001e26"
         end,
         sidebars = { "qf", "vista_kind", "terminal", "packer" },
         styles = {
