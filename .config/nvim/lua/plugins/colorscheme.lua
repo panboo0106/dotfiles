@@ -11,6 +11,7 @@ return {
         end,
         on_colors = function(colors)
           colors.error = "#ff0000"
+          colors.bg = "#001419"
         end,
         sidebars = { "qf", "vista_kind", "terminal", "packer" },
         styles = {
