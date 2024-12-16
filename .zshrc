@@ -141,6 +141,7 @@ precmd () {
     print -Pn "\e]0;%m:%~\a"
 }
 
-## vscode
-[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
+
+# Added by Windsurf
+export PATH="/Users/leo/.codeium/windsurf/bin:$PATH"
 

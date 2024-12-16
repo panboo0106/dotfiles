@@ -1,17 +1,5 @@
 #!/bin/sh
 # g shell setup
-
-# Use a `case` statement to load environment files based on the system type
-case "$(uname)" in
-    Linux)
-	export GOOS="linux" ;;
-    Darwin)
-	export GOOS="darwin" ;;
-    *) 
-        echo "Unsupported OS" ;; 
-esac
-
-
 export GOROOT="${HOME}/.g/go"
 export PATH="${HOME}/.g/bin:${GOROOT}/bin:${GOPATH}/bin:$PATH"
 export G_MIRROR=https://golang.google.cn/dl/
