@@ -1,12 +1,19 @@
 return {
   {
-    "nvim-cmp",
-    opts = function(_, opts)
-      table.insert(opts.sources, 1, {
-        name = "codeium",
-        group_index = 1,
-        priority = 200,
-      })
-    end,
+    "saghen/blink.cmp",
+    optional = true,
+    dependencies = { "codeium.nvim", "saghen/blink.compat" },
+    opts = {
+      sources = {
+        compat = { "codeium" },
+        providers = {
+          codeium = {
+            kind = "Codeium",
+            score_offset = 100,
+            async = true,
+          },
+        },
+      },
+    },
   },
 }

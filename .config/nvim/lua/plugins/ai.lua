@@ -1,18 +1,37 @@
 return {
   {
     "Exafunction/codeium.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "hrsh7th/nvim-cmp",
-    },
-    config = function()
-      require("codeium").setup({
-        enable_cmp_source = not string.find(vim.fn.expand("%:p"), "leetcode"),
-        virtual_text = {
-          enabled = false,
+    cmd = "Codeium",
+    build = ":Codeium Auth",
+    opts = {
+      enable_cmp_source = not vim.g.ai_cmp,
+      virtual_text = {
+        enabled = vim.g.ai_cmp,
+        key_bindings = {
+          accept = "<Tab>", -- handled by nvim-cmp / blink.cmp
+          next = "<M-]>",
+          prev = "<M-[>",
         },
-      })
+      },
+    },
+  },
+  {
+    "Exafunction/codeium.nvim",
+    cmd = "Codeium",
+    build = ":Codeium Auth",
+    opts = function()
+      LazyVim.cmp.actions.ai_accept = function()
+        if require("codeium.virtual_text").get_current_completion_item() then
+          LazyVim.create_undo()
+          vim.api.nvim_input(require("codeium.virtual_text").accept())
+          return true
+        end
+      end
     end,
+    dependencies = {
+      "hrsh7th/nvim-cmp",
+      "nvim-lua/plenary.nvim",
+    },
   },
   {
     "yetone/avante.nvim",

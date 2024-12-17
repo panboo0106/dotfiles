@@ -37,8 +37,118 @@ return {
   {
     "nvim-lualine/lualine.nvim",
     opts = function(_, opts)
-      table.insert(opts.sections.lualine_x, 2, LazyVim.lualine.cmp_source("codeium"))
+      -- Enhanced Lualine configuration with bubbles style
+      opts.options = {
+        theme = "auto",
+        component_separators = { left = "", right = "" },
+        section_separators = { left = "", right = "" },
+        disabled_filetypes = {
+          statusline = { "dashboard", "packer", "neo-tree", "Trouble" },
+          winbar = {},
+        },
+        globalstatus = true, -- Single statusline across all windows
+      }
+
+      -- Conditional function to show Codeium status
+      opts.sections = {
+        lualine_a = {
+          {
+            "mode",
+            icons_enabled = true,
+            icon = "",
+            color = { gui = "bold" },
+          },
+        },
+        lualine_b = {
+          {
+            "branch",
+            icon = "",
+            color = { fg = "#8be9fd" },
+          },
+          {
+            "diff",
+            symbols = { added = " ", modified = " ", removed = " " },
+            diff_color = {
+              added = { fg = "#50fa7b" },
+              modified = { fg = "#ffb86c" },
+              removed = { fg = "#ff5555" },
+            },
+          },
+        },
+        lualine_c = {
+          {
+            "filename",
+            file_status = true,
+            path = 1,
+            symbols = {
+              modified = " ●",
+              readonly = " ",
+              unnamed = "[No Name]",
+            },
+          },
+          {
+            "diagnostics",
+            sources = { "nvim_lsp", "nvim_diagnostic" },
+            sections = { "error", "warn", "info", "hint" },
+            symbols = {
+              error = " ",
+              warn = " ",
+              info = " ",
+              hint = "💡",
+            },
+            diagnostics_color = {
+              error = { fg = "#ff5555" },
+              warn = { fg = "#ffb86c" },
+              info = { fg = "#8be9fd" },
+              hint = { fg = "#50fa7b" },
+            },
+          },
+        },
+        lualine_x = {
+          {
+            "encoding",
+            fmt = string.upper,
+            color = { fg = "#bd93f9" },
+          },
+          {
+            "fileformat",
+            symbols = { unix = "LF", dos = "CRLF", mac = "CR" },
+            color = { fg = "#ff79c6" },
+          },
+          {
+            "filetype",
+            icon_only = true,
+            colored = true,
+          },
+        },
+        lualine_y = {
+          {
+            "progress",
+            icon = "",
+            color = { fg = "#f1fa8c" },
+          },
+          {
+            "location",
+            icon = "",
+            color = { fg = "#8be9fd" },
+          },
+        },
+        lualine_z = {
+          {
+            function()
+              return os.date("%R")
+            end,
+            icon = "",
+            color = { fg = "#50fa7b", gui = "bold" },
+          },
+        },
+      }
+      return opts
     end,
+    dependencies = {
+      "nvim-tree/nvim-web-devicons",
+      "Exafunction/codeium.vim", -- Optional: Ensure Codeium is installed
+    },
   },
   {
     "folke/noice.nvim",
