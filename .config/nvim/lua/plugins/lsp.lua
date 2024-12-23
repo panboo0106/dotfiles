@@ -20,6 +20,9 @@ return {
         "prettierd",
         "ruff-lsp",
         "isort",
+        "pyright",
+        "ruff",
+        "black",
       })
     end,
   },

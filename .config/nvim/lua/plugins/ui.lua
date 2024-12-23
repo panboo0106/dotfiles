@@ -15,6 +15,8 @@ return {
   },
   {
     "nvim-lualine/lualine.nvim",
+    optional = true,
+    event = { "VeryLazy", "InsertEnter" },
     opts = function(_, opts)
       -- Enhanced Lualine configuration with bubbles style
       opts.options = {
@@ -146,6 +148,7 @@ return {
             color = { fg = "#50fa7b", gui = "bold" },
           },
         },
+        table.insert(opts.sections.lualine_x, 2, LazyVim.lualine.cmp_source("codeium")),
       }
       return opts
     end,

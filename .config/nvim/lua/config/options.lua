@@ -3,6 +3,8 @@
 -- Add any additional options here
 --
 local opt = vim.opt
+opt.timeout = true
+vim.opt.timeoutlen = 300
 opt.encoding = "utf-8"
 opt.shell = "zsh"
 opt.shiftwidth = 2
