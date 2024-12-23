@@ -13,27 +13,6 @@ return {
       },
     },
   },
-  --   {
-  --     "nvimdev/dashboard-nvim",
-  --     event = "VimEnter",
-  --     config = function()
-  --       require("dashboard").setup({})
-  --     end,
-  --     opts = function(_, opts)
-  --       local logo = [[
-  -- ███╗   ███╗██╗   ██╗    ██████╗  █████╗ ███╗   ██╗██████╗  █████╗
-  -- ████╗ ████║╚██╗ ██╔╝    ██╔══██╗██╔══██╗████╗  ██║██╔══██╗██╔══██╗
-  -- ██╔████╔██║ ╚████╔╝     ██████╔╝███████║██╔██╗ ██║██║  ██║███████║
-  -- ██║╚██╔╝██║  ╚██╔╝      ██╔═══╝ ██╔══██║██║╚██╗██║██║  ██║██╔══██║
-  -- ██║ ╚═╝ ██║   ██║       ██║     ██║  ██║██║ ╚████║██████╔╝██║  ██║
-  -- ╚═╝     ╚═╝   ╚═╝       ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═══╝╚═════╝ ╚═╝  ╚═╝
-  --
-  -- ]]
-  --
-  --       logo = string.rep("\n", 8) .. logo .. "\n\n"
-  --       opts.config.header = vim.split(logo, "\n")
-  --     end,
-  --   },
   {
     "nvim-lualine/lualine.nvim",
     opts = function(_, opts)
@@ -43,31 +22,39 @@ return {
         component_separators = { left = "", right = "" },
         section_separators = { left = "", right = "" },
         disabled_filetypes = {
-          statusline = { "dashboard", "packer", "neo-tree", "Trouble" },
+          statusline = { "dashboard", "packer", "neo-tree", "Trouble", "alpha", "lazy" },
           winbar = {},
         },
-        globalstatus = true, -- Single statusline across all windows
+        globalstatus = true,
+        refresh = {
+          statusline = 1000,
+          tabline = 1000,
+          winbar = 1000,
+        },
       }
-
-      -- Conditional function to show Codeium status
       opts.sections = {
         lualine_a = {
           {
             "mode",
             icons_enabled = true,
-            icon = "",
+            icon = "󰊠",
             color = { gui = "bold" },
+            separator = { left = "", right = "" },
           },
         },
         lualine_b = {
           {
             "branch",
             icon = "",
-            color = { fg = "#8be9fd" },
+            color = { fg = "#8be9fd", gui = "bold" },
           },
           {
             "diff",
-            symbols = { added = " ", modified = " ", removed = " " },
+            symbols = {
+              added = " ",
+              modified = "󰝤 ",
+              removed = " ",
+            },
             diff_color = {
               added = { fg = "#50fa7b" },
               modified = { fg = "#ffb86c" },
@@ -81,64 +68,81 @@ return {
             file_status = true,
             path = 1,
             symbols = {
-              modified = " ●",
+              modified = " 󰛄",
               readonly = " ",
               unnamed = "[No Name]",
             },
+            color = { gui = "bold" },
           },
           {
             "diagnostics",
-            sources = { "nvim_lsp", "nvim_diagnostic" },
+            sources = { "nvim_diagnostic", "nvim_lsp" },
             sections = { "error", "warn", "info", "hint" },
             symbols = {
-              error = " ",
-              warn = " ",
-              info = " ",
-              hint = "💡",
+              error = "󰅚 ",
+              warn = "󰀪 ",
+              info = "󰈚 ",
+              hint = "󰌵 ",
             },
             diagnostics_color = {
-              error = { fg = "#ff5555" },
-              warn = { fg = "#ffb86c" },
-              info = { fg = "#8be9fd" },
-              hint = { fg = "#50fa7b" },
+              error = { fg = "#ff5555", gui = "bold" },
+              warn = { fg = "#ffb86c", gui = "bold" },
+              info = { fg = "#8be9fd", gui = "bold" },
+              hint = { fg = "#50fa7b", gui = "bold" },
             },
+            always_visible = false,
           },
         },
         lualine_x = {
           {
+            function()
+              return require("noice").api.status.command.get()
+            end,
+            cond = function()
+              return package.loaded["noice"] and require("noice").api.status.command.has()
+            end,
+            color = { fg = "#ff79c6" },
+          },
+          {
             "encoding",
             fmt = string.upper,
             color = { fg = "#bd93f9" },
+            icon = "󰃤",
           },
           {
             "fileformat",
-            symbols = { unix = "LF", dos = "CRLF", mac = "CR" },
+            symbols = {
+              unix = "",
+              dos = "",
+              mac = "",
+            },
             color = { fg = "#ff79c6" },
           },
           {
             "filetype",
             icon_only = true,
             colored = true,
+            color = { gui = "bold" },
           },
         },
         lualine_y = {
           {
             "progress",
-            icon = "",
-            color = { fg = "#f1fa8c" },
+            icon = "󰦨",
+            color = { fg = "#f1fa8c", gui = "bold" },
           },
           {
             "location",
-            icon = "",
-            color = { fg = "#8be9fd" },
+            icon = "󰚌",
+            color = { fg = "#8be9fd", gui = "bold" },
           },
         },
         lualine_z = {
           {
             function()
-              return os.date("%R")
+              return " " .. os.date("%R")
             end,
-            icon = "",
+            icon = "󰥔",
             color = { fg = "#50fa7b", gui = "bold" },
           },
         },
@@ -147,7 +151,8 @@ return {
     end,
     dependencies = {
       "nvim-tree/nvim-web-devicons",
-      "Exafunction/codeium.vim", -- Optional: Ensure Codeium is installed
+      "Exafunction/codeium.nvim",
+      "folke/noice.nvim", -- Optional: for command status
     },
   },
   {

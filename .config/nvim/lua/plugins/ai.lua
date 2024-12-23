@@ -3,23 +3,12 @@ return {
     "Exafunction/codeium.nvim",
     cmd = "Codeium",
     build = ":Codeium Auth",
-    opts = {
-      enable_cmp_source = not vim.g.ai_cmp,
-      virtual_text = {
-        enabled = vim.g.ai_cmp,
-        key_bindings = {
-          accept = "<Tab>", -- handled by nvim-cmp / blink.cmp
-          next = "<M-]>",
-          prev = "<M-[>",
-        },
-      },
+    dependencies = {
+      "hrsh7th/nvim-cmp",
+      "nvim-lua/plenary.nvim",
     },
-  },
-  {
-    "Exafunction/codeium.nvim",
-    cmd = "Codeium",
-    build = ":Codeium Auth",
     opts = function()
+      -- AI completion accept function
       LazyVim.cmp.actions.ai_accept = function()
         if require("codeium.virtual_text").get_current_completion_item() then
           LazyVim.create_undo()
@@ -27,11 +16,20 @@ return {
           return true
         end
       end
+
+      -- Return the options table
+      return {
+        enable_cmp_source = not vim.g.ai_cmp,
+        virtual_text = {
+          enabled = vim.g.ai_cmp,
+          key_bindings = {
+            accept = "<Tab>",
+            next = "<M-]>",
+            prev = "<M-[>",
+          },
+        },
+      }
     end,
-    dependencies = {
-      "hrsh7th/nvim-cmp",
-      "nvim-lua/plenary.nvim",
-    },
   },
   {
     "yetone/avante.nvim",
