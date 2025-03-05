@@ -6,6 +6,7 @@ return {
     opts = function()
       return {
         transparent = false,
+        terminal_colors = false,
         on_highlights = function(hl, c)
           hl.Title = { fg = c.blue, bold = true }
           hl.CursorLine = {

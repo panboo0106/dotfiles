@@ -67,7 +67,18 @@ return {
               },
             },
             { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
-            { LazyVim.lualine.pretty_path() },
+            -- { LazyVim.lualine.pretty_path() },
+            -- { "buffers" }
+            {
+              function()
+                local file = vim.fn.expand("%:p")
+                if file == "" then
+                  return ""
+                end
+                local permissions = vim.fn.getfperm(file)
+                return permissions ~= "" and "󰌋 " .. permissions or ""
+              end,
+            },
           },
           lualine_x = {
             Snacks.profiler.status(),
@@ -156,10 +167,35 @@ return {
           format = "{kind_icon}{symbol.name:Normal}",
           hl_group = "lualine_c_normal",
         })
-        table.insert(opts.sections.lualine_c, {
-          symbols and symbols.get,
+        -- 只有当 symbols 有效时才添加组件
+        if symbols then
+          table.insert(opts.sections.lualine_c, {
+            symbols.get,
+            cond = function()
+              return vim.b.trouble_lualine ~= false and symbols.has()
+            end,
+          })
+        end
+      end
+      -- 添加 LSP 状态指示器
+      if LazyVim.has("nvim-lspconfig") then
+        table.insert(opts.sections.lualine_x, {
+          function()
+            local clients = vim.lsp.get_clients({ bufnr = 0 })
+            if #clients == 0 then
+              return ""
+            end
+
+            local names = {}
+            for _, client in ipairs(clients) do
+              table.insert(names, client.name)
+            end
+
+            return " " .. table.concat(names, ", ")
+          end,
+          color = { fg = "#8ec07c" },
           cond = function()
-            return vim.b.trouble_lualine ~= false and symbols.has()
+            return next(vim.lsp.get_clients({ bufnr = 0 })) ~= nil
           end,
         })
       end
@@ -229,4 +265,57 @@ return {
       require("noice").setup(opts)
     end,
   },
+  {
+    "Bekaboo/dropbar.nvim",
+    -- optional, but required for fuzzy finder support
+    dependencies = {
+      "nvim-telescope/telescope-fzf-native.nvim",
+      build = "make",
+    },
+    config = function()
+      local dropbar_api = require("dropbar.api")
+      vim.keymap.set("n", "<Leader>;", dropbar_api.pick, { desc = "Pick symbols in winbar" })
+      vim.keymap.set("n", "[;", dropbar_api.goto_context_start, { desc = "Go to start of current context" })
+      vim.keymap.set("n", "];", dropbar_api.select_next_context, { desc = "Select next context" })
+    end,
+  },
+  -- {
+  --   "mikavilpas/yazi.nvim",
+  --   event = "VeryLazy",
+  --   dependencies = { "folke/snacks.nvim", lazy = true },
+  --   keys = {
+  --     -- 👇 in this section, choose your own keymappings!
+  --     {
+  --       "<leader>-",
+  --       mode = { "n", "v" },
+  --       "<cmd>Yazi<cr>",
+  --       desc = "Open yazi at the current file",
+  --     },
+  --     {
+  --       -- Open in the current working directory
+  --       "<leader>cw",
+  --       "<cmd>Yazi cwd<cr>",
+  --       desc = "Open the file manager in nvim's working directory",
+  --     },
+  --     {
+  --       "<c-up>",
+  --       "<cmd>Yazi toggle<cr>",
+  --       desc = "Resume the last yazi session",
+  --     },
+  --   },
+  --   ---@type YaziConfig | {}
+  --   opts = {
+  --     -- if you want to open yazi instead of netrw, see below for more info
+  --     open_for_directories = false,
+  --     keymaps = {
+  --       show_help = "<f1>",
+  --     },
+  --   },
+  --   -- 👇 if you use `open_for_directories=true`, this is recommended
+  --   init = function()
+  --     -- More details: https://github.com/mikavilpas/yazi.nvim/issues/802
+  --     -- vim.g.loaded_netrw = 1
+  --     vim.g.loaded_netrwPlugin = 1
+  --   end,
+  -- },
 }
