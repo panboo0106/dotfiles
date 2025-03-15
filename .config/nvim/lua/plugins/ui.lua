@@ -2,13 +2,14 @@ return {
   {
     "echasnovski/mini.icons",
     lazy = true,
+    dependencies = { "nvim-tree/nvim-web-devicons" },
     opts = {
       file = {
         [".keep"] = { glyph = "󰊢", hl = "MiniIconsGrey" },
         ["devcontainer.json"] = { glyph = "", hl = "MiniIconsAzure" },
       },
       filetype = {
-        dotenv = { glyph = "", hl = "MiniIconsYellow" },
+        dotenv = { glyph = "", hl = "MiniIconsYellow" },
         ["go"] = { glyph = "", hl = "MiniIconsAzure" },
       },
     },

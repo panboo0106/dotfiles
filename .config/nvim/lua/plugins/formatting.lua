@@ -3,13 +3,8 @@ return {
   optional = true,
   opts = {
     -- 添加全局选项
-    format_on_save = {
-      timeout_ms = 1000,
-      lsp_fallback = true,
-    },
     -- 添加格式化失败处理
     notify_on_error = true,
-
     formatters_by_ft = {
       -- Shell 脚本
       bash = { "shfmt" },

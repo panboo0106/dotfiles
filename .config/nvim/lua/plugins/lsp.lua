@@ -29,6 +29,19 @@ return {
   {
     "nvim-lspconfig",
     opts = {
+      servers = {
+        typos_lsp = {
+          cmd = { "typos-lsp" },
+          filetypes = { "*" },
+          root_dir = function()
+            return vim.fn.getcwd()
+          end,
+          init_options = {
+            config = "~/.config/nvim/typos.toml",
+            diagnosticSeverity = "Error",
+          },
+        },
+      },
       inlay_hints = { enabled = false },
     },
   },
