@@ -17,29 +17,29 @@ return {
       go = { "goimports", "gofumpt", "goimports-reviser" },
 
       -- Web 开发（添加备选格式化工具）
-      javascript = { { "prettier" }, { "prettierd" }, { "eslint_d" } },
-      typescript = { { "prettier" }, { "prettierd" }, { "eslint_d" } },
-      javascriptreact = { { "prettier" }, { "prettierd" } },
-      typescriptreact = { { "prettier" }, { "prettierd" } },
-      vue = { { "prettier" }, { "prettierd" } },
+      javascript = { "prettier", "prettierd", "eslint_d" },
+      typescript = { "prettier", "prettierd", "eslint_d" },
+      javascriptreact = { "prettier", "prettierd" },
+      typescriptreact = { "prettier", "prettierd" },
+      vue = { "prettier", "prettierd" },
 
       -- 样式文件
-      css = { { "prettier" }, { "prettierd" } },
-      scss = { { "prettier" }, { "prettierd" } },
-      less = { { "prettier" }, { "prettierd" } },
+      css = { "prettier", "prettierd" },
+      scss = { "prettier", "prettierd" },
+      less = { "prettier", "prettierd" },
 
       -- 标记语言
-      html = { { "prettier" }, { "prettierd" } },
-      json = { { "prettier" }, { "prettierd" }, { "jq" } },
-      jsonc = { { "prettier" }, { "prettierd" }, { "jq" } },
-      yaml = { { "prettier" }, { "prettierd" }, { "yamlfmt" } },
-      markdown = { { "prettier" }, { "prettierd" } },
-      ["markdown.mdx"] = { { "prettier" }, { "prettierd" } },
-      graphql = { { "prettier" }, { "prettierd" } },
-      handlebars = { { "prettier" } },
+      html = { "prettier", "prettierd" },
+      json = { "prettier", "prettierd", "jq" },
+      jsonc = { "prettier", "prettierd", "jq" },
+      yaml = { "prettier", "prettierd", "yamlfmt" },
+      markdown = { "prettier", "prettierd" },
+      ["markdown.mdx"] = { "prettier", "prettierd" },
+      graphql = { "prettier", "prettierd" },
+      handlebars = { "prettier" },
 
       -- 系统编程语言
-      rust = { { "rustfmt" } },
+      rust = { "rustfmt" },
       c = { "clang_format" },
       cpp = { "clang_format" },
 
@@ -69,6 +69,9 @@ return {
       },
       black = {
         args = { "--line-length", "88" },
+      },
+      ruff_format = {
+        args = { "--config=/home/panboo/.config/nvim/ruff.toml" },
       },
     },
   },
