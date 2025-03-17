@@ -206,4 +206,44 @@ return {
       },
     },
   },
+  {
+    "coffebar/transfer.nvim",
+    lazy = true,
+    cmd = { "TransferInit", "DiffRemote", "TransferUpload", "TransferDownload", "TransferDirDiff", "TransferRepeat" },
+    opts = {
+      require("which-key").add({
+        { "<leader>t", group = "Upload / Download", icon = "" },
+        {
+          "<leader>td",
+          "<cmd>TransferDownload<cr>",
+          desc = "Download from remote server (scp)",
+          icon = { color = "green", icon = "󰇚" },
+        },
+        {
+          "<leader>tf",
+          "<cmd>DiffRemote<cr>",
+          desc = "Diff file with remote server (scp)",
+          icon = { color = "green", icon = "" },
+        },
+        {
+          "<leader>ti",
+          "<cmd>TransferInit<cr>",
+          desc = "Init/Edit Deployment config",
+          icon = { color = "green", icon = "" },
+        },
+        {
+          "<leader>tr",
+          "<cmd>TransferRepeat<cr>",
+          desc = "Repeat transfer command",
+          icon = { color = "green", icon = "󰑖" },
+        },
+        {
+          "<leader>tu",
+          "<cmd>TransferUpload<cr>",
+          desc = "Upload to remote server (scp)",
+          icon = { color = "green", icon = "󰕒" },
+        },
+      }),
+    },
+  },
 }
