@@ -212,33 +212,33 @@ return {
     cmd = { "TransferInit", "DiffRemote", "TransferUpload", "TransferDownload", "TransferDirDiff", "TransferRepeat" },
     opts = {
       require("which-key").add({
-        { "<leader>t", group = "Upload / Download", icon = "" },
+        { "<leader>r", group = "Upload / Download", icon = "" },
         {
-          "<leader>td",
+          "<leader>rd",
           "<cmd>TransferDownload<cr>",
           desc = "Download from remote server (scp)",
           icon = { color = "green", icon = "󰇚" },
         },
         {
-          "<leader>tf",
+          "<leader>rf",
           "<cmd>DiffRemote<cr>",
           desc = "Diff file with remote server (scp)",
           icon = { color = "green", icon = "" },
         },
         {
-          "<leader>ti",
+          "<leader>ri",
           "<cmd>TransferInit<cr>",
           desc = "Init/Edit Deployment config",
           icon = { color = "green", icon = "" },
         },
         {
-          "<leader>tr",
+          "<leader>rr",
           "<cmd>TransferRepeat<cr>",
           desc = "Repeat transfer command",
           icon = { color = "green", icon = "󰑖" },
         },
         {
-          "<leader>tu",
+          "<leader>ru",
           "<cmd>TransferUpload<cr>",
           desc = "Upload to remote server (scp)",
           icon = { color = "green", icon = "󰕒" },
