@@ -30,6 +30,13 @@ return {
     "nvim-lspconfig",
     opts = {
       servers = {
+        ruff = {
+          cmd = { "~/.local/share/nvim/mason/bin/ruff", "server", "--preview" },
+          filetypes = { "python" },
+          root_dir = function()
+            return vim.fn.getcwd()
+          end,
+        },
         typos_lsp = {
           cmd = { "typos-lsp" },
           filetypes = { "*" },
@@ -43,6 +50,13 @@ return {
         },
       },
       inlay_hints = { enabled = false },
+      capabilities = {
+        workspace = {
+          didChangeWatchedFiles = {
+            dynamicRegistration = true,
+          },
+        },
+      },
     },
   },
 }

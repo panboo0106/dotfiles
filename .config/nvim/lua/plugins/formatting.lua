@@ -71,7 +71,9 @@ return {
         args = { "--line-length", "88" },
       },
       ruff_format = {
-        args = { "--config=/home/panboo/.config/nvim/ruff.toml" },
+        command = "ruff",
+        args = { "format", "--config=~/.config/nvim/ruff.toml", "--stdin-filename", "$FILENAME", "-" },
+        stdin = true,
       },
     },
   },

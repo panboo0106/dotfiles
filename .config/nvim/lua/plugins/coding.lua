@@ -1,6 +1,7 @@
 return {
   {
     "saghen/blink.cmp",
+    version = "1.*",
     optional = true,
     dependencies = { "codeium.nvim", "saghen/blink.compat" },
     opts = {
@@ -14,6 +15,7 @@ return {
           },
         },
       },
+      fuzzy = { implementation = "prefer_rust" },
     },
   },
   {
