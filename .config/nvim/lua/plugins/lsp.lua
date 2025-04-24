@@ -30,6 +30,21 @@ return {
     "nvim-lspconfig",
     opts = {
       servers = {
+        gopls = {
+          settings = {
+            gopls = {
+              hints = {
+                assignVariableTypes = true,
+                compositeLiteralFields = true,
+                compositeLiteralTypes = true,
+                constantValues = true,
+                functionTypeParameters = true,
+                parameterNames = true,
+                rangeVariableTypes = true,
+              },
+            },
+          },
+        },
         ruff = {
           cmd = { "~/.local/share/nvim/mason/bin/ruff", "server", "--preview" },
           filetypes = { "python" },

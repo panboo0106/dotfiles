@@ -19,5 +19,11 @@ vim.filetype.add({
   },
 })
 vim.treesitter.language.register("markdown", "Avante")
+vim.filetype.add({
+  extension = {
+    sh = "sh",
+  },
+})
+
 local leet_arg = "leetcode.nvim"
 return leet_arg

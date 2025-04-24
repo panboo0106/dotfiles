@@ -246,4 +246,15 @@ return {
       }),
     },
   },
+  {
+    "nvimdev/template.nvim",
+    cmd = { "Template", "TemProject" },
+    config = function()
+      require("template").setup({
+        temp_dir = os.getenv("HOME") .. "/.config/nvim/templates",
+        author = "minorui",
+        email = "leo.minorui@gmail.com",
+      })
+    end,
+  },
 }
