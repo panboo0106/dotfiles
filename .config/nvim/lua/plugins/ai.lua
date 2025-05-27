@@ -19,6 +19,7 @@ return {
 
       -- Return the options table
       return {
+
         enable_cmp_source = not vim.g.ai_cmp,
         virtual_text = {
           enabled = vim.g.ai_cmp,

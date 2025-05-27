@@ -166,6 +166,13 @@ return {
                   },
                 },
               },
+              sources = {
+                organizeImports = {
+                  starThreshold = 9999,
+                  staticStarThreshold = 9999,
+                  staticImportsAfterNonStatic = true,
+                },
+              },
               maven = {
                 downloadSources = true,
                 updateSnapshots = false,
@@ -239,13 +246,6 @@ return {
             signatureHelp = { enabled = true },
             contentProvider = { preferred = "fernflower" },
             extendedClientCapabilities = jdtls_setup.extendedClientCapabilities,
-            sources = {
-              organizeImports = {
-                starThreshold = 9999,
-                staticStarThreshold = 9999,
-                staticImportsAfterNonStatic = true,
-              },
-            },
             codeGeneration = {
               toString = {
                 template = "${object.className}{${member.name()}=${member.value}, ${otherMembers}}",
@@ -265,39 +265,71 @@ return {
           },
           -- LazyVim集成: 添加capabilities
           capabilities = require("blink.cmp").get_lsp_capabilities(capabilities),
+          -- 按键映射和其他附加功能
+          on_attach = function(client, bufnr)
+            -- 添加代码操作和调试支持
+            local opts = { noremap = true, silent = true, buffer = bufnr }
 
-          -- -- 按键映射和其他附加功能
-          -- on_attach = function(client, bufnr)
-          --   -- 添加代码操作和调试支持
-          --   local opts = { noremap = true, silent = true, buffer = bufnr }
-          --
-          --   -- 常用Java功能映射
-          --   vim.keymap.set("n", "<leader>jo", jdtls.organize_imports, opts)
-          --   vim.keymap.set("n", "<leader>jv", jdtls.extract_variable, opts)
-          --   vim.keymap.set("n", "<leader>jc", jdtls.extract_constant, opts)
-          --   vim.keymap.set("n", "<leader>jm", jdtls.extract_method, opts)
-          --   vim.keymap.set("n", "<leader>jt", jdtls.test_class, opts)
-          --   vim.keymap.set("n", "<leader>jn", jdtls.test_nearest_method, opts)
-          --
-          --   -- 代码行为菜单
-          --   vim.keymap.set("n", "<A-CR>", jdtls.code_action, opts)
-          --   vim.keymap.set("n", "<leader>jr", jdtls.code_action, opts)
-          --
-          --   -- 如果有which-key，可以添加标签
-          --   local wk = require("which-key")
-          --   wk.add({
-          --     ["<leader>j"] = { name = "Java" },
-          --   })
-          --
-          --   -- DAP配置（如果安装了nvim-dap）
-          --   if vim.fn.exists("nvim-dap") ~= 0 then
-          --     -- 在这里添加DAP相关配置
-          --     local dap = require("dap")
-          --
-          --     -- 添加Java调试配置
-          --     -- ...
-          --   end
-          -- end,
+            require("which-key").add({
+              { "<leader>j", group = "Java", icon = "??" },
+              {
+                "<leader>jo",
+                "<cmd>lua require('jdtls').organize_imports()<cr>",
+                desc = "Organize Imports",
+                icon = { color = "orange", icon = "??" },
+              },
+              {
+                "<leader>jv",
+                "<cmd>lua require('jdtls').extract_variable()<cr>",
+                desc = "Extract Variable",
+                icon = { color = "blue", icon = "??" },
+              },
+              {
+                "<leader>jc",
+                "<cmd>lua require('jdtls').extract_constant()<cr>",
+                desc = "Extract Constant",
+                icon = { color = "purple", icon = "??" },
+              },
+              {
+                "<leader>jm",
+                "<cmd>lua require('jdtls').extract_method()<cr>",
+                desc = "Extract Method",
+                icon = { color = "cyan", icon = "??" },
+              },
+              {
+                "<leader>jt",
+                "<cmd>lua require('jdtls').test_class()<cr>",
+                desc = "Test Class",
+                icon = { color = "green", icon = "??" },
+              },
+              {
+                "<leader>jn",
+                "<cmd>lua require('jdtls').test_nearest_method()<cr>",
+                desc = "Test Nearest Method",
+                icon = { color = "green", icon = "??" },
+              },
+              {
+                "<leader>jd",
+                "<cmd>lua require('jdtls').goto_definition()<cr>",
+                desc = "Goto Definition (Java Enhanced)",
+                icon = { color = "yellow", icon = "??" },
+              },
+              {
+                "<leader>cA",
+                "<cmd>lua require('jdtls').code_action()<cr>",
+                desc = "Java Code Action",
+                icon = { color = "red", icon = "??" },
+              },
+            }, { buffer = bufnr })
+            -- DAP配置（如果安装了nvim-dap）
+            if vim.fn.exists("nvim-dap") ~= 0 then
+              -- 在这里添加DAP相关配置
+              local dap = require("dap")
+
+              -- 添加Java调试配置
+              -- ...
+            end
+          end,
         }
 
         -- 启动JDTLS
