@@ -48,20 +48,20 @@ return {
       })
     end,
   },
-  {
-    "ray-x/go.nvim",
-    dependencies = { -- optional packages
-      "ray-x/guihua.lua",
-      "neovim/nvim-lspconfig",
-      "nvim-treesitter/nvim-treesitter",
-    },
-    config = function()
-      require("go").setup()
-    end,
-    event = { "CmdlineEnter" },
-    ft = { "go", "gomod" },
-    build = ':lua require("go.install").update_all_sync()', -- if you need to install/update all binaries
-  },
+  -- {
+  --   "ray-x/go.nvim",
+  --   dependencies = { -- optional packages
+  --     "ray-x/guihua.lua",
+  --     "neovim/nvim-lspconfig",
+  --     "nvim-treesitter/nvim-treesitter",
+  --   },
+  --   config = function()
+  --     require("go").setup()
+  --   end,
+  --   event = { "CmdlineEnter" },
+  --   ft = { "go", "gomod" },
+  --   build = ':lua require("go.install").update_all_sync()', -- if you need to install/update all binaries
+  -- },
   {
     "mfussenegger/nvim-jdtls",
     dependencies = {
@@ -76,8 +76,34 @@ return {
       -- JDTLS 自动启动函数
       local jdtls_start = function()
         -- 找到项目根目录
+        local function find_java_project_root()
+          -- 优先查找构建工具的包装脚本（通常在真正的项目根目录）
+          local wrapper_markers = { "gradlew", "mvnw" }
+          local wrapper_root = jdtls_setup.find_root(wrapper_markers)
+          if wrapper_root then
+            return wrapper_root
+          end
+
+          -- 然后查找 Git 仓库根目录
+          local git_root = jdtls_setup.find_root({ ".git" })
+          if git_root then
+            -- 检查 Git 根目录是否包含构建文件
+            local build_files = { "pom.xml", "build.gradle", "build.gradle.kts", "settings.gradle" }
+            for _, file in ipairs(build_files) do
+              if vim.fn.filereadable(git_root .. "/" .. file) == 1 then
+                return git_root
+              end
+            end
+          end
+
+          -- 最后查找最近的构建文件
+          local build_root = jdtls_setup.find_root({ "pom.xml", "build.gradle", "build.gradle.kts" })
+          return build_root or vim.fn.getcwd()
+        end
+
+        local root_dir = find_java_project_root()
         local root_markers = { "gradlew", "mvnw", ".git", "pom.xml", "build.gradle" }
-        local root_dir = jdtls_setup.find_root(root_markers)
+        -- local root_dir = jdtls_setup.find_root(root_markers)
         if root_dir == "" then
           root_dir = vim.fn.getcwd()
         end
@@ -322,13 +348,13 @@ return {
               },
             }, { buffer = bufnr })
             -- DAP配置（如果安装了nvim-dap）
-            if vim.fn.exists("nvim-dap") ~= 0 then
-              -- 在这里添加DAP相关配置
-              local dap = require("dap")
+            -- if vim.fn.exists("nvim-dap") ~= 0 then
+            --   -- 在这里添加DAP相关配置
+            --   local dap = require("dap")
 
-              -- 添加Java调试配置
-              -- ...
-            end
+            -- 添加Java调试配置
+            -- ...
+            -- end
           end,
         }
 
@@ -342,5 +368,235 @@ return {
         callback = jdtls_start,
       })
     end,
+  },
+  -- go.nvim 主配置
+  -- {
+  --   "ray-x/go.nvim",
+  --   dependencies = {
+  --     "ray-x/guihua.lua", -- 提供浮动窗口支持
+  --     "neovim/nvim-lspconfig",
+  --     "nvim-treesitter/nvim-treesitter",
+  --   },
+  --   config = function()
+  --     require("go").setup({
+  --       -- 基本配置
+  --       go = "go", -- go 命令路径
+  --       goimports = "gopls", -- 使用 gopls 进行 import 管理
+  --       gofmt = "gofumpt", -- 使用 gofumpt 进行格式化
+  --
+  --       -- LSP 配置
+  --       lsp_cfg = true, -- 让 go.nvim 管理 gopls 配置
+  --       lsp_gofumpt = true, -- 启用 gofumpt
+  --       lsp_on_attach = true, -- 使用 go.nvim 的 on_attach
+  --
+  --       -- 诊断配置
+  --       lsp_diag_hdlr = true, -- 使用 go.nvim 的诊断处理器
+  --       lsp_diag_underline = true,
+  --       lsp_diag_virtual_text = { space = 0, prefix = "■" },
+  --       lsp_diag_signs = true,
+  --       lsp_diag_update_in_insert = false,
+  --       lsp_keymaps = false,
+  --       -- 代码操作
+  --       lsp_document_formatting = true,
+  --       lsp_inlay_hints = {
+  --         enable = true,
+  --         -- 只在 Normal 模式显示 inlay hints
+  --         only_current_line = false,
+  --         -- 显示的 hint 类型
+  --         show_variable_name = true,
+  --         show_parameter_hints = true,
+  --         show_other_hints = true,
+  --         max_len_align = false,
+  --         max_len_align_padding = 1,
+  --         right_align = false,
+  --         right_align_padding = 7,
+  --         highlight = "Comment",
+  --       },
+  --
+  --       -- gopls 特定设置
+  --       gopls_cmd = nil, -- 使用默认的 gopls
+  --       gopls_remote_auto = true,
+  --
+  --       -- 分析器配置（包括 shadow）
+  --       gopls_settings = {
+  --         analyses = {
+  --           shadow = true, -- 启用变量遮蔽检查
+  --           unusedparams = true,
+  --           unusedwrite = true,
+  --           nilness = true,
+  --           useany = true,
+  --         },
+  --         staticcheck = true,
+  --         gofumpt = true,
+  --         hints = {
+  --           assignVariableTypes = true,
+  --           compositeLiteralFields = true,
+  --           compositeLiteralTypes = true,
+  --           constantValues = true,
+  --           functionTypeParameters = true,
+  --           parameterNames = true,
+  --           rangeVariableTypes = true,
+  --         },
+  --         codelenses = {
+  --           gc_details = false,
+  --           generate = true,
+  --           regenerate_cgo = true,
+  --           run_govulncheck = true,
+  --           test = true,
+  --           tidy = true,
+  --           upgrade_dependency = true,
+  --           vendor = true,
+  --         },
+  --         usePlaceholders = true,
+  --         completeUnimported = true,
+  --         directoryFilters = {
+  --           "-.git",
+  --           "-.vscode",
+  --           "-.idea",
+  --           "-.vscode-test",
+  --           "-node_modules",
+  --         },
+  --         semanticTokens = true,
+  --       },
+  --
+  --       -- Treesitter 配置
+  --       luasnip = true, -- 启用 go.nvim 的 luasnip 集成
+  --
+  --       -- 测试配置
+  --       test_runner = "go", -- 默认测试运行器
+  --       run_in_floaterm = false, -- 在终端中运行，而不是浮动终端
+  --
+  --       -- 调试配置
+  --       dap_debug = true,
+  --       dap_debug_gui = true,
+  --       dap_debug_keymap = true, -- 设置调试快捷键
+  --
+  --       -- 构建标签检测
+  --       build_tags = "", -- 可以设置特定的构建标签
+  --       textobjects = true, -- 启用 Go 特定的文本对象
+  --
+  --       -- 图标配置
+  --       icons = {
+  --         breakpoint = "🔴",
+  --         currentpos = "🔶",
+  --       },
+  --
+  --       -- 浮动窗口配置
+  --       floaterm = {
+  --         posititon = "auto", -- 或 'top', 'bottom', 'left', 'right', 'center', 'auto'
+  --         width = 0.45,
+  --         height = 0.98,
+  --       },
+  --
+  --       -- 自动命令
+  --       trouble = false, -- 如果你使用 trouble.nvim，设置为 true
+  --       test_efm = false, -- 使用错误格式
+  --     })
+  --
+  --     -- 自动命令：保存时格式化和组织导入
+  --     local format_sync_grp = vim.api.nvim_create_augroup("GoFormat", {})
+  --     vim.api.nvim_create_autocmd("BufWritePre", {
+  --       pattern = "*.go",
+  --       callback = function()
+  --         require("go.format").goimports()
+  --       end,
+  --       group = format_sync_grp,
+  --     })
+  --   end,
+  --   event = { "CmdlineEnter" },
+  --   ft = { "go", "gomod" },
+  --   build = ':lua require("go.install").update_all_sync()', -- 自动安装/更新 Go 工具
+  --
+  --   -- 键映射配置 - 完全避免与 LazyVim 默认键映射冲突
+  --   keys = {
+  --     -- 构建和运行
+  --     { "<leader>cgb", "<cmd>GoBuild<cr>", desc = "Build", ft = "go" },
+  --     { "<leader>cgr", "<cmd>GoRun<cr>", desc = "Run", ft = "go" },
+  --     { "<leader>cgR", "<cmd>GoRun %<cr>", desc = "Run Current File", ft = "go" },
+  --
+  --     -- 测试相关
+  --     { "<leader>cgt", "<cmd>GoTest<cr>", desc = "Test Package", ft = "go" },
+  --     { "<leader>cgT", "<cmd>GoTestFunc<cr>", desc = "Test Function", ft = "go" },
+  --     { "<leader>cgc", "<cmd>GoCoverage<cr>", desc = "Test Coverage", ft = "go" },
+  --     { "<leader>cgtf", "<cmd>GoTestFile<cr>", desc = "Test File", ft = "go" },
+  --     { "<leader>cgta", "<cmd>GoTestAll<cr>", desc = "Test All", ft = "go" },
+  --
+  --     -- 代码生成和修复
+  --     { "<leader>cgfs", "<cmd>GoFillStruct<cr>", desc = "Fill Struct", ft = "go" },
+  --     { "<leader>cgfw", "<cmd>GoFillSwitch<cr>", desc = "Fill Switch", ft = "go" },
+  --     { "<leader>cgie", "<cmd>GoIfErr<cr>", desc = "Add If Err", ft = "go" },
+  --     { "<leader>cgii", "<cmd>GoImpl<cr>", desc = "Implement Interface", ft = "go" },
+  --     { "<leader>cgig", "<cmd>GoGenerate<cr>", desc = "Go Generate", ft = "go" },
+  --
+  --     -- 代码操作和重构
+  --     { "<leader>cgn", "<cmd>GoRename<cr>", desc = "Go Rename", ft = "go" },
+  --     { "<leader>cge", "<cmd>GoExtract<cr>", desc = "Extract", ft = "go" },
+  --     { "<leader>cgA", "<cmd>GoAlt<cr>", desc = "Alternate File", ft = "go" },
+  --
+  --     -- 标签操作
+  --     { "<leader>cgj", "<cmd>GoAddTag<cr>", desc = "Add Tags", ft = "go" },
+  --     { "<leader>cgJ", "<cmd>GoRmTag<cr>", desc = "Remove Tags", ft = "go" },
+  --
+  --     -- 格式化和导入
+  --     { "<leader>cgf", "<cmd>GoImports<cr>", desc = "Format & Imports", ft = "go" },
+  --
+  --     -- 模块和依赖管理
+  --     { "<leader>cgm", "<cmd>GoMod<cr>", desc = "Go Mod", ft = "go" },
+  --     { "<leader>cgM", "<cmd>GoModTidy<cr>", desc = "Go Mod Tidy", ft = "go" },
+  --     { "<leader>cgI", "<cmd>GoInstallDeps<cr>", desc = "Install Dependencies", ft = "go" },
+  --
+  --     -- 诊断和 lint
+  --     { "<leader>cgl", "<cmd>GoLint<cr>", desc = "Go Lint", ft = "go" },
+  --     { "<leader>cgv", "<cmd>GoVet<cr>", desc = "Go Vet", ft = "go" },
+  --     { "<leader>cgV", "<cmd>GoVulnCheck<cr>", desc = "Vulnerability Check", ft = "go" },
+  --
+  --     -- 调试相关
+  --     { "<leader>cgdb", "<cmd>GoBreakToggle<cr>", desc = "Toggle Breakpoint", ft = "go" },
+  --     { "<leader>cgdB", "<cmd>GoBreakCondition<cr>", desc = "Conditional Breakpoint", ft = "go" },
+  --     { "<leader>cgdd", "<cmd>GoDebug<cr>", desc = "Debug", ft = "go" },
+  --     { "<leader>cgdt", "<cmd>GoDebugTest<cr>", desc = "Debug Test", ft = "go" },
+  --     { "<leader>cgdT", "<cmd>GoDebugTestFunc<cr>", desc = "Debug Test Function", ft = "go" },
+  --     { "<leader>cgds", "<cmd>GoDebugStop<cr>", desc = "Stop Debug", ft = "go" },
+  --
+  --     -- 导航和信息
+  --     -- { "<leader>cgnd", "<cmd>GoDefStack<cr>", desc = "Definition Stack", ft = "go" },
+  --     -- { "<leader>cgnt", "<cmd>GoDefType<cr>", desc = "Go to Type Definition", ft = "go" },
+  --     -- { "<leader>cgni", "<cmd>GoInfo<cr>", desc = "Go Info", ft = "go" },
+  --     -- { "<leader>cgnD", "<cmd>GoDoc<cr>", desc = "Go Documentation", ft = "go" },
+  --     -- { "<leader>cgnr", "<cmd>GoReferrers<cr>", desc = "Go Referrers", ft = "go" },
+  --     -- { "<leader>cgnc", "<cmd>GoCallers<cr>", desc = "Go Callers", ft = "go" },
+  --     -- { "<leader>cgnC", "<cmd>GoCallees<cr>", desc = "Go Callees", ft = "go" },
+  --
+  --     -- 工具和实用功能
+  --     { "<leader>cgw", "<cmd>GoWork<cr>", desc = "Go Work", ft = "go" },
+  --     { "<leader>cgE", "<cmd>GoEnv<cr>", desc = "Go Environment", ft = "go" },
+  --     { "<leader>cgp", "<cmd>GoPlay<cr>", desc = "Go Playground", ft = "go" },
+  --   },
+  -- },
+  {
+    "ray-x/go.nvim",
+    dependencies = { -- optional packages
+      "ray-x/guihua.lua",
+      "neovim/nvim-lspconfig",
+      "nvim-treesitter/nvim-treesitter",
+    },
+    opts = {
+      -- lsp_keymaps = false,
+      -- other options
+    },
+    config = function(lp, opts)
+      require("go").setup(opts)
+      local format_sync_grp = vim.api.nvim_create_augroup("GoFormat", {})
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        pattern = "*.go",
+        callback = function()
+          require("go.format").goimports()
+        end,
+        group = format_sync_grp,
+      })
+    end,
+    event = { "CmdlineEnter" },
+    ft = { "go", "gomod" },
+    build = ':lua require("go.install").update_all_sync()', -- if you need to install/update all binaries
   },
 }

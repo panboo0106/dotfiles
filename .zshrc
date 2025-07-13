@@ -1,6 +1,6 @@
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:/usr/local/bin:/opt/homebrew/bin:$PATH
-export STARSHIP_CONFIG=~/.config/starship/starship.toml
+export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 alias dotfiles='git --git-dir $HOME/.dotfiles --work-tree $HOME'
 eval "$(starship init zsh)"
 # Path to your oh-my-zsh installation.
