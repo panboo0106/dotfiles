@@ -32,7 +32,7 @@ return {
       html = { "prettier", "prettierd" },
       json = { "prettier", "prettierd", "jq" },
       jsonc = { "prettier", "prettierd", "jq" },
-      yaml = { "prettier", "prettierd", "yamlfmt" },
+      yaml = { "yamlfmt" },
       markdown = { "prettier", "prettierd" },
       ["markdown.mdx"] = { "prettier", "prettierd" },
       graphql = { "prettier", "prettierd" },
@@ -73,6 +73,15 @@ return {
       ruff_format = {
         command = "ruff",
         args = { "format", "--config=~/.config/nvim/ruff.toml", "--stdin-filename", "$FILENAME", "-" },
+        stdin = true,
+      },
+      yamlfmt = {
+        command = "yamlfmt",
+        args = {
+          "-formatter",
+          "indent=2,include_document_start=false,line_ending=lf,pad_line_comments=2,retain_line_breaks_single: true",
+          "-",
+        },
         stdin = true,
       },
     },
