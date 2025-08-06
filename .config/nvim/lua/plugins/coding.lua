@@ -3,12 +3,18 @@ return {
     "saghen/blink.cmp",
     version = "1.*",
     optional = true,
-    dependencies = { "codeium.nvim", "saghen/blink.compat" },
+    dependencies = {
+      "codeium.nvim",
+      "saghen/blink.compat",
+      "L3MON4D3/LuaSnip",
+      version = "v2.*",
+    },
     opts = {
       snippets = {
         preset = "luasnip",
       },
       sources = {
+        default = { "lsp", "path", "snippets", "buffer" },
         compat = { "codeium" },
         providers = {
           codeium = {

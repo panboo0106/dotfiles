@@ -178,10 +178,14 @@ return {
                 downloadSources = true,
               },
               compile = {
-                nullAnalysis = { mode = "automatic" },
+                nullAnalysis = { mode = "disabled" },
+              },
+              exclusions = {
+                "**/src/main/**/proto/**",
+                "**/target/generated-sources/protobuf/**",
               },
               configuration = {
-                updateBuildConfiguration = "automatic",
+                updateBuildConfiguration = "interactive",
                 runtimes = {
                   {
                     name = "JavaSE-17",

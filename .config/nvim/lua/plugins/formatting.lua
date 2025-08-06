@@ -14,7 +14,7 @@ return {
       lua = { "stylua" },
 
       -- Go 语言（保持顺序，先导入整理后格式化）
-      go = { "goimports", "gofumpt", "goimports-reviser" },
+      go = { "gofumpt", "goimports", "goimports-reviser" },
 
       -- Web 开发（添加备选格式化工具）
       javascript = { "prettier", "prettierd", "eslint_d" },
@@ -61,6 +61,18 @@ return {
 
     -- 添加一些格式化工具的特定配置
     formatters = {
+      ["goimports-reviser"] = {
+        command = "goimports-reviser",
+        args = {
+          "-rm-unused",
+          "-set-alias",
+          "-format",
+          "-company-prefixes",
+          "sangfor.com/xdr",
+          "$FILENAME",
+        },
+        stdin = false,
+      },
       shfmt = {
         args = { "-i", "2", "-ci" }, -- 使用 2 空格缩进
       },
@@ -79,7 +91,7 @@ return {
         command = "yamlfmt",
         args = {
           "-formatter",
-          "indent=2,include_document_start=false,line_ending=lf,pad_line_comments=2,retain_line_breaks_single: true",
+          "indent=2,include_document_start=false,line_ending=lf,pad_line_comments=2,retain_line_breaks_single=true,force_array_style=block,indentless_arrays=false",
           "-",
         },
         stdin = true,
