@@ -91,7 +91,7 @@ return {
         command = "yamlfmt",
         args = {
           "-formatter",
-          "indent=2,include_document_start=false,line_ending=lf,pad_line_comments=2,retain_line_breaks_single=true,force_array_style=block,indentless_arrays=false",
+          "indent=2,include_document_start=false,line_ending=lf,pad_line_comments=0,retain_line_breaks=true,retain_line_breaks_single=true,disallow_quotes=false,allow_flow_style=true,indentless_arrays=true,scan_folded_lines_as_literal=true",
           "-",
         },
         stdin = true,
