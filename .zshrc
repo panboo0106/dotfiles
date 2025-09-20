@@ -145,3 +145,5 @@ precmd () {
 # Added by Windsurf
 export PATH="/Users/leo/.codeium/windsurf/bin:$PATH"
 
+
+. "$HOME/.local/bin/env"
