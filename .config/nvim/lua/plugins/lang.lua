@@ -3,11 +3,11 @@ return {
     "MeanderingProgrammer/render-markdown.nvim",
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
-      "echasnovski/mini.nvim", -- 如果使用 mini.nvim 套件
+      "nvim-mini/mini.nvim", -- 如果使用 mini.nvim 套件
       -- 'echasnovski/mini.icons' -- 如果使用独立 mini 插件
       -- 'nvim-tree/nvim-web-devicons' -- 如果偏好使用 nvim-web-devicons
     },
-    ft = { "markdown" }, -- 懒加载，仅在 markdown 文件中加载
+    ft = { "markdown", "Avante" }, -- 懒加载，仅在 markdown 文件中加载
     cmd = { "RenderMarkdown" }, -- 也可以通过命令触发加载
     -- keys = {
     --   { "<leader>md", "<cmd>RenderMarkdown toggle<cr>", desc = "切换 Markdown 渲染" },
@@ -33,7 +33,7 @@ return {
 
       -- 日志级别和文件类型
       log_level = "error",
-      file_types = { "markdown" },
+      file_types = { "markdown", "Avante" },
 
       -- 反隐藏设置 - 在光标行隐藏插件添加的虚拟文本
       anti_conceal = {
@@ -78,6 +78,21 @@ return {
           "RenderMarkdownH4",
           "RenderMarkdownH5",
           "RenderMarkdownH6",
+        },
+      },
+      emphasis = {
+        enabled = true,
+        bold = {
+          enabled = true,
+          highlight = "RenderMarkdownBold",
+        },
+        italic = {
+          enabled = true,
+          highlight = "RenderMarkdownItalic",
+        },
+        strikethrough = {
+          enabled = true,
+          highlight = "RenderMarkdownStrikethrough",
         },
       },
 
@@ -384,19 +399,8 @@ return {
     -- end,
   },
   {
-    "OXY2DEV/markview.nvim",
-    lazy = true, -- Recommended
-    ft = { "norg", "rmd", "org", "vimwiki" },
-    opts = {}, -- ft = "markdown" -- If you decide to lazy-load anyway
-
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter",
-      "nvim-tree/nvim-web-devicons",
-    },
-  },
-  {
     "linux-cultist/venv-selector.nvim",
-    branch = "regexp",
+    branch = "main",
     dependencies = {
       "neovim/nvim-lspconfig",
       "nvim-telescope/telescope.nvim",

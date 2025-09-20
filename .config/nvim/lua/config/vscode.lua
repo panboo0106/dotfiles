@@ -319,7 +319,7 @@ map("n", "<Esc>", ":nohl<CR>", { desc = "Clear search highlight" })
 return {
   -- Mini.surround（环绕操作）
   {
-    "echasnovski/mini.surround",
+    "nvim-mini/mini.surround",
     vscode = true,
     opts = {
       mappings = {

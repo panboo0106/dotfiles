@@ -56,7 +56,7 @@ return {
     dependencies = {
       -- Mason 确保调试器安装
       {
-        "williamboman/mason.nvim",
+        "mason-org/mason.nvim",
         opts = {
           ensure_installed = {
             "java-debug-adapter",

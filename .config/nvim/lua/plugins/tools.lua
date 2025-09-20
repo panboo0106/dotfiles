@@ -1,5 +1,20 @@
 return {
   {
+    "dhruvasagar/vim-table-mode",
+    ft = { "markdown", "text", "org" }, -- 只在这些文件类型中加载
+    config = function()
+      -- 基本配置
+      vim.g.table_mode_corner = "|"
+      vim.g.table_mode_corner_corner = "|"
+      vim.g.table_mode_header_fillchar = "-"
+      require("which-key").add({
+        { "<leader>kt", group = "Table Mode", desc = "Table Mode" },
+        { "<leader>ktm", ":TableModeToggle<CR>", desc = "Toggle Table Mode" },
+        { "<leader>ktr", ":TableModeRealign<CR>", desc = "Realign Table" },
+      })
+    end,
+  },
+  {
     "kawre/leetcode.nvim",
     build = ":TSUpdate html",
     dependencies = {
@@ -196,6 +211,10 @@ return {
       -- your configuration comes here
       -- or leave it empty to use the default settings
       -- refer to the configuration section below
+      spec = {
+        { "<leader>k", group = "kitools", icon = { icon = "", color = "bule" } },
+        { "<leader>T", group = "terminal", icon = { icon = "", color = "black" } },
+      },
     },
     keys = {
       {
