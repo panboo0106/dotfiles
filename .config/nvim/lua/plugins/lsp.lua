@@ -19,16 +19,20 @@ return {
         "typescript-language-server",
         "css-lsp",
         "prettierd",
-        "ruff-lsp",
         "isort",
         "pyright",
         "ruff",
         "black",
+        "typos-lsp",
       })
     end,
   },
   {
-    "nvim-lspconfig",
+    "neovim/nvim-lspconfig",
+    dependencies = {
+      "mason.nvim",
+      { "mason-org/mason-lspconfig.nvim", config = function() end },
+    },
     opts = {
       servers = {
         gopls = {
@@ -100,14 +104,13 @@ return {
           end,
         },
         typos_lsp = {
-          cmd = { "typos-lsp" },
-          filetypes = { "*" },
-          root_dir = function()
-            return vim.fn.getcwd()
-          end,
-          init_options = {
-            config = "~/.config/nvim/typos.toml",
-            diagnosticSeverity = "Error",
+          settings = {
+            enabled = true,
+            filetypes = { "*" },
+            init_options = {
+              config = "~/.config/nvim/typos.toml",
+              diagnosticSeverity = "Info",
+            },
           },
         },
       },

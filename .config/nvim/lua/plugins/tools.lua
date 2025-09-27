@@ -175,7 +175,50 @@ return {
   },
   {
     "folke/snacks.nvim",
+    priority = 1000,
     opts = {
+      explorer = {
+        enabled = true,
+        replace_netrw = true,
+        finder = "explorer",
+        sort = { fields = { "sort" } },
+        supports_live = true,
+        tree = true,
+        watch = true,
+        diagnostics = true,
+        diagnostics_open = true,
+        git_status = true,
+        git_status_open = true,
+        git_untracked = true,
+        follow_file = true,
+        focus = "list",
+        auto_close = false,
+        jump = { close = false },
+        layout = { preset = "sidebar", preview = false },
+        win = {
+          list = {
+            keys = {
+              ["<C-b>"] = "page_up", -- Ctrl+r 向上翻页
+              ["<C-f>"] = "page_down", -- Ctrl+f 向下翻页
+            },
+          },
+        },
+      },
+      picker = {
+        enabled = true,
+        sources = {
+          explorer = {
+            hidden = true,
+            ignored = true,
+            exclude = {
+              ".DS_Store",
+              "thumbs.db",
+              ".git",
+              "node_modules",
+            },
+          },
+        },
+      },
       dashboard = {
         preset = {
           header = [[
