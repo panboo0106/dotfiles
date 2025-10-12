@@ -177,6 +177,23 @@ return {
     "folke/snacks.nvim",
     priority = 1000,
     opts = {
+      notifier = {
+        enabled = true,
+        timeout = 3000, -- 默认通知显示时间(毫秒)
+        width = { min = 40, max = 0.4 },
+        height = { min = 1, max = 0.6 },
+        margin = { top = 0, right = 1, bottom = 0 },
+        padding = true,
+        sort = { "level", "added" },
+        -- 保留通知历史
+        history = {
+          -- 最大保存的通知数量
+          max = 128,
+          -- 是否在关闭时保留历史
+          keep_closed = true,
+        },
+        style = "compact",
+      },
       explorer = {
         enabled = true,
         replace_netrw = true,
