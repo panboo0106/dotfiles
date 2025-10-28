@@ -125,7 +125,7 @@ return {
     version = false, -- set this if you want to always pull the latest change
     opts = {
       ---@alias Provider "claude" | "openai" | "azure" | "gemini" | "cohere" | "copilot" | string
-      provider = "openai", -- Recommend using Claude
+      provider = "claude-code", -- Recommend using Claude
       auto_suggestions_provider = "openai", -- Since auto-suggestions are a high-frequency operation and therefore expensive, it is recommended to specify an inexpensive provider or even a free provider: copilot
       -- add any opts here
       providers = {
@@ -136,12 +136,42 @@ return {
           max_tokens = 4096,
         },
       },
+      acp_providers = {
+        ["claude-code"] = {
+          command = "npx",
+          args = { "@zed-industries/claude-code-acp" },
+          env = {
+            NODE_NO_WARNINGS = "1",
+            ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY"),
+          },
+        },
+        ["codex"] = {
+          command = "codex-acp",
+          env = {
+            NODE_NO_WARNINGS = "1",
+            OPENAI_API_KEY = os.getenv("OPENAI_API_KEY"),
+          },
+        },
+        ["gemini-cli"] = {
+          command = "gemini",
+          args = { "--experimental-acp" },
+          env = {
+            NODE_NO_WARNINGS = "1",
+            GEMINI_API_KEY = os.getenv("GEMINI_API_KEY"),
+          },
+        },
+      },
       behaviour = {
         auto_suggestions = false, -- Experimental stage
         auto_set_highlight_group = true,
         auto_set_keymaps = true,
         auto_apply_diff_after_generation = true,
         support_paste_from_clipboard = true,
+      },
+      ui = {
+        sidebar = {
+          width = 40, -- sidebar width in columns
+        },
       },
     },
     -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`

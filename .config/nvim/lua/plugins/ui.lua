@@ -217,6 +217,9 @@ return {
       "rcarriga/nvim-notify",
     },
     opts = {
+      notify = {
+        enabled = false,
+      },
       views = {
         notify = {
           render = "simple",

@@ -197,46 +197,125 @@ return {
       explorer = {
         enabled = true,
         replace_netrw = true,
-        finder = "explorer",
-        sort = { fields = { "sort" } },
-        supports_live = true,
-        tree = true,
-        watch = true,
-        diagnostics = true,
-        diagnostics_open = true,
-        git_status = true,
-        git_status_open = true,
-        git_untracked = true,
-        follow_file = true,
-        focus = "list",
-        auto_close = false,
-        jump = { close = false },
-        layout = { preset = "sidebar", preview = false },
-        win = {
-          list = {
-            keys = {
-              ["<C-b>"] = "page_up", -- Ctrl+r 向上翻页
-              ["<C-f>"] = "page_down", -- Ctrl+f 向下翻页
-            },
-          },
-        },
       },
       picker = {
         enabled = true,
+        win = {
+          preview = {
+            wo = {
+              wrap = true,
+              linebreak = true,
+            },
+          },
+        },
         sources = {
           explorer = {
-            hidden = true,
-            ignored = true,
+            -- 文件显示配置
+            hidden = true, -- 显示隐藏文件（推荐 true，这样能看到 .env 等配置）
+            ignored = false, -- 不显示 gitignore 的文件（推荐 false）
+
+            -- 排除列表（推荐配置）
             exclude = {
+              -- 系统垃圾文件
               ".DS_Store",
               "thumbs.db",
+              "desktop.ini",
+              "Thumbs.db",
+
+              -- 版本控制内部文件
               ".git",
+              ".svn",
+              ".hg",
+
+              -- Node.js
               "node_modules",
+              "package-lock.json",
+              "yarn.lock",
+              "pnpm-lock.yaml",
+
+              -- Python
+              "__pycache__",
+              "*.pyc",
+              "*.pyo",
+              ".pytest_cache",
+              ".venv",
+              "venv",
+              ".tox",
+
+              -- 构建产物
+              "dist",
+              "build",
+              "out",
+              ".next",
+              ".nuxt",
+              "target",
+              "*.o",
+              "*.so",
+              "*.dylib",
+
+              -- 缓存
+              ".cache",
+              "*.swp",
+              "*.swo",
+              "*~",
+
+              -- IDE/编辑器
+              ".idea",
+              ".vscode",
+              "*.sublime-*",
+            },
+            -- Explorer 特定配置
+            tree = true,
+            watch = true,
+            diagnostics = true,
+            diagnostics_open = true,
+            git_status = true,
+            git_status_open = true,
+            git_untracked = true,
+            follow_file = true,
+            focus = "list",
+            auto_close = false,
+            jump = { close = false },
+
+            -- 布局配置（注意嵌套结构）
+            layout = {
+              cycle = true,
+              preview = false,
+              layout = { -- 这里是关键的第二层 layout
+                backdrop = false,
+                width = 30, -- 宽度：30 列
+                min_width = 30, -- 最小宽度
+                height = 0, -- 0 表示使用全高
+                position = "left", -- 位置：left 或 right
+                row = 0,
+                col = 0,
+                border = "none",
+                box = "vertical",
+                {
+                  win = "list",
+                  title = " 📁 Files ",
+                  border = "rounded",
+                },
+                -- {
+                --   win = "list",
+                --   border = "none",
+                -- },
+              },
+            },
+
+            win = {
+              list = {
+                keys = {
+                  ["<C-b>"] = "page_up",
+                  ["<C-f>"] = "page_down",
+                },
+              },
             },
           },
         },
       },
       dashboard = {
+        enabled = true,
         preset = {
           header = [[
    ███╗   ███╗██╗   ██╗    ██████╗  █████╗ ███╗   ██╗██████╗  █████╗
@@ -292,7 +371,7 @@ return {
     cmd = { "TransferInit", "DiffRemote", "TransferUpload", "TransferDownload", "TransferDirDiff", "TransferRepeat" },
     opts = {
       require("which-key").add({
-        { "<leader>r", group = "Upload / Download", icon = "" },
+        { "<leader>r", group = "Upload / Download", icon = { icon = "", color = "yellow" } },
         {
           "<leader>rd",
           "<cmd>TransferDownload<cr>",
@@ -315,7 +394,7 @@ return {
           "<leader>rr",
           "<cmd>TransferRepeat<cr>",
           desc = "Repeat transfer command",
-          icon = { color = "green", icon = "󰑖" },
+          icon = { color = "green", icon = "" },
         },
         {
           "<leader>ru",

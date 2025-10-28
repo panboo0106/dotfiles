@@ -1,0 +1,4 @@
+# zshrc.private.template
+# Copy this to ~/.zshrc.private and fill in your secrets
+export GITHUB_TOKEN=""
+export OPENAI_API_KEY=""

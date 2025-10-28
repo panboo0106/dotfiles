@@ -104,6 +104,9 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+#
+# Your private conf. Please dont add to github
+[[ -f ~/.zshrc.private ]] && source ~/.zshrc.private
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -147,3 +150,5 @@ export PATH="/Users/leo/.codeium/windsurf/bin:$PATH"
 
 
 . "$HOME/.local/bin/env"
+
+alias avante='nvim -c "lua vim.defer_fn(function()require(\"avante.api\").zen_mode()end, 100)"'
