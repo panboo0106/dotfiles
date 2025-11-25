@@ -28,7 +28,12 @@ return {
     ft = { "markdown", "md", "mkd", "markdown.md", "Avante" },
     cmd = { "RenderMarkdown" },
     keys = {
-      { "<leader>md", "<cmd>RenderMarkdown toggle<cr>", desc = "Toggle Markdown Rendering", ft = { "markdown", "md", "mkd" } },
+      {
+        "<leader>md",
+        "<cmd>RenderMarkdown toggle<cr>",
+        desc = "Toggle Markdown Rendering",
+        ft = { "markdown", "md", "mkd" },
+      },
     },
     opts = {
       enabled = true,
@@ -80,21 +85,21 @@ return {
           "RenderMarkdownH6",
         },
       },
-      emphasis = {
-        enabled = true,
-        bold = {
-          enabled = true,
-          highlight = "RenderMarkdownBold",
-        },
-        italic = {
-          enabled = true,
-          highlight = "RenderMarkdownItalic",
-        },
-        strikethrough = {
-          enabled = true,
-          highlight = "RenderMarkdownStrikethrough",
-        },
-      },
+      -- emphasis = {
+      --   enabled = true,
+      --   bold = {
+      --     enabled = true,
+      --     highlight = "RenderMarkdownBold",
+      --   },
+      --   italic = {
+      --     enabled = true,
+      --     highlight = "RenderMarkdownItalic",
+      --   },
+      --   strikethrough = {
+      --     enabled = true,
+      --     highlight = "RenderMarkdownStrikethrough",
+      --   },
+      -- },
       paragraph = {
         enabled = true,
         left_margin = 0,
@@ -181,7 +186,17 @@ return {
         padding = 1,
         min_width = 0,
         border = {
-          "┌", "┬", "┐", "├", "┼", "┤", "└", "┴", "┘", "│", "─",
+          "┌",
+          "┬",
+          "┐",
+          "├",
+          "┼",
+          "┤",
+          "└",
+          "┴",
+          "┘",
+          "│",
+          "─",
         },
         border_enabled = true,
         border_virtual = false,
@@ -339,3 +354,4 @@ return {
     },
   },
 }
+

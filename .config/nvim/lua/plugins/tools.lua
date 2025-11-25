@@ -175,6 +175,7 @@ return {
   },
   {
     "folke/snacks.nvim",
+    lazy = false,
     priority = 1000,
     opts = {
       notifier = {
@@ -199,8 +200,15 @@ return {
         replace_netrw = true,
       },
       picker = {
+        preset = "sidebar",
         enabled = true,
         win = {
+          list = {
+            keys = {
+              ["<C-b>"] = "page_up",
+              ["<C-f>"] = "page_down",
+            },
+          },
           preview = {
             wo = {
               wrap = true,
@@ -279,16 +287,14 @@ return {
 
             -- 布局配置（注意嵌套结构）
             layout = {
-              cycle = true,
+              cycle = false,
               preview = false,
+              auto_hide = { "input" },
               layout = { -- 这里是关键的第二层 layout
-                backdrop = false,
+                backdrop = true,
                 width = 30, -- 宽度：30 列
                 min_width = 30, -- 最小宽度
-                height = 0, -- 0 表示使用全高
                 position = "left", -- 位置：left 或 right
-                row = 0,
-                col = 0,
                 border = "none",
                 box = "vertical",
                 {
@@ -296,18 +302,12 @@ return {
                   title = " 📁 Files ",
                   border = "rounded",
                 },
-                -- {
-                --   win = "list",
-                --   border = "none",
-                -- },
-              },
-            },
-
-            win = {
-              list = {
-                keys = {
-                  ["<C-b>"] = "page_up",
-                  ["<C-f>"] = "page_down",
+                {
+                  win = "input",
+                  height = 1,
+                  border = "rounded",
+                  -- title = " 📁 Files ",
+                  title_pos = "center",
                 },
               },
             },
@@ -341,6 +341,73 @@ return {
         },
       },
     },
+    keys = {
+      {
+        "<leader>e",
+        function()
+          Snacks.explorer()
+        end,
+        desc = "Explorer",
+      },
+      {
+        "<leader>er",
+        function()
+          -- 手动刷新 explorer
+          if Snacks.explorer then
+            Snacks.explorer.refresh()
+          end
+        end,
+        desc = "Refresh Explorer",
+      },
+    },
+    config = function(_, opts)
+      -- 设置 snacks 选项
+      require("snacks").setup(opts)
+
+      -- 创建自动命令组来监听 git 操作并自动刷新
+      local group = vim.api.nvim_create_augroup("SnacksExplorerGitRefresh", { clear = true })
+
+      -- 在执行 git 命令后自动刷新
+      vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+        group = group,
+        callback = function()
+          -- 延迟刷新以确保 git 状态已更新
+          vim.defer_fn(function()
+            if Snacks.explorer and Snacks.explorer.refresh then
+              Snacks.explorer.refresh()
+            end
+          end, 100)
+        end,
+        desc = "Auto refresh explorer git status after saving",
+      })
+
+      -- 监听焦点返回时刷新
+      vim.api.nvim_create_autocmd({ "FocusGained" }, {
+        group = group,
+        callback = function()
+          vim.defer_fn(function()
+            if Snacks.explorer and Snacks.explorer.refresh then
+              Snacks.explorer.refresh()
+            end
+          end, 100)
+        end,
+        desc = "Refresh explorer on focus gained",
+      })
+
+      -- 监听 Git 相关的命令执行后刷新
+      vim.api.nvim_create_autocmd("User", {
+        group = group,
+        pattern = { "GitSignsUpdate", "GitSignsChanged" },
+        callback = function()
+          vim.defer_fn(function()
+            if Snacks.explorer and Snacks.explorer.refresh then
+              Snacks.explorer.refresh()
+            end
+          end, 50)
+        end,
+        desc = "Refresh explorer after git signs update",
+      })
+    end,
   },
   {
     "folke/which-key.nvim",

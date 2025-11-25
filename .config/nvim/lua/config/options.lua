@@ -14,12 +14,12 @@ vim.filetype.add({
     [".*/templates/.*%.yaml"] = "helm",
   },
 })
+vim.opt.showtabline = 0
 vim.treesitter.language.register("markdown", "Avante")
 vim.filetype.add({
   extension = {
     sh = "sh",
   },
 })
-
 local leet_arg = "leetcode.nvim"
 return leet_arg

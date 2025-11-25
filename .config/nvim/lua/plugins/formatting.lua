@@ -46,7 +46,7 @@ return {
       -- Python - 优化逻辑，保持您的条件判断
       python = function(bufnr)
         if require("conform").get_formatter_info("ruff_format", bufnr).available then
-          return { "ruff_format" }
+          return { "ruff_imports", "ruff_format" }
         else
           return { "isort", "black" }
         end
@@ -81,6 +81,18 @@ return {
       },
       black = {
         args = { "--line-length", "88" },
+      },
+      ruff_imports = {
+        command = "ruff",
+        args = {
+          "check",
+          "--select=I",
+          "--fix",
+          "--stdin-filename",
+          "$FILENAME",
+          "-",
+        },
+        stdin = true,
       },
       ruff_format = {
         command = "ruff",

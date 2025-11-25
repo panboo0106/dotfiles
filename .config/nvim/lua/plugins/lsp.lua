@@ -26,6 +26,8 @@ return {
         "ruff",
         "black",
         "typos-lsp",
+        "markdownlint-cli2",
+        "markdown-toc",
       },
     },
   },
@@ -73,6 +75,7 @@ return {
 
       ---@type table<string, lazyvim.lsp.Config|boolean>
       servers = {
+        marksman = {},
         stylua = { enabled = false },
 
         lua_ls = {
