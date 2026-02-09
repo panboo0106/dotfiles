@@ -1,422 +1,303 @@
 -- ~/.config/nvim/lua/config/vscode.lua
--- LazyVim 在 VSCode 中的配置
+-- VS Code Neovim 专用配置
 
--- ============================================
--- 基础设置
--- ============================================
+-- ==================== 基础设置 ====================
 vim.g.mapleader = " "
-vim.g.maplocalleader = ","
+vim.g.maplocalleader = " "
 
--- 基础选项设置
-local options = {
-  clipboard = "unnamedplus",
-  ignorecase = true,
-  smartcase = true,
-  hlsearch = false,
-  incsearch = true,
-  scrolloff = 8,
-  sidescrolloff = 8,
-  updatetime = 50,
-  timeoutlen = 300,
-}
+-- 禁用不需要的内置插件
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+vim.g.loaded_matchit = 1
+vim.g.loaded_matchparen = 1
+vim.g.loaded_2html_plugin = 1
+vim.g.loaded_getscript = 1
+vim.g.loaded_getscriptPlugin = 1
+vim.g.loaded_gzip = 1
+vim.g.loaded_logipat = 1
+vim.g.loaded_rrhelper = 1
+vim.g.loaded_spellfile_plugin = 1
+vim.g.loaded_tar = 1
+vim.g.loaded_tarPlugin = 1
+vim.g.loaded_vimball = 1
+vim.g.loaded_vimballPlugin = 1
+vim.g.loaded_zip = 1
+vim.g.loaded_zipPlugin = 1
 
-for k, v in pairs(options) do
-  vim.opt[k] = v
-end
+-- ==================== Vim 选项设置 ====================
+local opt = vim.opt
 
--- ============================================
--- VSCode 特定的辅助函数
--- ============================================
-local vscode = require("vscode")
+-- 搜索设置
+opt.ignorecase = true
+opt.smartcase = true
+opt.hlsearch = true
+opt.incsearch = true
 
-local function map(mode, lhs, rhs, opts)
+-- 缩进设置
+opt.tabstop = 2
+opt.shiftwidth = 2
+opt.expandtab = true
+opt.smartindent = true
+opt.autoindent = true
+
+-- 剪贴板（使用系统剪贴板）
+opt.clipboard = "unnamedplus"
+
+-- 其他设置
+opt.number = true
+opt.relativenumber = false
+opt.wrap = false
+opt.scrolloff = 8
+opt.sidescrolloff = 8
+opt.timeoutlen = 300
+
+-- ==================== VSCode API 辅助函数 ====================
+local vscode = require("vscode-neovim")
+
+-- 安全调用 VSCode 命令
+local function call_vscode(command, opts)
   opts = opts or {}
-  opts.silent = opts.silent ~= false
-  vim.keymap.set(mode, lhs, rhs, opts)
+  vscode.call(command, opts)
 end
 
--- ============================================
--- 核心快捷键映射
--- ============================================
+-- 带参数调用 VSCode 命令
+local function action(command, opts)
+  return function()
+    call_vscode(command, opts)
+  end
+end
 
--- 文件操作
-map("n", "<leader>ff", function()
-  vscode.call("workbench.action.quickOpen")
-end, { desc = "Find files" })
-map("n", "<leader>fg", function()
-  vscode.call("workbench.action.findInFiles")
-end, { desc = "Grep files" })
-map("n", "<leader>fr", function()
-  vscode.call("workbench.action.openRecent")
-end, { desc = "Recent files" })
-map("n", "<leader>fb", function()
-  vscode.call("workbench.action.showAllEditors")
-end, { desc = "Buffers" })
-map("n", "<leader>fe", function()
-  vscode.call("workbench.view.explorer")
-end, { desc = "Explorer" })
-map("n", "<leader>fn", function()
-  vscode.call("workbench.action.files.newUntitledFile")
-end, { desc = "New file" })
+-- ==================== 基础按键映射 ====================
+local keymap = vim.keymap.set
+local opts = { noremap = true, silent = true }
 
--- 搜索和替换
-map("n", "<leader>sg", function()
-  vscode.call("workbench.action.findInFiles")
-end, { desc = "Grep" })
-map("n", "<leader>ss", function()
-  vscode.call("workbench.action.gotoSymbol")
-end, { desc = "Symbols" })
-map("n", "<leader>sS", function()
-  vscode.call("workbench.action.showAllSymbols")
-end, { desc = "All symbols" })
-map("n", "<leader>sr", function()
-  vscode.call("editor.action.rename")
-end, { desc = "Rename" })
-map("n", "<leader>sh", function()
-  vscode.call("workbench.action.replaceInFiles")
-end, { desc = "Replace in files" })
+-- jk 退出 Insert 模式
+keymap("i", "jk", "<Esc>", opts)
 
--- LSP 功能
-map("n", "gd", function()
-  vscode.call("editor.action.revealDefinition")
-end, { desc = "Go to definition" })
-map("n", "gD", function()
-  vscode.call("editor.action.revealDeclaration")
-end, { desc = "Go to declaration" })
-map("n", "gi", function()
-  vscode.call("editor.action.goToImplementation")
-end, { desc = "Go to implementation" })
-map("n", "gr", function()
-  vscode.call("editor.action.goToReferences")
-end, { desc = "Go to references" })
-map("n", "gy", function()
-  vscode.call("editor.action.goToTypeDefinition")
-end, { desc = "Go to type definition" })
-map("n", "K", function()
-  vscode.call("editor.action.showHover")
-end, { desc = "Hover" })
+-- 更好的移动（保持光标居中）
+keymap("n", "<C-d>", "<C-d>zz", opts)
+keymap("n", "<C-u>", "<C-u>zz", opts)
+keymap("n", "n", "nzzzv", opts)
+keymap("n", "N", "Nzzzv", opts)
 
-map("n", "<leader>la", function()
-  vscode.call("editor.action.quickFix")
-end, { desc = "Code action" })
-map("n", "<leader>lf", function()
-  vscode.call("editor.action.formatDocument")
-end, { desc = "Format" })
-map("n", "<leader>lr", function()
-  vscode.call("editor.action.rename")
-end, { desc = "Rename" })
-map("n", "<leader>ld", function()
-  vscode.call("workbench.actions.view.problems")
-end, { desc = "Diagnostics" })
-map("n", "<leader>ls", function()
-  vscode.call("workbench.action.gotoSymbol")
-end, { desc = "Document symbols" })
+-- 保持视觉模式的选择
+keymap("v", "<", "<gv", opts)
+keymap("v", ">", ">gv", opts)
 
--- 代码操作
-map("n", "<leader>ca", function()
-  vscode.call("editor.action.quickFix")
-end, { desc = "Code action" })
-map("v", "<leader>ca", function()
-  vscode.call("editor.action.quickFix")
-end, { desc = "Code action" })
-map("n", "<leader>cf", function()
-  vscode.call("editor.action.formatDocument")
-end, { desc = "Format" })
-map("v", "<leader>cf", function()
-  vscode.call("editor.action.formatSelection")
-end, { desc = "Format selection" })
-map("n", "<leader>cr", function()
-  vscode.call("editor.action.rename")
-end, { desc = "Rename" })
-map("n", "<leader>cc", function()
-  vscode.call("editor.action.commentLine")
-end, { desc = "Comment" })
-map("v", "<leader>cc", function()
-  vscode.call("editor.action.commentLine")
-end, { desc = "Comment" })
+-- 移动选中的行
+keymap("v", "J", ":m '>+1<CR>gv=gv", opts)
+keymap("v", "K", ":m '<-2<CR>gv=gv", opts)
 
--- Git 操作
-map("n", "<leader>gg", function()
-  vscode.call("workbench.view.scm")
-end, { desc = "Git status" })
-map("n", "<leader>gb", function()
-  vscode.call("git.checkout")
-end, { desc = "Git branches" })
-map("n", "<leader>gc", function()
-  vscode.call("git.commit")
-end, { desc = "Git commit" })
-map("n", "<leader>gd", function()
-  vscode.call("git.openChange")
-end, { desc = "Git diff" })
-map("n", "<leader>gp", function()
-  vscode.call("git.push")
-end, { desc = "Git push" })
-map("n", "<leader>gl", function()
-  vscode.call("git.pull")
-end, { desc = "Git pull" })
-map("n", "<leader>gs", function()
-  vscode.call("git.stage")
-end, { desc = "Git stage" })
-map("n", "<leader>gu", function()
-  vscode.call("git.unstage")
-end, { desc = "Git unstage" })
+-- 保持粘贴寄存器内容
+keymap("x", "<leader>p", '"_dP', opts)
 
--- 窗口管理
-map("n", "<leader>wv", function()
-  vscode.call("workbench.action.splitEditor")
-end, { desc = "Split vertical" })
-map("n", "<leader>ws", function()
-  vscode.call("workbench.action.splitEditorDown")
-end, { desc = "Split horizontal" })
-map("n", "<leader>wc", function()
-  vscode.call("workbench.action.closeActiveEditor")
-end, { desc = "Close window" })
-map("n", "<leader>wo", function()
-  vscode.call("workbench.action.closeOtherEditors")
-end, { desc = "Close others" })
-map("n", "<leader>wh", function()
-  vscode.call("workbench.action.focusLeftGroup")
-end, { desc = "Focus left" })
-map("n", "<leader>wj", function()
-  vscode.call("workbench.action.focusBelowGroup")
-end, { desc = "Focus below" })
-map("n", "<leader>wk", function()
-  vscode.call("workbench.action.focusAboveGroup")
-end, { desc = "Focus above" })
-map("n", "<leader>wl", function()
-  vscode.call("workbench.action.focusRightGroup")
-end, { desc = "Focus right" })
-map("n", "<leader>w=", function()
-  vscode.call("workbench.action.evenEditorWidths")
-end, { desc = "Equal width" })
-
--- Buffer 操作
-map("n", "<leader>bd", function()
-  vscode.call("workbench.action.closeActiveEditor")
-end, { desc = "Delete buffer" })
-map("n", "<leader>bn", function()
-  vscode.call("workbench.action.nextEditor")
-end, { desc = "Next buffer" })
-map("n", "<leader>bp", function()
-  vscode.call("workbench.action.previousEditor")
-end, { desc = "Previous buffer" })
-map("n", "<leader>bb", function()
-  vscode.call("workbench.action.showAllEditors")
-end, { desc = "Buffer list" })
-map("n", "<leader>bo", function()
-  vscode.call("workbench.action.closeOtherEditors")
-end, { desc = "Close others" })
-
--- 切换功能
-map("n", "<leader>uw", function()
-  vscode.call("editor.action.toggleWordWrap")
-end, { desc = "Toggle word wrap" })
-map("n", "<leader>un", function()
-  vscode.call("workbench.action.toggleSidebarVisibility")
-end, { desc = "Toggle sidebar" })
-map("n", "<leader>uz", function()
-  vscode.call("workbench.action.toggleZenMode")
-end, { desc = "Toggle zen mode" })
-map("n", "<leader>uf", function()
-  vscode.call("workbench.action.toggleFullScreen")
-end, { desc = "Toggle fullscreen" })
-
--- 诊断导航
-map("n", "]d", function()
-  vscode.call("editor.action.marker.next")
-end, { desc = "Next diagnostic" })
-map("n", "[d", function()
-  vscode.call("editor.action.marker.prev")
-end, { desc = "Previous diagnostic" })
-map("n", "]e", function()
-  vscode.call("editor.action.marker.nextInFiles")
-end, { desc = "Next error" })
-map("n", "[e", function()
-  vscode.call("editor.action.marker.prevInFiles")
-end, { desc = "Previous error" })
-
--- 快速面板
-map("n", "<leader>qq", function()
-  vscode.call("workbench.action.togglePanel")
-end, { desc = "Toggle panel" })
-map("n", "<leader>ql", function()
-  vscode.call("workbench.panel.markers.view.focus")
-end, { desc = "Focus problems" })
-
--- Tab 操作
-map("n", "<leader><tab>n", function()
-  vscode.call("workbench.action.nextEditorInGroup")
-end, { desc = "Next tab" })
-map("n", "<leader><tab>p", function()
-  vscode.call("workbench.action.previousEditorInGroup")
-end, { desc = "Previous tab" })
-map("n", "<leader><tab>d", function()
-  vscode.call("workbench.action.closeActiveEditor")
-end, { desc = "Close tab" })
-
--- 终端操作
-map("n", "<leader>tt", function()
-  vscode.call("workbench.action.terminal.toggleTerminal")
-end, { desc = "Toggle terminal" })
-map("n", "<leader>tn", function()
-  vscode.call("workbench.action.terminal.new")
-end, { desc = "New terminal" })
-map("n", "<leader>ts", function()
-  vscode.call("workbench.action.terminal.split")
-end, { desc = "Split terminal" })
-
--- 快速保存和退出
-map("n", "<leader>w", function()
-  vscode.call("workbench.action.files.save")
-end, { desc = "Save file" })
-map("n", "<leader>q", function()
-  vscode.call("workbench.action.closeActiveEditor")
-end, { desc = "Quit" })
-map("n", "<leader>Q", function()
-  vscode.call("workbench.action.closeAllEditors")
-end, { desc = "Quit all" })
-
--- 折叠操作（使用 VSCode 命令）
-map("n", "za", function()
-  vscode.call("editor.toggleFold")
-end, { desc = "Toggle fold" })
-map("n", "zc", function()
-  vscode.call("editor.fold")
-end, { desc = "Close fold" })
-map("n", "zo", function()
-  vscode.call("editor.unfold")
-end, { desc = "Open fold" })
-map("n", "zM", function()
-  vscode.call("editor.foldAll")
-end, { desc = "Close all folds" })
-map("n", "zR", function()
-  vscode.call("editor.unfoldAll")
-end, { desc = "Open all folds" })
-
--- 改进的移动命令
-map("n", "H", "^", { desc = "Start of line" })
-map("n", "L", ",", { desc = "End of line" })
-map("n", "<C-d>", "<C-d>zz", { desc = "Half page down" })
-map("n", "<C-u>", "<C-u>zz", { desc = "Half page up" })
-map("n", "n", "nzzzv", { desc = "Next search" })
-map("n", "N", "Nzzzv", { desc = "Previous search" })
-
--- 更好的缩进
-map("v", "<", "<gv", { desc = "Indent left" })
-map("v", ">", ">gv", { desc = "Indent right" })
-
--- 移动行
-map("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move line down" })
-map("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move line up" })
+-- 删除到黑洞寄存器
+keymap("n", "<leader>d", '"_d', opts)
+keymap("v", "<leader>d", '"_d', opts)
 
 -- 清除搜索高亮
-map("n", "<Esc>", ":nohl<CR>", { desc = "Clear search highlight" })
+keymap("n", "<Esc>", "<cmd>noh<CR><Esc>", opts)
+keymap("n", "<leader>nh", "<cmd>noh<CR>", { noremap = true, silent = true, desc = "Clear search highlight" })
 
--- ============================================
--- LazyVim 插件配置（在 VSCode 中可用的）
--- ============================================
+-- 保存文件
+keymap("n", "<C-s>", action("workbench.action.files.save"), { desc = "Save file" })
+keymap(
+  "i",
+  "<C-s>",
+  "<Esc><cmd>lua require('vscode-neovim').call('workbench.action.files.save')<CR>",
+  { desc = "Save file" }
+)
 
-return {
-  -- Mini.surround（环绕操作）
-  {
-    "nvim-mini/mini.surround",
-    vscode = true,
-    opts = {
-      mappings = {
-        add = "gsa",
-        delete = "gsd",
-        find = "gsf",
-        find_left = "gsF",
-        highlight = "gsh",
-        replace = "gsr",
-        update_n_lines = "gsn",
-      },
-    },
-  },
+-- ==================== Leader 键绑定（配合 WhichKey） ====================
 
-  -- Which-key（显示快捷键提示）
-  {
-    "folke/which-key.nvim",
-    vscode = true,
-    event = "VeryLazy",
-    opts = {
-      defaults = {
-        ["<leader>f"] = { name = "+file" },
-        ["<leader>s"] = { name = "+search" },
-        ["<leader>l"] = { name = "+lsp" },
-        ["<leader>c"] = { name = "+code" },
-        ["<leader>g"] = { name = "+git" },
-        ["<leader>w"] = { name = "+window" },
-        ["<leader>b"] = { name = "+buffer" },
-        ["<leader>u"] = { name = "+ui" },
-        ["<leader>q"] = { name = "+quit/session" },
-        ["<leader>t"] = { name = "+terminal" },
-        ["<leader><tab>"] = { name = "+tabs" },
-      },
-    },
-  },
+-- 文件操作 (Leader + f)
+keymap("n", "<leader>ff", action("workbench.action.quickOpen"), { desc = "Find file" })
+keymap("n", "<leader>fr", action("workbench.action.openRecent"), { desc = "Recent files" })
+keymap("n", "<leader>fn", action("workbench.action.files.newUntitledFile"), { desc = "New file" })
+keymap("n", "<leader>fs", action("workbench.action.files.save"), { desc = "Save file" })
+keymap("n", "<leader>fS", action("workbench.action.files.saveAll"), { desc = "Save all" })
+keymap("n", "<leader>fe", action("workbench.view.explorer"), { desc = "Explorer" })
+keymap("n", "<leader>fg", action("workbench.action.findInFiles"), { desc = "Find in files" })
 
-  -- Comment.nvim（注释操作）
-  {
-    "numToStr/Comment.nvim",
-    vscode = true,
-    opts = {},
-    keys = {
-      { "gcc", mode = "n", desc = "Comment line" },
-      { "gc", mode = { "n", "v" }, desc = "Comment" },
-      { "gb", mode = { "n", "v" }, desc = "Comment block" },
-    },
-  },
+-- 搜索 (Leader + s)
+keymap("n", "<leader>sg", action("workbench.action.findInFiles"), { desc = "Grep" })
+keymap("n", "<leader>ss", action("workbench.action.gotoSymbol"), { desc = "Go to symbol" })
+keymap("n", "<leader>sS", action("workbench.action.showAllSymbols"), { desc = "Workspace symbols" })
+keymap("n", "<leader>sr", action("workbench.action.replaceInFiles"), { desc = "Replace in files" })
 
-  -- nvim-treesitter-textobjects（文本对象）
-  {
-    "nvim-treesitter/nvim-treesitter-textobjects",
-    vscode = true,
-    config = function()
-      require("nvim-treesitter.configs").setup({
-        textobjects = {
-          select = {
-            enable = true,
-            lookahead = true,
-            keymaps = {
-              ["af"] = "@function.outer",
-              ["if"] = "@function.inner",
-              ["ac"] = "@class.outer",
-              ["ic"] = "@class.inner",
-              ["aa"] = "@parameter.outer",
-              ["ia"] = "@parameter.inner",
-            },
-          },
-          move = {
-            enable = true,
-            set_jumps = true,
-            goto_next_start = {
-              ["]f"] = "@function.outer",
-              ["]c"] = "@class.outer",
-              ["]a"] = "@parameter.inner",
-            },
-            goto_previous_start = {
-              ["[f"] = "@function.outer",
-              ["[c"] = "@class.outer",
-              ["[a"] = "@parameter.inner",
-            },
-          },
-        },
-      })
-    end,
-  },
-}
+-- 代码操作 (Leader + c)
+keymap("n", "<leader>ca", action("editor.action.quickFix"), { desc = "Code action" })
+keymap("n", "<leader>cr", action("editor.action.rename"), { desc = "Rename" })
+keymap("n", "<leader>cf", action("editor.action.formatDocument"), { desc = "Format document" })
+keymap("v", "<leader>cf", action("editor.action.formatSelection"), { desc = "Format selection" })
+keymap("n", "<leader>cd", action("editor.action.showHover"), { desc = "Show definition" })
+keymap("n", "<leader>co", action("editor.action.organizeImports"), { desc = "Organize imports" })
 
--- ============================================
--- LazyVim 配置文件结构（供参考）
--- ============================================
--- 在你的 ~/.config/nvim/init.lua 中添加：
---[[
-if vim.g.vscode then
-  -- 加载 VSCode 专用配置
-  require("config.vscode")
-else
-  -- 加载正常的 LazyVim 配置
-  require("config.lazy")
-end
---]]
+-- 注释
+keymap("n", "gcc", action("editor.action.commentLine"), { desc = "Toggle comment line" })
+keymap("v", "gc", action("editor.action.commentLine"), { desc = "Toggle comment" })
+
+-- Buffer 操作 (Leader + b)
+keymap("n", "<leader>bb", action("workbench.action.showAllEditors"), { desc = "Show all buffers" })
+keymap("n", "<leader>bd", action("workbench.action.closeActiveEditor"), { desc = "Close buffer" })
+keymap("n", "<leader>bn", action("workbench.action.nextEditor"), { desc = "Next buffer" })
+keymap("n", "<leader>bp", action("workbench.action.previousEditor"), { desc = "Previous buffer" })
+keymap("n", "<leader>bo", action("workbench.action.closeOtherEditors"), { desc = "Close other buffers" })
+
+-- 快速切换 Buffer
+keymap("n", "H", action("workbench.action.previousEditor"), { desc = "Previous buffer" })
+keymap("n", "L", action("workbench.action.nextEditor"), { desc = "Next buffer" })
+
+-- 窗口操作 (Leader + w)
+keymap("n", "<leader>wv", action("workbench.action.splitEditor"), { desc = "Split vertically" })
+keymap("n", "<leader>ws", action("workbench.action.splitEditorDown"), { desc = "Split horizontally" })
+keymap("n", "<leader>wc", action("workbench.action.closeActiveEditor"), { desc = "Close window" })
+keymap("n", "<leader>wo", action("workbench.action.closeOtherEditors"), { desc = "Close other windows" })
+keymap("n", "<leader>ww", action("workbench.action.files.save"), { desc = "Save file" })
+keymap("n", "<leader>w=", action("workbench.action.evenEditorWidths"), { desc = "Even widths" })
+
+-- 窗口导航（使用 Ctrl）
+keymap("n", "<C-h>", action("workbench.action.navigateLeft"), { desc = "Go to left window" })
+keymap("n", "<C-j>", action("workbench.action.navigateDown"), { desc = "Go to lower window" })
+keymap("n", "<C-k>", action("workbench.action.navigateUp"), { desc = "Go to upper window" })
+keymap("n", "<C-l>", action("workbench.action.navigateRight"), { desc = "Go to right window" })
+
+-- Git 操作 (Leader + g)
+keymap("n", "<leader>gg", action("workbench.view.scm"), { desc = "Source control" })
+keymap("n", "<leader>gb", action("git.checkout"), { desc = "Checkout branch" })
+keymap("n", "<leader>gc", action("git.commit"), { desc = "Commit" })
+keymap("n", "<leader>gp", action("git.push"), { desc = "Push" })
+keymap("n", "<leader>gP", action("git.pull"), { desc = "Pull" })
+keymap("n", "<leader>gs", action("git.stage"), { desc = "Stage" })
+keymap("n", "<leader>gu", action("git.unstage"), { desc = "Unstage" })
+keymap("n", "<leader>gd", action("git.openChange"), { desc = "View changes" })
+
+-- 终端 (Leader + t)
+keymap("n", "<leader>tt", action("workbench.action.terminal.toggleTerminal"), { desc = "Toggle terminal" })
+keymap("n", "<leader>tn", action("workbench.action.terminal.new"), { desc = "New terminal" })
+keymap("n", "<leader>ts", action("workbench.action.terminal.split"), { desc = "Split terminal" })
+keymap("n", "<leader>tk", action("workbench.action.terminal.kill"), { desc = "Kill terminal" })
+
+-- 快速终端切换
+keymap("n", "<C-`>", action("workbench.action.terminal.toggleTerminal"), { desc = "Toggle terminal" })
+
+-- UI 切换 (Leader + u)
+keymap("n", "<leader>uw", action("editor.action.toggleWordWrap"), { desc = "Toggle word wrap" })
+keymap("n", "<leader>ue", action("workbench.action.toggleSidebarVisibility"), { desc = "Toggle explorer" })
+keymap("n", "<leader>uz", action("workbench.action.toggleZenMode"), { desc = "Toggle zen mode" })
+keymap("n", "<leader>uf", action("workbench.action.toggleFullScreen"), { desc = "Toggle fullscreen" })
+
+-- 侧边栏切换
+keymap("n", "<C-b>", action("workbench.action.toggleSidebarVisibility"), { desc = "Toggle sidebar" })
+keymap("n", "<C-n>", action("workbench.view.explorer"), { desc = "Explorer" })
+
+-- 问题/诊断 (Leader + x)
+keymap("n", "<leader>xx", action("workbench.actions.view.problems"), { desc = "Show problems" })
+keymap("n", "<leader>xq", action("workbench.action.closePanel"), { desc = "Close panel" })
+
+-- 快速退出
+keymap("n", "<leader>q", action("workbench.action.closeActiveEditor"), { desc = "Close editor" })
+keymap("n", "<leader>Q", action("workbench.action.closeAllEditors"), { desc = "Close all editors" })
+
+-- ==================== LSP 相关按键 ====================
+
+-- 跳转
+keymap("n", "gd", action("editor.action.revealDefinition"), { desc = "Go to definition" })
+keymap("n", "gD", action("editor.action.peekDefinition"), { desc = "Peek definition" })
+keymap("n", "gi", action("editor.action.goToImplementation"), { desc = "Go to implementation" })
+keymap("n", "gr", action("editor.action.goToReferences"), { desc = "Go to references" })
+keymap("n", "gy", action("editor.action.goToTypeDefinition"), { desc = "Go to type definition" })
+
+-- 文档
+keymap("n", "K", action("editor.action.showHover"), { desc = "Show hover" })
+keymap("n", "gh", action("editor.action.showHover"), { desc = "Show hover" })
+
+-- 诊断导航
+keymap("n", "]d", action("editor.action.marker.nextInFiles"), { desc = "Next diagnostic" })
+keymap("n", "[d", action("editor.action.marker.prevInFiles"), { desc = "Previous diagnostic" })
+keymap("n", "]e", function()
+  call_vscode("editor.action.marker.next", { args = { severity = "Error" } })
+end, { desc = "Next error" })
+keymap("n", "[e", function()
+  call_vscode("editor.action.marker.prev", { args = { severity = "Error" } })
+end, { desc = "Previous error" })
+
+-- 快速修复
+keymap("n", "<C-.>", action("editor.action.quickFix"), { desc = "Quick fix" })
+
+-- 重命名
+keymap("n", "<F2>", action("editor.action.rename"), { desc = "Rename" })
+
+-- 格式化
+keymap("n", "<S-A-f>", action("editor.action.formatDocument"), { desc = "Format document" })
+keymap("v", "<S-A-f>", action("editor.action.formatSelection"), { desc = "Format selection" })
+
+-- ==================== 折叠操作 ====================
+keymap("n", "za", action("editor.toggleFold"), { desc = "Toggle fold" })
+keymap("n", "zc", action("editor.fold"), { desc = "Close fold" })
+keymap("n", "zo", action("editor.unfold"), { desc = "Open fold" })
+keymap("n", "zM", action("editor.foldAll"), { desc = "Close all folds" })
+keymap("n", "zR", action("editor.unfoldAll"), { desc = "Open all folds" })
+
+-- ==================== 面板和视图 ====================
+keymap("n", "<C-S-f>", action("workbench.action.findInFiles"), { desc = "Find in files" })
+keymap("n", "<C-S-o>", action("workbench.action.gotoSymbol"), { desc = "Go to symbol" })
+keymap("n", "<C-S-m>", action("workbench.actions.view.problems"), { desc = "Show problems" })
+keymap("n", "<C-S-g>", action("workbench.view.scm"), { desc = "Source control" })
+
+-- ==================== 特殊功能 ====================
+
+-- 多光标（使用 VS Code 原生功能）
+keymap("n", "<C-d>", action("editor.action.addSelectionToNextFindMatch"), { desc = "Add selection to next match" })
+
+-- 快速打开
+keymap("n", "<C-p>", action("workbench.action.quickOpen"), { desc = "Quick open" })
+
+-- 命令面板
+keymap("n", "<leader><leader>", action("workbench.action.showCommands"), { desc = "Command palette" })
+
+-- ==================== 自动命令 ====================
+
+-- 语言特定设置
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "python",
+  callback = function()
+    vim.opt_local.tabstop = 4
+    vim.opt_local.shiftwidth = 4
+    vim.opt_local.expandtab = true
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "java",
+  callback = function()
+    vim.opt_local.tabstop = 4
+    vim.opt_local.shiftwidth = 4
+    vim.opt_local.expandtab = true
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "go",
+  callback = function()
+    vim.opt_local.tabstop = 4
+    vim.opt_local.shiftwidth = 4
+    vim.opt_local.expandtab = false
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "javascript", "typescript", "javascriptreact", "typescriptreact", "json", "yaml", "html", "css", "lua" },
+  callback = function()
+    vim.opt_local.tabstop = 2
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.expandtab = true
+  end,
+})
+
+-- ==================== 通知用户配置已加载 ====================
+vim.notify("VS Code Neovim configuration loaded", vim.log.levels.INFO)
+
+print("✓ VS Code Neovim configuration loaded successfully")
+print("Leader key: <Space>")
+print("Use <Space> to see available commands via WhichKey")

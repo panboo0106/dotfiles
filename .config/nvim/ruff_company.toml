@@ -1,0 +1,336 @@
+# ========================================
+# Ruff 配置文件 - 公司编码规范版本
+# ========================================
+# 严格遵循公司编码规范 checklist
+# 涵盖 9 大类检查项：style, exception, func, language, concurrent, i18n, security, third_party_library, tools
+#
+# 适用场景：
+# - 公司内部项目
+# - 需要严格遵守编码规范的团队
+# - 代码质量要求高的项目
+
+# ========================================
+# 基础设置
+# ========================================
+line-length = 120                  # 行长度（公司规范）
+target-version = "py39"            # Python 版本
+indent-width = 4                   # 缩进宽度（4个空格）
+
+# 文件包含模式
+include = ["*.py", "*.pyi", "*.ipynb"]
+
+# 排除目录
+exclude = [
+  ".bzr",
+  ".direnv",
+  ".eggs",
+  ".git",
+  ".git-rewrite",
+  ".hg",
+  ".ipynb_checkpoints",
+  ".mypy_cache",
+  ".nox",
+  ".pants.d",
+  ".pyenv",
+  ".pytest_cache",
+  ".pytype",
+  ".ruff_cache",
+  ".svn",
+  ".tox",
+  ".venv",
+  ".vscode",
+  "__pypackages__",
+  "_build",
+  "buck-out",
+  "build",
+  "dist",
+  "node_modules",
+  "site-packages",
+  "venv",
+]
+
+# 启用 preview 模式
+preview = true
+
+[lint]
+explicit-preview-rules = true
+# ========================================
+# 规则选择（公司 checklist）
+# ========================================
+select = [
+  "ALL",  # 启用所有规则
+]
+
+# ========================================
+# 忽略规则（仅限公司规范允许的例外）
+# ========================================
+ignore = [
+  # ========== 与格式化工具冲突 ==========
+  "E203",      # 空格在 slice 周围
+  "E501",      # 行长度由 formatter 处理
+  "ISC001",    # 单行隐式字符串连接
+
+  # ========== 中文场景支持 ==========
+  "RUF001",    # 字符串中的全角字符
+  "RUF002",    # 文档字符串中的全角字符
+  "RUF003",    # 注释中的全角字符
+
+  # ========== 文档字符串（建议而非强制）==========
+  "D100",      # 缺失模块文档字符串
+  "D101",      # 缺失类文档字符串
+  "D102",      # 缺失方法文档字符串
+  "D103",      # 缺失函数文档字符串
+  "D104",      # 缺失包文档字符串
+  "D105",      # 缺失魔术方法文档字符串
+  "D106",      # 缺失嵌套类文档字符串
+  "D107",      # 缺失 __init__ 文档字符串
+
+  # ========== 文档字符串风格 ==========
+  "D203",      # 与 D211 冲突
+  "D205",      # 文档字符串空行
+  "D212",      # 多行文档字符串从第一行开始
+  "D415",      # 文档字符串第一行标点
+
+  # ========== 类型注解（建议而非强制）==========
+  "ANN",       # 类型注解
+
+  # ========== TODO 格式 ==========
+  "TD002",     # TODO 作者格式
+  "TD003",     # TODO 问题链接
+  "FIX002",    # TODO 格式
+
+  # ========== 安全例外（公司业务场景）==========
+  "S101",      # 使用 assert（内部正确性检查）
+  "S324",      # hashlib 默认算法
+  "S603",      # subprocess shell=True
+  "S605",      # subprocess 启动
+  "S607",      # subprocess 启动进程
+
+  # ========== 可读性 ==========
+  "EM101",     # 异常原始字符串
+  "EM102",     # 异常 f-string
+  "SIM108",    # 三元表达式
+]
+
+# ========================================
+# 自动修复配置
+# ========================================
+fixable = ["ALL"]
+unfixable = []
+
+# ========================================
+# 每个文件的忽略规则
+# ========================================
+[lint.per-file-ignores]
+
+# __init__.py 允许未使用的导入
+"__init__.py" = [
+  "F401",      # 允许未使用的导入
+  "E402",      # 允许非顶层导入
+]
+
+# 测试文件
+"test_*.py" = [
+  "PLR2004",   # 测试中允许魔术常量
+  "S101",      # 测试中允许 assert
+  "ANN",       # 测试中不强制类型注解
+  "D",         # 测试中不强制文档字符串
+]
+
+"tests/*.py" = [
+  "PLR2004",   # 测试中允许魔术常量
+  "ANN",       # 测试中不强制类型注解
+  "D",         # 测试中不强制文档字符串
+]
+
+# Jupyter Notebook
+"*.ipynb" = [
+  "D",         # notebook 不强制文档字符串
+  "E402",      # notebook 允许非顶层导入
+  "I002",      # notebook 允许未排序的导入
+]
+
+# ========================================
+# McCabe 复杂度设置（公司规范）
+# ========================================
+[lint.mccabe]
+max-complexity = 15  # 复杂度阈值
+
+# ========================================
+# 格式化设置
+# ========================================
+[format]
+quote-style = "double"           # 使用双引号
+indent-style = "space"           # 使用空格缩进
+line-ending = "auto"             # 自动检测行尾
+skip-magic-trailing-comma = false
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
+
+# ========================================
+# isort 导入排序（公司规范）
+# ========================================
+[lint.isort]
+known-first-party = ["src"]
+known-third-party = [
+  "numpy",
+  "pandas",
+  "requests",
+]
+section-order = [
+  "future",
+  "standard-library",
+  "third-party",
+  "first-party",
+  "local-folder",
+]
+combine-as-imports = true
+split-on-trailing-comma = false
+lines-after-imports = 2
+
+# ========================================
+# pydocstyle 文档字符串
+# ========================================
+[lint.pydocstyle]
+convention = "google"
+ignore-decorators = ["property", "setter"]
+
+# ========================================
+# flake8-quotes 引号
+# ========================================
+[lint.flake8-quotes]
+docstring-quotes = "double"
+inline-quotes = "double"
+
+# ========================================
+# Pylint 设置（公司 checklist 强制要求）
+# ========================================
+[lint.pylint]
+max-args = 7                    # 函数最大参数（≤8）
+max-returns = 3                 # 函数最大返回值（≤3，强制）
+max-statements = 50             # 函数最大语句数
+max-branches = 12
+max-locals = 15
+allow-magic-value-types = ["int", "float", "str"]
+
+# ========================================
+# flake8-bugbear 框架支持
+# ========================================
+[lint.flake8-bugbear]
+extend-immutable-calls = [
+  "fastapi.Depends",
+  "fastapi.Query",
+  "fastapi.Path",
+  "fastapi.Body"      -- vulture 配置（检测未使用的函数、类、变量）
+      if vim.fn.exepath("vulture") ~= "" then
+        lint.linters.vulture = {
+          cmd = "vulture",
+          name = "vulture",
+          stdin = false,
+          append_fname = true,
+          args = {
+            "--min-confidence",
+            "60",
+            "--exclude",
+            "venv,.venv,virtualenv,env,.env,.tox,.pytest_cache,.mypy_cache,__pycache__,build,dist,node_modules,tests,test_*.py",
+          },
+          stream = "stdout",
+          ignore_exitcode = true,
+          parser = function(output, bufnr)
+            local diagnostics = {}
+            local current_file = vim.api.nvim_buf_get_name(bufnr)
+            for line in output:gmatch("[^\r\n]+") do
+              local file, lnum, message = line:match("^(.+):(%d+):%s*(.*)$")
+              if file and lnum and message then
+                if vim.fn.fnamemodify(file, ":p") == current_file then
+                  table.insert(diagnostics, {
+                    lnum = tonumber(lnum) - 1,
+                    col = 0,
+                    severity = vim.diagnostic.severity.INFO,
+                    message = message .. " (Vulture)",
+                    source = "vulture",
+                  })
+                end
+              end
+            end
+            return diagnostics
+          end,
+        }
+      end
+
+  "typer.Argument",
+  "typer.Option",
+]
+
+# ========================================
+# pyupgrade 语法升级
+# ========================================
+[lint.pyupgrade]
+keep-runtime-typing = true
+
+# ========================================
+# pycodestyle PEP 8
+# ========================================
+[lint.pycodestyle]
+max-line-length = 120
+
+# ========================================
+# pep8-naming 命名约定
+# ========================================
+[lint.pep8-naming]
+classmethod-decorators = [
+  "classmethod",
+  "pydantic.validator",
+  "pydantic.field_validator",
+  "staticmethod",
+]
+ignore-names = [
+  "test_*",
+  "setup_*",
+  "teardown_*",
+]
+
+# ========================================
+# flake8-type-checking 类型检查
+# ========================================
+[lint.flake8-type-checking]
+strict = true
+runtime-evaluated-base-classes = [
+  "pydantic.BaseModel",
+  "sqlalchemy.orm.DeclarativeBase",
+]
+
+# ========================================
+# flake8-pytest-style 测试
+# ========================================
+[lint.flake8-pytest-style]
+mark-parentheses = false
+
+# ========================================
+# 其他设置
+# ========================================
+# 注意: dummy-variable-rgx 已在 Ruff 新版本中移除，未使用变量默认警告
+
+# ========================================
+# 使用说明
+# ========================================
+# 公司编码规范检查命令：
+#
+# 1. 完整检查：
+#    ruff check --config ruff_company.toml .
+#
+# 2. 自动修复：
+#    ruff check --config ruff_company.toml --fix .
+#
+# 3. 格式化：
+#    ruff format --config ruff_company.toml .
+#
+# 4. 分类检查（基于 checklist）：
+#    - 风格规范: ruff check --select E,F,W,N,UP,COM .
+#    - 错误处理: ruff check --select TRY,BLE .
+#    - 函数方法: ruff check --select ANN,ARG,RET,PLR .
+#    - 语言特性: ruff check --select F,I,E,C,PLW,PERF,RUF .
+#    - 安全特性: ruff check --select S .
+#
+# 5. CI/CD 集成：
+#    ruff check --config ruff_company.toml --output-format=github .

@@ -1,0 +1,229 @@
+# Makefile - 多语言项目统一开发命令
+# 支持: JavaScript, C++, Shell, Python, Go
+# 基于 SFRD-PPQA-03-6.7 编码规范
+
+.PHONY: help all clean
+.PHONY: js-lint js-format js-verify
+.PHONY: cpp-lint cpp-format cpp-verify
+.PHONY: sh-lint sh-format sh-verify
+.PHONY: py-lint py-format py-verify
+.PHONY: go-lint go-format go-verify
+
+# 默认目标：显示帮助
+help:
+	@echo "=========================================="
+	@echo "  SANGFOR 多语言开发命令"
+	@echo "=========================================="
+	@echo ""
+	@echo "JavaScript:"
+	@echo "  make js-lint      - ESLint 检查"
+	@echo "  make js-format    - Prettier 格式化"
+	@echo "  make js-verify    - 完整验证"
+	@echo ""
+	@echo "C++:"
+	@echo "  make cpp-lint     - clang-tidy 检查"
+	@echo "  make cpp-format   - clang-format 格式化"
+	@echo "  make cpp-verify   - 完整验证"
+	@echo ""
+	@echo "Shell:"
+	@echo "  make sh-lint      - ShellCheck 检查"
+	@echo "  make sh-format    - shfmt 格式化"
+	@echo "  make sh-verify    - 完整验证"
+	@echo ""
+	@echo "Python:"
+	@echo "  make py-lint      - Ruff + Pylint 检查"
+	@echo "  make py-format    - Ruff 格式化"
+	@echo "  make py-verify    - 完整验证"
+	@echo ""
+	@echo "Go:"
+	@echo "  make go-lint      - golangci-lint 检查"
+	@echo "  make go-format    - gofmt 格式化"
+	@echo "  make go-verify    - 完整验证"
+	@echo ""
+	@echo "通用:"
+	@echo "  make all          - 检查所有语言"
+	@echo "  make clean        - 清理临时文件"
+	@echo ""
+
+# ============================================
+# JavaScript (ESLint + Prettier)
+# ============================================
+JS_FILES := $(shell find . -name "*.js" -o -name "*.jsx" -not -path "*/node_modules/*" 2>/dev/null)
+
+js-lint:
+	@echo "🔍 运行 ESLint 检查..."
+	@if command -v eslint >/dev/null 2>&1; then \
+		eslint . --ext .js,.jsx; \
+	else \
+		echo "⚠️  ESLint 未安装，请运行: npm install -g eslint"; \
+	fi
+
+js-format:
+	@echo "🎨 使用 Prettier 格式化 JavaScript..."
+	@if command -v prettier >/dev/null 2>&1; then \
+		prettier --write "**/*.{js,jsx}"; \
+	else \
+		echo "⚠️  Prettier 未安装，请运行: npm install -g prettier"; \
+	fi
+
+js-verify: js-format js-lint
+	@echo "✅ JavaScript 验证通过"
+	@echo ""
+	@echo "⚠️  需人工审查项目:"
+	@echo "  - 文件头部注释（checklist 1.3）"
+	@echo "  - 参数验证逻辑（checklist 2.2）"
+	@echo "  - 命名空间规范（checklist 3.5）"
+	@echo "  - 属性修改接口（checklist 3.3）"
+
+# ============================================
+# C++ (clang-tidy + clang-format)
+# ============================================
+CPP_FILES := $(shell find . -name "*.cpp" -o -name "*.cc" -o -name "*.h" -o -name "*.hpp" 2>/dev/null)
+
+cpp-lint:
+	@echo "🔍 运行 clang-tidy 检查..."
+	@if command -v clang-tidy >/dev/null 2>&1; then \
+		find . -name "*.cpp" -o -name "*.cc" -o -name "*.h" -o -name "*.hpp" | \
+			xargs clang-tidy --config-file=$(HOME)/.config/nvim/.clang-tidy 2>/dev/null || true; \
+	else \
+		echo "⚠️  clang-tidy 未安装，请运行: brew install clang-tidy"; \
+	fi
+
+cpp-format:
+	@echo "🎨 使用 clang-format 格式化 C++..."
+	@if command -v clang-format >/dev/null 2>&1; then \
+		find . -name "*.cpp" -o -name "*.cc" -o -name "*.h" -o -name "*.hpp" | \
+			xargs clang-format -i -style=file; \
+	else \
+		echo "⚠️  clang-format 未安装，请运行: brew install clang-format"; \
+	fi
+
+cpp-verify: cpp-format cpp-lint
+	@echo "✅ C++ 验证通过"
+	@echo ""
+	@echo "⚠️  需人工审查项目:"
+	@echo "  - 全局变量依赖性（checklist 1.7）"
+	@echo "  - 异常使用策略（checklist 2.1-2.3）"
+	@echo "  - 类成员访问权限（checklist 1.9）"
+	@echo "  - 运算符重载语义（checklist 5.1）"
+	@echo "  - 容器选择（checklist 6.4）"
+
+# ============================================
+# Shell (ShellCheck + shfmt)
+# ============================================
+SH_FILES := $(shell find . -name "*.sh" -o -name "*.bash" 2>/dev/null)
+
+sh-lint:
+	@echo "🔍 运行 ShellCheck 检查..."
+	@if command -v shellcheck >/dev/null 2>&1; then \
+		find . -name "*.sh" -exec shellcheck {} \; ; \
+	else \
+		echo "⚠️  ShellCheck 未安装，请运行: brew install shellcheck"; \
+	fi
+
+sh-format:
+	@echo "🎨 使用 shfmt 格式化 Shell..."
+	@if command -v shfmt >/dev/null 2>&1; then \
+		find . -name "*.sh" -exec shfmt -w {} \; ; \
+	else \
+		echo "⚠️  shfmt 未安装，请运行: brew install shfmt"; \
+	fi
+
+sh-verify: sh-format sh-lint
+	@echo "✅ Shell 验证通过"
+	@echo ""
+	@echo "⚠️  需人工审查项目:"
+	@echo "  - 命名规范（checklist 1.1）"
+	@echo "  - 注释完整性（checklist 1.3）"
+	@echo "  - 参数验证逻辑（checklist 2.1）"
+	@echo "  - 数据验证逻辑（checklist 2.2）"
+	@echo "  - 管道操作安全（checklist 3.4）"
+	@echo "  - 注入攻击防护（checklist 3.6）"
+
+# ============================================
+# Python (Ruff + Pylint)
+# ============================================
+py-lint:
+	@echo "🔍 运行 Ruff 检查..."
+	@if command -v ruff >/dev/null 2>&1; then \
+		ruff check --config=$(HOME)/.config/nvim/ruff_company.toml .; \
+	else \
+		echo "⚠️  Ruff 未安装，请运行: pip install ruff"; \
+	fi
+	@echo ""
+	@echo "🔍 运行 Pylint 检查..."
+	@if command -v pylint >/dev/null 2>&1; then \
+		pylint --rcfile=$(HOME)/.config/nvim/.pylintrc . 2>/dev/null || true; \
+	else \
+		echo "⚠️  Pylint 未安装，请运行: pip install pylint"; \
+	fi
+
+py-format:
+	@echo "🎨 使用 Ruff 格式化 Python..."
+	@if command -v ruff >/dev/null 2>&1; then \
+		ruff format --config=$(HOME)/.config/nvim/ruff_company.toml .; \
+	else \
+		echo "⚠️  Ruff 未安装，请运行: pip install ruff"; \
+	fi
+
+py-verify: py-format py-lint
+	@echo "✅ Python 验证通过"
+	@echo ""
+	@echo "⚠️  需人工审查项目:"
+	@echo "  - 闭包变量绑定（checklist 3.9）"
+	@echo "  - 嵌套类使用（checklist 3.8）"
+	@echo "  - 协程回收（checklist 5.1）"
+	@echo "  - 文件刷新时机（checklist 5.3）"
+	@echo "  - 硬编码检查（checklist 7.2）"
+
+# ============================================
+# Go (golangci-lint + gofmt)
+# ============================================
+go-lint:
+	@echo "🔍 运行 golangci-lint 检查..."
+	@if command -v golangci-lint >/dev/null 2>&1; then \
+		golangci-lint run --config=$(HOME)/.config/nvim/.golangci.yml; \
+	else \
+		echo "⚠️  golangci-lint 未安装，请参考Go文档安装"; \
+	fi
+
+go-format:
+	@echo "🎨 使用 gofmt 格式化 Go..."
+	@if command -v gofmt >/dev/null 2>&1; then \
+		gofmt -w -s .; \
+	else \
+		echo "⚠️  gofmt 未安装"; \
+	fi
+
+go-verify: go-format go-lint
+	@echo "✅ Go 验证通过"
+
+# ============================================
+# 通用命令
+# ============================================
+all: js-verify cpp-verify sh-verify py-verify go-verify
+	@echo ""
+	@echo "=========================================="
+	@echo "✅ 所有语言验证完成！"
+	@echo "=========================================="
+
+clean:
+	@echo "🧹 清理临时文件..."
+	@# JavaScript
+	@find . -name "*.log" -delete 2>/dev/null || true
+	@rm -rf node_modules/.cache 2>/dev/null || true
+	@# C++
+	@find . -name "*.o" -delete 2>/dev/null || true
+	@find . -name "*.so" -delete 2>/dev/null || true
+	@rm -rf build/ cmake-build-*/ 2>/dev/null || true
+	@# Python
+	@find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+	@find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
+	@find . -type f -name "*.pyc" -delete 2>/dev/null || true
+	@rm -rf .mypy_cache .pytest_cache .ruff_cache 2>/dev/null || true
+	@# Go
+	@rm -rf vendor 2>/dev/null || true
+	@# Shell
+	@find . -name "*.sh.bak" -delete 2>/dev/null || true
+	@find . -name "*~" -delete 2>/dev/null || true
+	@echo "✅ 清理完成"

@@ -63,6 +63,7 @@ return {
             "java-test",
             "delve", -- Go debugger
             "debugpy", -- Python debugger
+            "jdtls", -- Java LSP
           },
         },
       },
@@ -71,6 +72,9 @@ return {
       {
         "mfussenegger/nvim-dap-python",
         ft = "python",
+        dependencies = {
+          "mfussenegger/nvim-dap",
+        },
         keys = {
           {
             "<leader>dPt",
@@ -98,22 +102,108 @@ return {
           },
         },
         config = function()
-          local python_path = vim.fn.has("win32") == 1 and LazyVim.get_pkg_path("debugpy", "/venv/Scripts/pythonw.exe")
-            or LazyVim.get_pkg_path("debugpy", "/venv/bin/python")
+          -- Try to find debugpy in multiple locations
+          local mason_debugpy = vim.fn.expand("$HOME") .. "/.local/share/nvim/mason/packages/debugpy/venv/bin/python"
+          local debugpy_cmd = vim.fn.executable("python3") == 1 and "python3" or "python"
 
-          require("dap-python").setup(python_path)
+          -- Check if we can use mason's debugpy
+          if vim.fn.executable(mason_debugpy) == 1 then
+            debugpy_cmd = mason_debugpy
+          end
+
+          require("dap-python").setup(debugpy_cmd)
 
           -- 添加额外的 Python 调试配置
           local dap = require("dap")
-          table.insert(dap.configurations.python, {
-            type = "python",
-            request = "attach",
-            name = "Attach Remote",
-            connect = {
-              host = "localhost",
-              port = 5678,
+          dap.configurations.python = {
+            {
+              type = "python",
+              request = "launch",
+              name = "Launch file",
+              program = "${file}",
+              pythonPath = debugpy_cmd,
+              console = "integratedTerminal",
             },
-          })
+            {
+              type = "python",
+              request = "launch",
+              name = "Launch file with arguments",
+              program = "${file}",
+              args = function()
+                local args_string = vim.fn.input("Arguments: ")
+                return vim.split(args_string, " +")
+              end,
+              pythonPath = debugpy_cmd,
+              console = "integratedTerminal",
+            },
+            {
+              type = "python",
+              request = "launch",
+              name = "Launch current module",
+              module = function()
+                return vim.fn.input("Module name: ")
+              end,
+              pythonPath = debugpy_cmd,
+              console = "integratedTerminal",
+            },
+            {
+              type = "python",
+              request = "attach",
+              name = "Attach remote",
+              connect = {
+                host = "localhost",
+                port = function()
+                  return tonumber(vim.fn.input("Port: ")) or 5678
+                end,
+              },
+              mode = "remote",
+              pythonPath = debugpy_cmd,
+            },
+            {
+              type = "python",
+              request = "attach",
+              name = "Attach local",
+              processId = function()
+                local process = require("dap.utils").pick_process()
+                return process
+              end,
+              pythonPath = debugpy_cmd,
+            },
+            {
+              type = "python",
+              request = "launch",
+              name = "Debug Django",
+              program = function()
+                return vim.fn.getcwd() .. "/manage.py"
+              end,
+              args = { "runserver", "--noreload" },
+              justMyCode = false,
+              pythonPath = debugpy_cmd,
+              console = "integratedTerminal",
+            },
+            {
+              type = "python",
+              request = "launch",
+              name = "Debug Flask",
+              module = "flask",
+              args = { "run", "--no-debugger", "--no-reload" },
+              justMyCode = false,
+              pythonPath = debugpy_cmd,
+              console = "integratedTerminal",
+            },
+            {
+              type = "python",
+              request = "launch",
+              name = "Pytest",
+              module = "pytest",
+              args = function()
+                return vim.fn.input("Pytest args: ")
+              end,
+              justMyCode = false,
+              pythonPath = debugpy_cmd,
+              console = "integratedTerminal",
+            },
+          }
         end,
       },
 
@@ -121,6 +211,9 @@ return {
       {
         "leoluz/nvim-dap-go",
         ft = "go",
+        dependencies = {
+          "mfussenegger/nvim-dap",
+        },
         keys = {
           {
             "<leader>dGt",
@@ -152,6 +245,18 @@ return {
             dap_configurations = {
               {
                 type = "go",
+                name = "Debug",
+                request = "launch",
+                program = "${file}",
+              },
+              {
+                type = "go",
+                name = "Debug Package",
+                request = "launch",
+                program = "${workspaceFolder}",
+              },
+              {
+                type = "go",
                 name = "Attach Remote",
                 mode = "remote",
                 request = "attach",
@@ -164,7 +269,7 @@ return {
               args = {},
               build_flags = "",
               detached = vim.fn.has("win32") == 0,
-              cwd = nil, -- 使用当前工作目录
+              cwd = nil,
             },
             tests = {
               verbose = false,
@@ -177,7 +282,97 @@ return {
       {
         "mfussenegger/nvim-jdtls",
         ft = "java",
-        optional = true,
+        dependencies = {
+          "mfussenegger/nvim-dap",
+        },
+        config = function()
+          -- Setup Java DAP configuration
+          local dap = require("dap")
+          local home = vim.fn.expand("$HOME")
+
+          dap.configurations.java = {
+            {
+              type = "java",
+              request = "launch",
+              name = "Launch Current File",
+              program = function()
+                return vim.fn.expand("%:p:h") .. "/src/main/java/" .. vim.fn.expand("%:t:r")
+              end,
+              cwd = "${workspaceFolder}",
+              console = "internalConsole",
+              stopOnEntry = false,
+              mainClass = function()
+                return vim.fn.expand("%:t:r")
+              end,
+            },
+            {
+              type = "java",
+              request = "launch",
+              name = "Launch Main Class",
+              program = "${workspaceFolder}",
+              cwd = "${workspaceFolder}",
+              console = "internalConsole",
+              stopOnEntry = false,
+              mainClass = function()
+                -- Ask user for main class
+                return vim.fn.input("Main class > ")
+              end,
+            },
+            {
+              type = "java",
+              request = "attach",
+              name = "Attach to Process",
+              hostName = "localhost",
+              port = function()
+                return tonumber(vim.fn.input("Port > "))
+              end,
+              timeout = 20000,
+            },
+            {
+              type = "java",
+              request = "launch",
+              name = "Debug JUnit Test",
+              mainClass = function()
+                return vim.fn.expand("%:t:r")
+              end,
+              projectName = function()
+                return vim.fn.input("Project name > ")
+              end,
+              cwd = "${workspaceFolder}",
+              classPaths = {},
+              modulePaths = {},
+              vmArgs = "",
+              env = {
+                JAVA_HOME = home .. "/.sdkman/candidates/java/current",
+              },
+            },
+          }
+
+          -- Java test debug configurations
+          dap.adapters.java = function(callback, config)
+            local jdtls = require("jdtls")
+            jdtls.start_or_attach({
+              cmd = { vim.fn.exepath("jdtls") },
+              root_dir = vim.fs.root(0, { ".git", "mvnw", "gradlew" }),
+              settings = {
+                java = {
+                  configuration = {
+                    runTestsOnBuild = false,
+                  },
+                },
+              },
+            })
+            callback({
+              type = "server",
+              host = "127.0.0.1",
+              port = 5005,
+              enrich_config = function(config, on_config)
+                local jdtls = require("jdtls")
+                jdtls.setup_dap_main_class_configs(config, on_config)
+              end,
+            })
+          end
+        end,
       },
     },
 

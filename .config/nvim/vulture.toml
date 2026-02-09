@@ -1,0 +1,34 @@
+# Vulture 死代码检测配置
+# 使用方法：vulture . --min-confidence 60 --exclude venv/,__pycache__/
+
+# 最小置信度 (0-100)
+# 60-70: 平衡误报和漏报
+# 80+: 更保守，但可能漏掉一些死代码
+--min-confidence = 60
+
+# 排除目录
+--exclude
+    venv/
+    .venv/
+    __pycache__/
+    build/
+    dist/
+    *.egg-info/
+    .tox/
+    migrations/
+    tests/
+
+# 排除的名称模式 (whitelist)
+# 这些名称会被认为是"可能被使用"，不会报告为死代码
+--make_whitelist
+    Meta
+    __init__
+    __str__
+    __repr__
+    setUp
+    tearDown
+    as_view
+    register
+    url
+    path
+    admin

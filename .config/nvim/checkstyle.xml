@@ -1,0 +1,442 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+    "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+    "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<!--
+    Alibaba Java Coding Guidelines - Checkstyle Configuration
+    Based on 阿里巴巴Java开发手册（嵩山版 v1.7.0）
+
+    规范来源:
+    - https://github.com/alibaba/p3c
+    - https://xiaoxue-images.oss-cn-shenzhen.aliyuncs.com/阿里巴巴Java开发规范（嵩山版）.pdf
+
+    主要规范:
+    1. 命名规范（16条）
+    2. 代码格式（11条）
+    3. OOP规约（20条）
+    4. 集合处理（13条）
+    5. 并发处理（15条）
+    6. 控制语句（10条）
+    7. 注释规约（11条）
+    8. 异常处理（13条）
+    9. 日志规范（8条）
+
+    Authors: Updated for Alibaba Java Coding Guidelines
+-->
+
+<module name="Checker">
+    <property name="charset" value="UTF-8"/>
+    <property name="severity" value="error"/>
+    <property name="fileExtensions" value="java, properties, xml"/>
+
+    <!-- 检查文件长度 - 阿里巴巴规范: 单个类文件不超过2000行 -->
+    <module name="FileLength">
+        <property name="max" value="2000"/>
+    </module>
+
+    <!-- 检查Tab字符 - 阿里巴巴规范: 禁止使用Tab，必须使用4个空格缩进 -->
+    <module name="FileTabCharacter">
+        <property name="eachLine" value="true"/>
+    </module>
+
+    <!-- 单行字符长度限制 - 阿里巴巴规范: 不超过120个字符 -->
+    <module name="LineLength">
+        <property name="max" value="120"/>
+        <property name="ignorePattern"
+             value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+    </module>
+
+    <module name="TreeWalker">
+
+        <!-- ============================================================ -->
+        <!-- 01. 命名规范 (Naming Conventions) - 16条强制规则            -->
+        <!-- ============================================================ -->
+
+        <!-- 1.1 类名使用UpperCamelCase -->
+        <module name="TypeName">
+            <property name="format" value="^[A-Z][a-zA-Z0-9]*$"/>
+            <message key="name.invalidPattern"
+                   value="类名 ''{0}'' 必须使用 UpperCamelCase 风格，如：UserDO / XmlService"/>
+        </module>
+
+        <!-- 1.2 接口名使用UpperCamelCase -->
+        <module name="TypeName">
+            <property name="tokens" value="INTERFACE_DEF"/>
+            <message key="name.invalidPattern"
+                   value="接口名 ''{0}'' 必须使用 UpperCamelCase 风格"/>
+        </module>
+
+        <!-- 1.3 方法名使用lowerCamelCase -->
+        <module name="MethodName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+            <message key="name.invalidPattern"
+                   value="方法名 ''{0}'' 必须使用 lowerCamelCase 风格，如：getHttpMessage()"/>
+        </module>
+
+        <!-- 1.4 变量名使用lowerCamelCase -->
+        <module name="MemberName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+            <message key="name.invalidPattern"
+                   value="成员变量名 ''{0}'' 必须使用 lowerCamelCase 风格"/>
+        </module>
+
+        <!-- 1.5 参数名使用lowerCamelCase -->
+        <module name="ParameterName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+            <message key="name.invalidPattern"
+                   value="参数名 ''{0}'' 必须使用 lowerCamelCase 风格"/>
+        </module>
+
+        <!-- 1.6 局部变量名使用lowerCamelCase -->
+        <module name="LocalVariableName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+            <message key="name.invalidPattern"
+                   value="局部变量名 ''{0}'' 必须使用 lowerCamelCase 风格"/>
+        </module>
+
+        <!-- 1.7 常量名全大写，下划线分隔 -->
+        <module name="ConstantName">
+            <property name="format" value="^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/>
+            <message key="name.invalidPattern"
+                   value="常量名 ''{0}'' 必须全大写，下划线分隔，如：MAX_STOCK_COUNT"/>
+        </module>
+
+        <!-- 1.8 包名全小写，单词间有且仅有一个自然语义 -->
+        <module name="PackageName">
+            <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
+            <message key="name.invalidPattern"
+                   value="包名 ''{0}'' 必须全小写，如：com.alibaba.ai.util"/>
+        </module>
+
+        <!-- 1.9 抽象类命名以Abstract或Base开头 -->
+        <!-- 需要人工Review -->
+
+        <!-- 1.10 异常类命名以Exception结尾 -->
+        <!-- 需要人工Review -->
+
+        <!-- 1.11 测试类命名以Test结尾 -->
+        <!-- 需要人工Review -->
+
+        <!-- 1.12 类型与[]紧挨相连定义数组 -->
+        <module name="ArrayTypeStyle"/>
+        <message key="array.type.style"
+               value="数组定义应使用 ''int[] arrayDemo'' 而非 ''int arrayDemo[]''"/>
+
+        <!-- 1.13 POJO布尔类型变量不加is前缀 -->
+        <!-- 需要人工Review或PMD检查 -->
+
+        <!-- ============================================================ -->
+        <!-- 02. 代码格式 (Code Style) - 11条强制规则                   -->
+        <!-- ============================================================ -->
+
+        <!-- 2.1 大括号约定: 左大括号前不换行，后换行 -->
+        <module name="LeftCurly">
+            <property name="option" value="eol"/>
+            <message key="line.previous"
+                   value="左大括号 { 前不换行，后换行"/>
+        </module>
+
+        <!-- 2.2 右大括号前换行 -->
+        <module name="RightCurly">
+            <property name="option" value="same"/>
+            <message key="line.same"
+                   value="右大括号 } 前换行，后有else不换行"/>
+        </module>
+
+        <!-- 2.3 括号与字符间不加空格 -->
+        <module name="ParenPad">
+            <property name="tokens"
+                     value="ANNOTATION, ANNOTATION_FIELD_DEF, CTOR_CALL, CTOR_DEF, DOT,
+                            ENUM_CONSTANT_DEF, EXPR, LITERAL_CATCH, LITERAL_DO,
+                            LITERAL_FOR, LITERAL_IF, LITERAL_NEW, LITERAL_SWITCH,
+                            LITERAL_SYNCHRONIZED, LITERAL_WHILE, METHOD_CALL,
+                            METHOD_DEF, QUESTION, SUPER_CTOR_CALL, LAMBDA"/>
+        </module>
+
+        <!-- 2.4 保留字与括号间加空格 -->
+        <module name="WhitespaceAround">
+            <property name="tokens"
+                     value="ASSIGN, BAND, BAND_ASSIGN, BOR, BOR_ASSIGN, BSR, BSR_ASSIGN,
+                            BXOR, BXOR_ASSIGN, COLON, DIV, DIV_ASSIGN, DO_WHILE, EQUAL,
+                            GE, GT, LAMBDA, LAND, LCURLY, LE, LITERAL_CATCH, LITERAL_DO,
+                            LITERAL_ELSE, LITERAL_FINALLY, LITERAL_FOR, LITERAL_IF,
+                            LITERAL_RETURN, LITERAL_SWITCH, LITERAL_SYNCHRONIZED,
+                            LITERAL_TRY, LITERAL_WHILE, LOR, LT, MINUS, MINUS_ASSIGN,
+                            MOD, MOD_ASSIGN, NOT_EQUAL, PLUS, PLUS_ASSIGN, QUESTION,
+                            RCURLY, SL, SLIST, SL_ASSIGN, SR, SR_ASSIGN, STAR,
+                            STAR_ASSIGN, LITERAL_ASSERT, TYPE_EXTENSION_AND"/>
+        </module>
+
+        <!-- 2.5 运算符左右加空格 -->
+        <!-- 已包含在WhitespaceAround中 -->
+
+        <!-- 2.6 4个空格缩进，禁止tab -->
+        <module name="Indentation">
+            <property name="basicOffset" value="4"/>
+            <property name="braceAdjustment" value="0"/>
+            <property name="caseIndent" value="4"/>
+            <property name="throwsIndent" value="4"/>
+            <property name="lineWrappingIndentation" value="4"/>
+            <property name="arrayInitIndent" value="4"/>
+        </module>
+
+        <!-- 2.7 注释双斜线后加空格 -->
+        <module name="SingleLineComment">
+            <message key="single.line.comment"
+                   value="单行注释 // 后必须加空格"/>
+        </module>
+
+        <!-- 2.8 单行字符不超过120 -->
+        <!-- 已在LineLength中配置 -->
+
+        <!-- 2.9 方法参数逗号后加空格 -->
+        <module name="WhitespaceAfter">
+            <property name="tokens" value="COMMA, SEMI, TYPECAST, ELLIPSIS"/>
+        </module>
+
+        <!-- 2.10 IDE编码UTF-8，换行符Unix格式 -->
+        <!-- 已在Checker中配置charset为UTF-8 -->
+
+        <!-- 2.11 不同业务间插入空行 -->
+        <module name="EmptyLineSeparator">
+            <property name="tokens"
+                     value="PACKAGE_DEF, IMPORT, STATIC_IMPORT, CLASS_DEF, INTERFACE_DEF,
+                            ENUM_DEF, STATIC_INIT, INSTANCE_INIT, METHOD_DEF, CTOR_DEF,
+                            VARIABLE_DEF"/>
+            <property name="allowNoEmptyLineBetweenFields" value="true"/>
+            <property name="allowMultipleEmptyLines" value="false"/>
+        </module>
+
+        <!-- ============================================================ -->
+        <!-- 03. OOP规约 (Object-Oriented Programming) - 20条规则        -->
+        <!-- ============================================================ -->
+
+        <!-- 3.1 覆写方法必须加@Override注解 -->
+        <module name="MissingOverride">
+            <message key="annotation.missing.override"
+                   value="覆写方法必须加 @Override 注解"/>
+        </module>
+
+        <!-- 3.2 避免使用过时类/方法 -->
+        <module name="AvoidEscapedUnicodeCharacters">
+            <property name="allowEscapesForControlCharacters" value="true"/>
+            <property name="allowByTailComment" value="true"/>
+            <property name="allowNonPrintableEscapes" value="true"/>
+        </module>
+
+        <!-- 3.3 访问控制从严 -->
+        <module name="VisibilityModifier">
+            <property name="packageAllowed" value="false"/>
+            <property name="protectedAllowed" value="false"/>
+            <message key="visibility.modifier"
+                   value="访问控制从严，尽量使用private"/>
+        </module>
+
+        <!-- 3.4 重载方法顺序放置 -->
+        <module name="OverloadMethodsDeclarationOrder"/>
+
+        <!-- 3.5 方法顺序: 公有/保护 → 私有 → getter/setter -->
+        <!-- 需要人工Review -->
+
+        <!-- ============================================================ -->
+        <!-- 04. 集合处理 (Collection Handling) - 13条规则               -->
+        <!-- ============================================================ -->
+
+        <!-- 4.1 集合初始化指定大小 -->
+        <module name="ArrayTrailingComma"/>
+        <!-- 需要结合PMD使用 -->
+
+        <!-- 4.2 Map用entrySet遍历 -->
+        <!-- 需要PMD检查 -->
+
+        <!-- ============================================================ -->
+        <!-- 05. 控制语句 (Control Statements) - 10条规则                -->
+        <!-- ============================================================ -->
+
+        <!-- 5.1 switch每个case必须break/return -->
+        <module name="FallThroughCase">
+            <message key="fall.through.case"
+                   value="switch 每个case必须break/return"/>
+        </module>
+
+        <!-- 5.2 switch必须有default分支 -->
+        <module name="MissingSwitchDefault">
+            <message key="missing.switch.default"
+                   value="switch 必须有 default 分支"/>
+        </module>
+
+        <!-- 5.3 if/else/for/while必须用大括号 -->
+        <module name="NeedBraces">
+            <property name="tokens"
+                     value="LITERAL_DO, LITERAL_ELSE, LITERAL_FOR, LITERAL_IF, LITERAL_WHILE"/>
+            <message key="needBraces"
+                   value="if/else/for/while 必须使用大括号"/>
+        </module>
+
+        <!-- 5.4 避免取反逻辑运算符 -->
+        <!-- 需要PMD检查 -->
+
+        <!-- ============================================================ -->
+        <!-- 06. 注释规约 (Comment Conventions) - 11条规则               -->
+        <!-- ============================================================ -->
+
+        <!-- 6.1 类/属性/方法用Javadoc -->
+        <module name="JavadocMethod">
+            <property name="scope" value="public"/>
+            <message key="javadoc.missing"
+                   value="公共方法必须有Javadoc注释"/>
+        </module>
+
+        <module name="JavadocType">
+            <property name="scope" value="public"/>
+            <message key="javadoc.missing"
+                   value="公共类必须有Javadoc注释"/>
+        </module>
+
+        <module name="JavadocVariable">
+            <property name="scope" value="public"/>
+            <message key="javadoc.missing"
+                   value="公共属性必须有Javadoc注释"/>
+        </module>
+
+        <!-- 6.2 抽象方法必须有Javadoc -->
+        <module name="JavadocMethod">
+            <property name="allowMissingParamTags" value="false"/>
+            <property name="allowMissingReturnTag" value="false"/>
+        </module>
+
+        <!-- 6.3 类必须标注创建者和日期 -->
+        <!-- 需要人工Review -->
+
+        <!-- 6.4 单行注释在语句上方 -->
+        <module name="CommentsIndentation">
+            <property name="tokens" value="SINGLE_LINE_COMMENT, BLOCK_COMMENT_BEGIN"/>
+        </module>
+
+        <!-- 6.5 枚举字段必须有注释 -->
+        <!-- 需要人工Review -->
+
+        <!-- 6.6 特殊注释标记 TODO/FIXME -->
+        <module name="TodoComment">
+            <property name="format" value="(TODO)|(FIXME)"/>
+            <message key="todo.match"
+                   value="使用特殊注释标记: TODO / FIXME"/>
+        </module>
+
+        <!-- ============================================================ -->
+        <!-- 07. 代码规范 (Code Quality)                                 -->
+        <!-- ============================================================ -->
+
+        <!-- 7.1 禁止使用星号import -->
+        <module name="AvoidStarImport">
+            <message key="import.avoidStar"
+                   value="禁止使用星号import，如：import java.util.*;"/>
+        </module>
+
+        <!-- 7.2 删除未使用的import -->
+        <module name="UnusedImports">
+            <message key="import.unused"
+                   value="删除未使用的import"/>
+        </module>
+
+        <!-- 7.3 import顺序 -->
+        <module name="CustomImportOrder">
+            <property name="customImportOrderRules"
+                     value="STATIC###THIRD_PARTY_PACKAGE"/>
+            <property name="sortImportsInGroupAlphabetically" value="true"/>
+            <property name="separateLineBetweenGroups" value="true"/>
+        </module>
+
+        <!-- 7.4 一个文件只有一个顶级类 -->
+        <module name="OneTopLevelClass">
+            <message key="one.top.level.class"
+                   value="一个文件只能有一个顶级类"/>
+        </module>
+
+        <!-- 7.5 修饰符顺序 -->
+        <module name="ModifierOrder">
+            <message key="mod.order"
+                   value="修饰符顺序必须符合Java规范"/>
+        </module>
+
+        <!-- 7.6 避免同行的多个变量 -->
+        <module name="MultipleVariableDeclarations">
+            <message key="multiple.variable.declarations"
+                   value="禁止同行声明多个变量"/>
+        </module>
+
+        <!-- 7.7 一行一个语句 -->
+        <module name="OneStatementPerLine">
+            <message key="multiple.statement"
+                   value="一行只能有一个语句"/>
+        </module>
+
+        <!-- 7.8 避免复杂条件 -->
+        <module name="SimplifyBooleanExpression">
+            <message key="simplify.expression"
+                   value="避免复杂的布尔表达式"/>
+        </module>
+
+        <!-- ============================================================ -->
+        <!-- 08. 异常处理 (Exception Handling) - 13条规则                 -->
+        <!-- ============================================================ -->
+
+        <!-- 8.1 捕获异常必须处理 -->
+        <module name="EmptyCatchBlock">
+            <property name="commentFormat" value=".*"/>
+            <message key="catch.block.empty"
+                   value="捕获的异常必须处理，不允许空的catch块"/>
+        </module>
+
+        <!-- ============================================================ -->
+        <!-- 09. 其他规范                                                 -->
+        <!-- ============================================================ -->
+
+        <!-- 9.1 避免魔法值 -->
+        <module name="MagicNumber">
+            <property name="ignoreNumbers" value="-1, 0, 1, 2"/>
+            <property name="ignoreHashCodeMethod" value="true"/>
+            <property name="ignoreAnnotation" value="true"/>
+            <property name="ignoreFieldDeclaration" value="false"/>
+            <message key="magic.number"
+                   value="避免使用魔法值，应定义为常量"/>
+        </module>
+
+        <!-- 9.2 避免条件判断中的复杂语句 -->
+        <module name="NestedIfDepth">
+            <property name="max" value="3"/>
+            <message key="nested.if.depth"
+                   value="if嵌套层数不超过3层"/>
+        </module>
+
+        <module name="NestedForDepth">
+            <property name="max" value="2"/>
+            <message key="nested.for.depth"
+                   value="for嵌套层数不超过2层"/>
+        </module>
+
+        <!-- 9.3 方法参数个数限制 -->
+        <module name="ParameterNumber">
+            <property name="max" value="5"/>
+            <message key="maxParam"
+                   value="方法参数不超过5个，超过应使用POJO"/>
+        </module>
+
+        <!-- 9.4 方法长度限制 -->
+        <module name="MethodLength">
+            <property name="max" value="80"/>
+            <property name="countEmpty" value="false"/>
+            <message key="maxLen.method"
+                   value="单个方法不超过80行"/>
+        </module>
+
+        <!-- 9.5 避免过长的参数列表 -->
+        <module name="MethodParamPad">
+            <property name="tokens"
+                     value="CTOR_DEF, LITERAL_NEW, METHOD_CALL, METHOD_DEF, CTOR_CALL,
+                          SUPER_CTOR_CALL, ENUM_CONSTANT_DEF"/>
+        </module>
+
+    </module>
+</module>
