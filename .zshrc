@@ -38,11 +38,11 @@ export NVM_DIR="$HOME/.nvm"
 # Go bin directory
 export PATH="$HOME/go/bin:$PATH"
 
-# Cargo (Rust)
-. "$HOME/.cargo/env"
+# Cargo (Rust) - only if installed
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
 
-# Local bin
-. "$HOME/.local/bin/env"
+# Local bin - only if exists
+[ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
 
 # Conda
 __conda_setup="$('/Users/leo/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
