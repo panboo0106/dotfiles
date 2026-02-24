@@ -1,0 +1,66 @@
+# 雾凇拼音配置
+# 优化: 模糊音、Emoji、候选词数量
+# 注意: 不修改 key_binder，保持 Backspace 默认行为
+
+patch:
+  # 1. 候选词数量优化
+  menu:
+    page_size: 7  # 每页显示 7 个候选词（默认 5 个，7 个更适中）
+
+  # 2. Emoji 开关优化
+  switches:
+    - name: ascii_mode
+      reset: 0
+      states: [ 中, 英 ]
+    - name: ascii_punct
+      reset: 0
+      states: [ 。，, ．， ]
+    - name: traditionalization
+      reset: 0
+      states: [ 简, 繁 ]
+    - name: emoji
+      reset: 1  # 默认开启 Emoji（0=关闭, 1=开启）
+      states: [ 💀, 😄 ]
+    - name: full_shape
+      reset: 0
+      states: [ 半角, 全角 ]
+
+  # 3. 模糊音优化
+  speller:
+    alphabet: zyxwvutsrqponmlkjihgfedcba
+    delimiter: " '"
+    algebra:
+      - erase/^xx$/
+      # 模糊音: z/zh, c/ch, s/sh
+      - derive/^([zcs])h/$1/
+      - derive/^([zcs])([^h])/$1h$2/
+      # 模糊音: n/l
+      - derive/^n/l/
+      - derive/^l/n/
+      # 模糊音: f/h (部分地区)
+      - derive/^([fh])/$1u/
+      - derive/^([fh])u/$1/
+      # 模糊音: l/n + ue/ve
+      - derive/^([nl])ue/$1ve/
+      - derive/^([nl])ve/$1ue/
+      # 智能纠错
+      - derive/([aeiou])ng$/$1gn/
+      - derive/([dtngkhrzcs])o(u|ng)$/$1o/
+      - derive/ong$/on/
+      - derive/ao$/oa/
+      - derive/([iu])a(o|ng?)$/a$1$2/
+
+  # 注意: 不添加 key_binder 配置
+  # 保持 Backspace 默认行为
+
+  # 其他保持默认
+  translator:
+    dictionary: rime_ice
+    contextual_suggestions: true
+    max_homophones: 7
+    max_homographs: 7
+
+  simplifier:
+    opencc_config: s2t.json
+    option_name: traditionalization
+    tips: all
