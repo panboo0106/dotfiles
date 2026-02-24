@@ -8,7 +8,7 @@
 # ============================================
 
 # Basic PATH setup
-export PATH=$HOME/bin:/usr/local/bin:/opt/homebrew/bin:$PATH
+export PATH=$HOME/bin:/usr/local/bin:/opt/homebrew/bin:$HOME/.local/bin:$PATH
 
 # Starship prompt
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
@@ -45,14 +45,14 @@ export PATH="$HOME/go/bin:$PATH"
 [ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
 
 # Conda
-__conda_setup="$('/Users/leo/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+__conda_setup="$('/opt/homebrew/Caskroom/miniconda/base/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
-    if [ -f "/Users/leo/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "/Users/leo/anaconda3/etc/profile.d/conda.sh"
+    if [ -f "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh" ]; then
+        . "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh"
     else
-        export PATH="/Users/leo/anaconda3/bin:$PATH"
+        export PATH="/opt/homebrew/Caskroom/miniconda/base/bin:$PATH"
     fi
 fi
 unset __conda_setup
@@ -84,6 +84,11 @@ eval "$(starship init zsh)"
 
 alias dotfiles='git --git-dir $HOME/.dotfiles --work-tree $HOME'
 alias avante='nvim -c "lua vim.defer_fn(function()require(\"avante.api\").zen_mode()end, 100)"'
+# 常用快捷命令
+alias dot='dotfiles'  # 简写
+alias dot-status='dotfiles status'
+alias dot-push='dotfiles push'
+alias dot-pull='dotfiles pull'
 
 # ============================================
 # Functions
@@ -105,3 +110,10 @@ fi
 
 # Load private configuration if it exists
 [[ -f ~/.zshrc.private ]] && source ~/.zshrc.private
+export PATH="$HOME/.local/bin:$PATH"
+
+# Remove problematic rg alias from Claude Code
+unalias rg 2>/dev/null || true
+
+# Use local bin fd and rg
+export PATH="$HOME/.local/bin:$PATH"
