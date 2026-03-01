@@ -31,6 +31,14 @@
 .ssh/
 .vscode/
 .viminfo
+.bash_profile
+.bun/
+.cline/
+.conda/
+.kuzu/
+.openclaw/
+.snipaste/
+.wget-hsts
 
 # =============================================================================
 # Development Tools
@@ -59,6 +67,10 @@
 .config/oh-my-zsh/
 .config/raycast/
 .config/zed/
+.config/coding/
+.config/fontconfig/
+.config/mole/
+.config/obsidian/
 
 # =============================================================================
 # User Directories
@@ -74,6 +86,8 @@ Desktop/
 OrbStack/
 Google\ Drive/
 go/
+alma/
+dev/
 
 # =============================================================================
 # Private Config
@@ -85,4 +99,14 @@ go/
 # =============================================================================
 .Trash/
 Google Drive/
-Google Drive/
+
+# =============================================================================
+# Editor & Temp Files
+# =============================================================================
+*.swp
+*.swo
+*~
+.node_repl_history
+.pnpm-store/
+.python-version
+.pyenv/

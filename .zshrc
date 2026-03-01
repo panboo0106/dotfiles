@@ -94,6 +94,27 @@ alias dot-status='dotfiles status'
 alias dot-push='dotfiles push'
 alias dot-pull='dotfiles pull'
 
+# Dotfiles 快捷函数
+# 快速添加文件
+dot-add() {
+  dotfiles add "$1" && dotfiles status
+}
+
+# 快速提交
+dot-commit() {
+  dotfiles commit -m "${1:-update dotfiles}"
+}
+
+# 快速同步 (add + commit + push)
+dot-sync() {
+  dotfiles add -u && dotfiles commit -m "sync: $(date +%Y-%m-%d)" && dotfiles push
+}
+
+# 列出已追踪文件
+dot-list() {
+  git --git-dir=$HOME/.dotfiles --work-tree=$HOME ls-files
+}
+
 # ============================================
 # Functions
 # ============================================
