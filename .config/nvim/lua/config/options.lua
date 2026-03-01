@@ -5,6 +5,7 @@
 vim.opt.relativenumber = false
 vim.opt.timeoutlen = 300
 vim.opt.shell = "zsh"
+vim.opt.spell = false
 -- 设置 Ruff 全局配置文件路径
 vim.env.RUFF_CONFIG = vim.fn.stdpath("config") .. "/ruff.toml"
 vim.g.lazyvim_python_lsp = "ruff"

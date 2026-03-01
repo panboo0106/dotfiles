@@ -33,6 +33,9 @@ return {
       end
     end,
     opts = function()
+      -- 禁用 trouble symbols 在 lualine 中显示（避免 Markdown 标题出现在状态栏）
+      vim.g.trouble_lualine = false
+
       -- PERF: we don't need this lualine require madness 🤷
       local lualine_require = require("lualine_require")
       lualine_require.require = require
@@ -73,7 +76,7 @@ return {
               },
             },
             { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
-            -- { LazyVim.lualine.pretty_path() },
+            { "filename", symbols = { modified = " ●", readonly = " " } },
             -- { "buffers" }
             {
               function()

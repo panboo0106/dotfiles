@@ -39,3 +39,33 @@ map("t", "<C-l>", "<cmd>wincmd l<cr>", { desc = "向右切换窗口" })
 -- 快速退出终端模式
 map("t", "<C-\\><C-n>", "<C-\\><C-n>", { desc = "退出终端模式" })
 map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "退出终端模式(双Esc)" })
+
+-- scratch 临时笔记（使用 <leader>N 避免与 <leader>n 冲突）
+-- 注册 which-key 分组图标
+local wk = require("which-key")
+wk.add({
+	{ "<leader>N", group = "Scratch", icon = { icon = "󰆓", color = "yellow" } },
+})
+
+-- 纯内存模式（不保存到文件，关闭后消失）
+map("n", "<leader>Nn", function()
+	Snacks.scratch()
+end, { desc = "Memory Only" })
+
+-- 保存到文件模式（自动保存到 ~/.local/share/nvim/scratch）
+map("n", "<leader>Ns", function()
+	local scratch_dir = vim.fn.stdpath("data") .. "/scratch"
+	vim.fn.mkdir(scratch_dir, "p")
+	Snacks.scratch({ root = scratch_dir })
+end, { desc = "Save to File" })
+
+-- 打开今日笔记（按日期命名，自动保存）
+map("n", "<leader>Nd", function()
+	local scratch_dir = vim.fn.stdpath("data") .. "/scratch"
+	vim.fn.mkdir(scratch_dir, "p")
+	local filename = os.date("%Y-%m-%d") .. ".md"
+	Snacks.scratch({
+		name = filename,
+		root = scratch_dir,
+	})
+end, { desc = "Daily Note" })

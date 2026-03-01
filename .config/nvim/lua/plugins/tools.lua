@@ -178,6 +178,12 @@ return {
     lazy = false,
     priority = 1000,
     opts = {
+      terminal = {
+        win = {
+          style = "terminal", -- 使用内置终端样式
+          border = "rounded", -- 圆角边框
+        },
+      },
       notifier = {
         enabled = true,
         timeout = 3000, -- 默认通知显示时间(毫秒)

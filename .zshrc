@@ -73,6 +73,10 @@ plugins=(
     zsh-completions
 )
 
+# Autosuggestions color - compatible with both dark and light themes
+# Uses gray (color 8) with underline for visibility in any theme
+export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=8,underline"
+
 source $ZSH/oh-my-zsh.sh
 
 # Starship init (after oh-my-zsh to override prompt)

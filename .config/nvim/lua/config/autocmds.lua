@@ -16,3 +16,11 @@
 --     vim.opt_local.spell = false
 --   end,
 -- })
+--
+-- 覆盖 LazyVim 默认的 wrap_spell autocmd，禁用拼写检查
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "text", "plaintex", "typst", "gitcommit", "markdown" },
+  callback = function()
+    vim.opt_local.spell = false
+  end,
+})
