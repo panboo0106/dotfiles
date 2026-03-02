@@ -9,10 +9,16 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
   git = {
-    config = {
-      ["http.proxy"] = "http://127.0.0.1:7890",
-      ["https.proxy"] = "http://127.0.0.1:7890",
-    },
+    config = function()
+      local proxy = os.getenv("GIT_PROXY")
+      if proxy and proxy ~= "" then
+        return {
+          ["http.proxy"] = proxy,
+          ["https.proxy"] = proxy,
+        }
+      end
+      return {}
+    end,
   },
   spec = {
     -- add LazyVim and import its plugins

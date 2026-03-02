@@ -11,55 +11,85 @@ vim.keymap.set("n", "<S-Right>", ":vertical resize +2<CR>")
 vim.keymap.set("i", "jj", "<ESC>", { noremap = true, silent = true })
 vim.keymap.set("t", "jj", "<C-\\><C-n>", { noremap = true, silent = true })
 
--- 水平分割打开终端
-vim.keymap.set("n", "<leader>Th", function()
-  vim.cmd("split")
-  vim.cmd("terminal")
-  vim.cmd("startinsert")
-end, { desc = "Terminal (horizontal split)" })
-
--- 垂直分割打开终端
-vim.keymap.set("n", "<leader>Tv", function()
-  vim.cmd("vsplit")
-  vim.cmd("terminal")
-  vim.cmd("startinsert")
-end, { desc = "Terminal (vertical split)" })
-
+-- ==================== 终端快捷键（<leader>t）====================
 local map = vim.keymap.set
 
--- 终端相关快捷键
-map("n", "<leader>Tt", "<cmd>tabnew | terminal<cr>", { desc = "新标签页终端" })
+-- 水平分割打开终端
+map("n", "<leader>th", function()
+	vim.cmd("split")
+	vim.cmd("terminal")
+	vim.cmd("startinsert")
+end, { desc = "Horizontal Split" })
 
--- 终端模式下的快捷键
-map("t", "<C-h>", "<cmd>wincmd h<cr>", { desc = "向左切换窗口" })
-map("t", "<C-j>", "<cmd>wincmd j<cr>", { desc = "向下切换窗口" })
-map("t", "<C-k>", "<cmd>wincmd k<cr>", { desc = "向上切换窗口" })
-map("t", "<C-l>", "<cmd>wincmd l<cr>", { desc = "向右切换窗口" })
+-- 垂直分割打开终端
+map("n", "<leader>tv", function()
+	vim.cmd("vsplit")
+	vim.cmd("terminal")
+	vim.cmd("startinsert")
+end, { desc = "Vertical Split" })
+
+-- 新标签页终端
+map("n", "<leader>tt", "<cmd>tabnew | terminal<cr>", { desc = "New Tab" })
+
+-- 右侧终端：切换
+map("n", "<leader>ta", function()
+	Snacks.terminal.toggle(nil, {
+		win = {
+			position = "right",
+			width = 40,
+			border = "rounded",
+		},
+	})
+end, { desc = "Toggle Right" })
+
+-- 右侧终端：新建
+map("n", "<leader>tn", function()
+	Snacks.terminal.open(nil, {
+		win = {
+			position = "right",
+			width = 40,
+			border = "rounded",
+		},
+	})
+end, { desc = "New Right" })
+
+-- 终端模式下的窗口切换快捷键
+map("t", "<C-h>", "<cmd>wincmd h<cr>", { desc = "Left Window" })
+map("t", "<C-j>", "<cmd>wincmd j<cr>", { desc = "Down Window" })
+map("t", "<C-k>", "<cmd>wincmd k<cr>", { desc = "Up Window" })
+map("t", "<C-l>", "<cmd>wincmd l<cr>", { desc = "Right Window" })
 
 -- 快速退出终端模式
-map("t", "<C-\\><C-n>", "<C-\\><C-n>", { desc = "退出终端模式" })
-map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "退出终端模式(双Esc)" })
+map("t", "<C-\\><C-n>", "<C-\\><C-n>", { desc = "Exit Terminal" })
+map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit Terminal (Double Esc)" })
 
--- scratch 临时笔记（使用 <leader>N 避免与 <leader>n 冲突）
--- 注册 which-key 分组图标
-local wk = require("which-key")
-wk.add({
-	{ "<leader>N", group = "Scratch", icon = { icon = "󰆓", color = "yellow" } },
+-- 自动打开右侧终端
+vim.api.nvim_create_autocmd("VimEnter", {
+	callback = function()
+		vim.defer_fn(function()
+			Snacks.terminal.toggle(nil, {
+				win = {
+					position = "right",
+					width = 40,
+					border = "rounded",
+				},
+			})
+		end, 100)
+	end,
+	desc = "Auto open terminal on startup",
 })
 
--- 纯内存模式（不保存到文件，关闭后消失）
+-- ==================== Scratch 临时笔记（<leader>N）===================
 map("n", "<leader>Nn", function()
 	Snacks.scratch()
-end, { desc = "Memory Only" })
+end, { desc = "New Scratch" })
 
--- 保存到文件模式（自动保存到 ~/.local/share/nvim/scratch）
 map("n", "<leader>Ns", function()
 	local scratch_dir = vim.fn.stdpath("data") .. "/scratch"
 	vim.fn.mkdir(scratch_dir, "p")
 	Snacks.scratch({ root = scratch_dir })
 end, { desc = "Save to File" })
 
--- 打开今日笔记（按日期命名，自动保存）
 map("n", "<leader>Nd", function()
 	local scratch_dir = vim.fn.stdpath("data") .. "/scratch"
 	vim.fn.mkdir(scratch_dir, "p")
@@ -69,3 +99,20 @@ map("n", "<leader>Nd", function()
 		root = scratch_dir,
 	})
 end, { desc = "Daily Note" })
+
+-- ==================== Which-Key 图标注册 ====================
+local wk = require("which-key")
+wk.add({
+	-- 终端组
+	{ "<leader>t", group = "terminal", icon = { icon = "", color = "grey" } },
+	{ "<leader>th", icon = { icon = "", color = "grey" } },
+	{ "<leader>tv", icon = { icon = "", color = "grey" } },
+	{ "<leader>tt", icon = { icon = "󰓩", color = "grey" } },
+	{ "<leader>ta", icon = { icon = "󰆽", color = "grey" } },
+	{ "<leader>tn", icon = { icon = "󰆓", color = "grey" } },
+	-- Scratch 组
+	{ "<leader>N", group = "Scratch", icon = { icon = "󰆓", color = "yellow" } },
+	{ "<leader>Nn", icon = { icon = "󰝖", color = "yellow" } },
+	{ "<leader>Ns", icon = { icon = "󰆓", color = "yellow" } },
+	{ "<leader>Nd", icon = { icon = "󰃭", color = "yellow" } },
+})

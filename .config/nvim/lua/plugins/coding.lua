@@ -507,21 +507,8 @@ return {
         end,
       },
     },
-    opts = {
-      history = true,
-      delete_check_events = "TextChanged",
-    },
-  },
-  {
-    "rafamadriz/friendly-snippets",
-    config = function()
-      require("luasnip.loaders.from_vscode").lazy_load()
-      require("luasnip.loaders.from_vscode").lazy_load({ paths = { vim.fn.stdpath("config") .. "/snippets" } })
-    end,
-  },
-  {
-    "L3MON4D3/LuaSnip",
     opts = function()
+      -- LazyVim snippet actions
       LazyVim.cmp.actions.snippet_forward = function()
         if require("luasnip").jumpable(1) then
           vim.schedule(function()
@@ -531,11 +518,15 @@ return {
         end
       end
       LazyVim.cmp.actions.snippet_stop = function()
-        if require("luasnip").expand_or_jumpable() then -- or just jumpable(1) is fine?
+        if require("luasnip").expand_or_jumpable() then
           require("luasnip").unlink_current()
           return true
         end
       end
+      return {
+        history = true,
+        delete_check_events = "TextChanged",
+      }
     end,
   },
   {
@@ -680,65 +671,65 @@ return {
 
     -- 键位映射
     keys = {
-      { "<leader>t", "", desc = "+test" },
+      { "<leader>T", "", desc = "+test" },
       {
-        "<leader>tt",
+        "<leader>Tt",
         function()
           require("neotest").run.run(vim.fn.expand("%"))
         end,
         desc = "Run File (Neotest)",
       },
       {
-        "<leader>tT",
+        "<leader>TT",
         function()
           require("neotest").run.run(vim.uv.cwd())
         end,
         desc = "Run All Test Files (Neotest)",
       },
       {
-        "<leader>tr",
+        "<leader>Tr",
         function()
           require("neotest").run.run()
         end,
         desc = "Run Nearest (Neotest)",
       },
       {
-        "<leader>tl",
+        "<leader>Tl",
         function()
           require("neotest").run.run_last()
         end,
         desc = "Run Last (Neotest)",
       },
       {
-        "<leader>ts",
+        "<leader>Ts",
         function()
           require("neotest").summary.toggle()
         end,
         desc = "Toggle Summary (Neotest)",
       },
       {
-        "<leader>to",
+        "<leader>To",
         function()
           require("neotest").output.open({ enter = true, auto_close = true })
         end,
         desc = "Show Output (Neotest)",
       },
       {
-        "<leader>tO",
+        "<leader>TO",
         function()
           require("neotest").output_panel.toggle()
         end,
         desc = "Toggle Output Panel (Neotest)",
       },
       {
-        "<leader>tS",
+        "<leader>TS",
         function()
           require("neotest").run.stop()
         end,
         desc = "Stop (Neotest)",
       },
       {
-        "<leader>tw",
+        "<leader>Tw",
         function()
           require("neotest").watch.toggle(vim.fn.expand("%"))
         end,
@@ -747,7 +738,7 @@ return {
 
       -- 调试支持（需要 nvim-dap）
       {
-        "<leader>td",
+        "<leader>Td",
         function()
           require("neotest").run.run({ strategy = "dap" })
         end,

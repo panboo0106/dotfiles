@@ -424,8 +424,8 @@ return {
       -- or leave it empty to use the default settings
       -- refer to the configuration section below
       spec = {
-        { "<leader>k", group = "kitools", icon = { icon = "", color = "bule" } },
-        { "<leader>T", group = "terminal", icon = { icon = "", color = "black" } },
+        { "<leader>k", group = "kitools", icon = { icon = "", color = "cyan" } },
+        { "<leader>T", group = "test", icon = { icon = "󰙨", color = "green" } },
       },
     },
     keys = {
