@@ -85,7 +85,7 @@ return {
         exclude = { "vue" },
       },
 
-      codelens = { enabled = false },
+      codelens = { enabled = true },
 
       folds = { enabled = true },
 
@@ -99,7 +99,6 @@ return {
         jdtls = false,
 
         marksman = {},
-        stylua = { enabled = false },
 
         -- ============ JavaScript/TypeScript ============
         eslint = {

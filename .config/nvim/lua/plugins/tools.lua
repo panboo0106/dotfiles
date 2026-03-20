@@ -370,37 +370,8 @@ return {
       -- 设置 snacks 选项
       require("snacks").setup(opts)
 
-      -- 创建自动命令组来监听 git 操作并自动刷新
+      -- 监听 Git 状态变化后刷新 explorer（explorer 本身已有 watch=true 监听文件变化）
       local group = vim.api.nvim_create_augroup("SnacksExplorerGitRefresh", { clear = true })
-
-      -- 在执行 git 命令后自动刷新
-      vim.api.nvim_create_autocmd({ "BufWritePost" }, {
-        group = group,
-        callback = function()
-          -- 延迟刷新以确保 git 状态已更新
-          vim.defer_fn(function()
-            if Snacks.explorer and Snacks.explorer.refresh then
-              Snacks.explorer.refresh()
-            end
-          end, 100)
-        end,
-        desc = "Auto refresh explorer git status after saving",
-      })
-
-      -- 监听焦点返回时刷新
-      vim.api.nvim_create_autocmd({ "FocusGained" }, {
-        group = group,
-        callback = function()
-          vim.defer_fn(function()
-            if Snacks.explorer and Snacks.explorer.refresh then
-              Snacks.explorer.refresh()
-            end
-          end, 100)
-        end,
-        desc = "Refresh explorer on focus gained",
-      })
-
-      -- 监听 Git 相关的命令执行后刷新
       vim.api.nvim_create_autocmd("User", {
         group = group,
         pattern = { "GitSignsUpdate", "GitSignsChanged" },
@@ -442,7 +413,8 @@ return {
     "coffebar/transfer.nvim",
     lazy = true,
     cmd = { "TransferInit", "DiffRemote", "TransferUpload", "TransferDownload", "TransferDirDiff", "TransferRepeat" },
-    opts = {
+    config = function()
+      require("transfer").setup({})
       require("which-key").add({
         { "<leader>r", group = "Upload / Download", icon = { icon = "", color = "yellow" } },
         {
@@ -475,8 +447,8 @@ return {
           desc = "Upload to remote server (scp)",
           icon = { color = "green", icon = "󰕒" },
         },
-      }),
-    },
+      })
+    end,
   },
   {
     "nvimdev/template.nvim",

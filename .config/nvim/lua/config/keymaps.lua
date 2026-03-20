@@ -60,24 +60,7 @@ map("t", "<C-k>", "<cmd>wincmd k<cr>", { desc = "Up Window" })
 map("t", "<C-l>", "<cmd>wincmd l<cr>", { desc = "Right Window" })
 
 -- 快速退出终端模式
-map("t", "<C-\\><C-n>", "<C-\\><C-n>", { desc = "Exit Terminal" })
 map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit Terminal (Double Esc)" })
-
--- 自动打开右侧终端
-vim.api.nvim_create_autocmd("VimEnter", {
-	callback = function()
-		vim.defer_fn(function()
-			Snacks.terminal.toggle(nil, {
-				win = {
-					position = "right",
-					width = 40,
-					border = "rounded",
-				},
-			})
-		end, 100)
-	end,
-	desc = "Auto open terminal on startup",
-})
 
 -- ==================== Scratch 临时笔记（<leader>N）===================
 map("n", "<leader>Nn", function()
@@ -101,6 +84,7 @@ map("n", "<leader>Nd", function()
 end, { desc = "Daily Note" })
 
 -- ==================== Which-Key 图标注册 ====================
+vim.schedule(function()
 local wk = require("which-key")
 wk.add({
 	-- 终端组
@@ -116,3 +100,4 @@ wk.add({
 	{ "<leader>Ns", icon = { icon = "󰆓", color = "yellow" } },
 	{ "<leader>Nd", icon = { icon = "󰃭", color = "yellow" } },
 })
+end)

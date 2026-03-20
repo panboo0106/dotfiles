@@ -8,6 +8,7 @@
 - **编辑器**: Neovim (LazyVim), Zed, VSCode
 - **终端**: Kitty (主终端), WezTerm, Alacritty
 - **输入法**: 鼠须管 (Squirrel) + 雾凇拼音
+- **现代 CLI**: bat, eza, delta
 
 ## 快速安装
 
@@ -19,6 +20,9 @@
 
 # 安装核心工具
 brew install git vim fzf ripgrep fd starship
+
+# 安装现代 CLI 工具
+brew install bat eza delta
 brew install --cask squirrel
 ```
 
@@ -40,6 +44,72 @@ curl -fsSL https://raw.githubusercontent.com/rime/plum/master/rime-install | \
 ```bash
 # 检查是否成功
 ls ~/Library/Rime/build/*.bin 2>/dev/null | head -5
+```
+
+## 现代 CLI 工具
+
+用 Rust 编写的现代命令行工具替代传统命令，提供更好的体验。
+
+### 工具对照
+
+| 传统命令 | 现代替代 | 主要优势 |
+|---------|---------|---------|
+| `cat` | `bat` | 语法高亮、行号、Git 集成 |
+| `ls` | `eza` | 彩色输出、Git 状态、图标、树形视图 |
+| `git diff` | `delta` | 并排对比、语法高亮、行号高亮 |
+
+### 常用命令
+
+```bash
+# bat - 文件查看
+bat file.py              # 语法高亮 + 行号
+bat -A file.txt          # 显示特殊字符
+bat -p file.txt          # 纯净输出
+
+# eza - 目录列表
+eza                      # 彩色列表
+eza -la                  # 详细 + 隐藏文件
+eza --tree --level=2     # 树形视图
+eza --git                # 显示 Git 状态
+
+# delta - Git diff 美化 (自动集成到 git)
+git diff                 # 自动使用 delta
+git log -p               # 彩色日志
+```
+
+### Shell Alias 配置
+
+已配置以下 alias（在 `~/.zshrc`）：
+
+```bash
+# bat as cat
+alias cat='bat'
+
+# eza as ls
+alias ls='eza'
+alias ll='eza -l'
+alias la='eza -la'
+alias lt='eza --tree --level=2'
+alias lta='eza --tree --level=2 -a'
+```
+
+### Delta 配置
+
+Git 配置（在 `~/.gitconfig`）：
+
+```ini
+[core]
+    pager = delta
+    editor = nvim
+
+[delta]
+    navigate = true          # n/N 跳转差异块
+    side-by-side = true     # 并排显示
+    line-numbers = true
+    syntax-theme = Dracula
+
+[merge]
+    conflictstyle = zdiff3  # 三方冲突对比
 ```
 
 ## 输入法使用说明

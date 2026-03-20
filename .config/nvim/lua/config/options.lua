@@ -20,13 +20,10 @@ vim.filetype.add({
   pattern = {
     [".*/templates/.*%.yaml"] = "helm",
   },
-})
-vim.opt.showtabline = 0
--- 启用保存时自动格式化
-vim.g.autoformat = true
-vim.treesitter.language.register("markdown", "Avante")
-vim.filetype.add({
   extension = {
     sh = "sh",
   },
 })
+vim.opt.showtabline = 0
+-- 启用保存时自动格式化
+vim.g.autoformat = true
