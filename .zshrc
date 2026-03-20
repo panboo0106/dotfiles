@@ -75,7 +75,7 @@ plugins=(
 
 # Autosuggestions color - compatible with both dark and light themes
 # Uses gray (color 8) with underline for visibility in any theme
-export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=8,underline"
+export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=242,underline"
 
 source $ZSH/oh-my-zsh.sh
 
@@ -83,34 +83,46 @@ source $ZSH/oh-my-zsh.sh
 eval "$(starship init zsh)"
 
 # ============================================
-# Aliases
+# Modern CLI Tools (bat, eza)
 # ============================================
 
-alias dotfiles='git --git-dir $HOME/.dotfiles --work-tree $HOME'
-alias avante='nvim -c "lua vim.defer_fn(function()require(\"avante.api\").zen_mode()end, 100)"'
-# 常用快捷命令
-alias dot='dotfiles'  # 简写
-alias dot-status='dotfiles status'
-alias dot-push='dotfiles push'
-alias dot-pull='dotfiles pull'
+# bat as cat replacement
+alias cat='bat'
+compdef bat=cat
 
-# Dotfiles 快捷函数
-# 快速添加文件
-dot-add() {
-  dotfiles add "$1" && dotfiles status
+# eza as ls replacement
+alias ls='eza'
+alias ll='eza -l'
+alias la='eza -la'
+alias lt='eza --tree --level=2'
+alias lta='eza --tree --level=2 -a'
+compdef eza=ls
+
+# ============================================
+# Dotfiles (Bare Repository)
+# ============================================
+
+# dotfiles 函数
+dotfiles() {
+  git --git-dir="$HOME/.dotfiles" --work-tree="$HOME" "$@"
 }
 
-# 快速提交
+alias dot='dotfiles'
+alias avante='nvim -c "lua vim.defer_fn(function()require(\"avante.api\").zen_mode()end, 100)"'
+
+# 快速操作函数
+dot-add() {
+  dotfiles add "$@" && dotfiles status
+}
+
 dot-commit() {
   dotfiles commit -m "${1:-update dotfiles}"
 }
 
-# 快速同步 (add + commit + push)
 dot-sync() {
   dotfiles add -u && dotfiles commit -m "sync: $(date +%Y-%m-%d)" && dotfiles push
 }
 
-# 列出已追踪文件
 dot-list() {
   git --git-dir=$HOME/.dotfiles --work-tree=$HOME ls-files
 }
@@ -134,7 +146,7 @@ fi
 # ============================================
 
 # Load private configuration if it exists
-[[ -f ~/.zshrc.private ]] && source ~/.zshrc.private
+# [[ -f ~/.zshrc.private ]] && source ~/.zshrc.private
 export PATH="$HOME/.local/bin:$PATH"
 
 # Remove problematic rg alias from Claude Code

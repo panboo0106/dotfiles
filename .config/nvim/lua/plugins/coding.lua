@@ -551,7 +551,10 @@ return {
           dap = { justMyCode = false },
           args = { "--log-level", "DEBUG" },
           runner = "pytest",
-          python = vim.fn.expand("~/anaconda3/envs/apextest/bin/python"),
+          python = (function()
+            local py = vim.fn.exepath("python3")
+            return py ~= "" and py or vim.fn.exepath("python")
+          end)(),
         },
 
         -- Go 适配器

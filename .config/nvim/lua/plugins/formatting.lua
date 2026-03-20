@@ -17,26 +17,26 @@ return {
       go = { "gofumpt", "goimports", "goimports-reviser" },
 
       -- Web 开发（添加备选格式化工具）
-      javascript = { "prettier", "prettierd", "eslint_d" },
-      typescript = { "prettier", "prettierd", "eslint_d" },
-      javascriptreact = { "prettier", "prettierd" },
-      typescriptreact = { "prettier", "prettierd" },
-      vue = { "prettier", "prettierd" },
+      javascript = { "prettierd", "prettier" },
+      typescript = { "prettierd", "prettier" },
+      javascriptreact = { "prettierd", "prettier" },
+      typescriptreact = { "prettierd", "prettier" },
+      vue = { "prettierd", "prettier" },
 
       -- 样式文件
-      css = { "prettier", "prettierd" },
-      scss = { "prettier", "prettierd" },
-      less = { "prettier", "prettierd" },
+      css = { "prettierd", "prettier" },
+      scss = { "prettierd", "prettier" },
+      less = { "prettierd", "prettier" },
 
       -- 标记语言
-      html = { "prettier", "prettierd" },
-      json = { "prettier", "prettierd", "jq" },
-      jsonc = { "prettier", "prettierd", "jq" },
+      html = { "prettierd", "prettier" },
+      json = { "prettierd", "prettier", "jq" },
+      jsonc = { "prettierd", "prettier", "jq" },
       yaml = { "yamlfmt" },
-      markdown = { "prettier", "prettierd" },
-      ["markdown.mdx"] = { "prettier", "prettierd" },
-      graphql = { "prettier", "prettierd" },
-      handlebars = { "prettier" },
+      markdown = { "prettierd", "prettier" },
+      ["markdown.mdx"] = { "prettierd", "prettier" },
+      graphql = { "prettierd", "prettier" },
+      handlebars = { "prettierd", "prettier" },
 
       -- 系统编程语言
       rust = { "rustfmt" },
