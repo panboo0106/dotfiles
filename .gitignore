@@ -81,7 +81,8 @@ Music/
 Movies/
 Pictures/
 Public/
-Library/
+Library/*
+!Library/Rime/
 Desktop/
 OrbStack/
 Google\ Drive/
