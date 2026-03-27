@@ -101,7 +101,7 @@ return {
 
       codelens = { enabled = true },
 
-      folds = { enabled = true },
+      folds = { enabled = false }, -- nvim-ufo 接管折叠
 
       format = {
         formatting_options = nil,

@@ -514,4 +514,42 @@ return {
       },
     },
   },
+
+  {
+    "mbbill/undotree",
+    keys = {
+      { "<leader>uu", "<cmd>UndotreeToggle<cr>", desc = "Undo Tree" },
+    },
+  },
+
+  {
+    "tpope/vim-dadbod",
+    dependencies = {
+      {
+        "kristijanhusak/vim-dadbod-ui",
+        keys = {
+          { "<leader>kdb", "<cmd>DBUIToggle<cr>",       desc = "Toggle DB UI" },
+          { "<leader>kdB", "<cmd>DBUIFindBuffer<cr>",   desc = "Find DB Buffer" },
+        },
+        init = function()
+          vim.g.db_ui_use_nerd_fonts = 1
+        end,
+      },
+      { "kristijanhusak/vim-dadbod-completion", ft = { "sql", "mysql", "plsql" } },
+    },
+    cmd = { "DB", "DBUI", "DBUIToggle", "DBUIFindBuffer" },
+  },
+
+  {
+    "mistweaverco/kulala.nvim",
+    ft = "http",
+    keys = {
+      { "<leader>khs", function() require("kulala").run() end,          desc = "Send Request" },
+      { "<leader>kha", function() require("kulala").run_all() end,      desc = "Send All Requests" },
+      { "<leader>khi", function() require("kulala").inspect() end,      desc = "Inspect Request" },
+      { "<leader>khp", function() require("kulala").jump_prev() end,    desc = "Prev Request" },
+      { "<leader>khn", function() require("kulala").jump_next() end,    desc = "Next Request" },
+    },
+    opts = {},
+  },
 }

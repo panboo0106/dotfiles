@@ -22,13 +22,13 @@ return {
   {
     "nvim-lualine/lualine.nvim",
     event = "VeryLazy",
+    priority = 1000,
+    dependencies = { "folke/snacks.nvim" },
     init = function()
       vim.g.lualine_laststatus = vim.o.laststatus
       if vim.fn.argc(-1) > 0 then
-        -- set an empty statusline till lualine loads
         vim.o.statusline = " "
       else
-        -- hide the statusline on the starter page
         vim.o.laststatus = 0
       end
     end,
@@ -93,30 +93,36 @@ return {
             },
           },
           lualine_x = {
-            Snacks.profiler.status(),
+            function()
+              if package.loaded["snacks"] then
+                local status = Snacks.profiler.status()
+                return type(status) == "string" and status or ""
+              end
+              return ""
+            end,
           -- stylua: ignore
           {
             function() return require("noice").api.status.command.get() end,
             cond = function() return package.loaded["noice"] and require("noice").api.status.command.has() end,
-            color = function() return { fg = Snacks.util.color("Statement") } end,
+            color = function() return package.loaded["snacks"] and { fg = Snacks.util.color("Statement") } or {} end,
           },
           -- stylua: ignore
           {
             function() return require("noice").api.status.mode.get() end,
             cond = function() return package.loaded["noice"] and require("noice").api.status.mode.has() end,
-            color = function() return { fg = Snacks.util.color("Constant") } end,
+            color = function() return package.loaded["snacks"] and { fg = Snacks.util.color("Constant") } or {} end,
           },
           -- stylua: ignore
           {
             function() return "  " .. require("dap").status() end,
             cond = function() return package.loaded["dap"] and require("dap").status() ~= "" end,
-            color = function() return { fg = Snacks.util.color("Debug") } end,
+            color = function() return package.loaded["snacks"] and { fg = Snacks.util.color("Debug") } or {} end,
           },
           -- stylua: ignore
           {
             require("lazy.status").updates,
             cond = require("lazy.status").has_updates,
-            color = function() return { fg = Snacks.util.color("Special") } end,
+            color = function() return package.loaded["snacks"] and { fg = Snacks.util.color("Special") } or {} end,
           },
             -- LSP 客户端：1个显示名称，多个显示数量，过滤噪音 LSP
             {
@@ -216,6 +222,9 @@ return {
       end
       return opts
     end,
+    config = function(_, opts)
+      require("lualine").setup(opts)
+    end,
   },
   {
     "folke/noice.nvim",
@@ -295,46 +304,20 @@ return {
       vim.keymap.set("n", "];", dropbar_api.select_next_context, { desc = "Select next context" })
     end,
   },
-  -- {
-  --   "mikavilpas/yazi.nvim",
-  --   event = "VeryLazy",
-  --   dependencies = { "folke/snacks.nvim", lazy = true },
-  --   keys = {
-  --     -- 👇 in this section, choose your own keymappings!
-  --     {
-  --       "<leader>-",
-  --       mode = { "n", "v" },
-  --       "<cmd>Yazi<cr>",
-  --       desc = "Open yazi at the current file",
-  --     },
-  --     {
-  --       -- Open in the current working directory
-  --       "<leader>cw",
-  --       "<cmd>Yazi cwd<cr>",
-  --       desc = "Open the file manager in nvim's working directory",
-  --     },
-  --     {
-  --       "<c-up>",
-  --       "<cmd>Yazi toggle<cr>",
-  --       desc = "Resume the last yazi session",
-  --     },
-  --   },
-  --   ---@type YaziConfig | {}
-  --   opts = {
-  --     -- if you want to open yazi instead of netrw, see below for more info
-  --     open_for_directories = false,
-  --     keymaps = {
-  --       show_help = "<f1>",
-  --     },
-  --   },
-  --   -- 👇 if you use `open_for_directories=true`, this is recommended
-  --   init = function()
-  --     -- More details: https://github.com/mikavilpas/yazi.nvim/issues/802
-  --     -- vim.g.loaded_netrw = 1
-  --     vim.g.loaded_netrwPlugin = 1
-  --   end,
-  -- },
-  --
+  {
+    "mikavilpas/yazi.nvim",
+    event = "VeryLazy",
+    dependencies = { "folke/snacks.nvim", lazy = true },
+    keys = {
+      { "<leader>-", "<cmd>Yazi<cr>",     mode = { "n", "v" }, desc = "Open Yazi" },
+      { "<c-up>",    "<cmd>Yazi toggle<cr>",                    desc = "Resume Yazi" },
+    },
+    opts = {
+      open_for_directories = false,
+      keymaps = { show_help = "<f1>" },
+    },
+  },
+
   {
     "akinsho/bufferline.nvim",
     event = "VeryLazy",
@@ -353,9 +336,9 @@ return {
     opts = {
       options = {
       -- stylua: ignore
-      close_command = function(n) Snacks.bufdelete(n) end,
+      close_command = function(n) if package.loaded["snacks"] then Snacks.bufdelete(n) end end,
       -- stylua: ignore
-      right_mouse_command = function(n) Snacks.bufdelete(n) end,
+      right_mouse_command = function(n) if package.loaded["snacks"] then Snacks.bufdelete(n) end end,
         diagnostics = "nvim_lsp",
         always_show_bufferline = false,
         diagnostics_indicator = function(_, _, diag)
@@ -388,6 +371,19 @@ return {
           end)
         end,
       })
+    end,
+  },
+
+  {
+    "norcalli/nvim-colorizer.lua",
+    event = "LazyFile",
+    opts = {
+      "*",
+      css = { css = true },
+      html = { css = true },
+    },
+    config = function(_, opts)
+      require("colorizer").setup(opts)
     end,
   },
 }

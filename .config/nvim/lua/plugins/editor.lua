@@ -361,4 +361,100 @@ return {
       })
     end,
   },
+
+  {
+    "NeogitOrg/neogit",
+    dependencies = { "nvim-lua/plenary.nvim", "sindrets/diffview.nvim" },
+    cmd = { "Neogit" },
+    keys = {
+      { "<leader>gn",  "<cmd>Neogit<cr>",        desc = "Neogit" },
+      { "<leader>gnc", "<cmd>Neogit commit<cr>",  desc = "Neogit Commit" },
+      { "<leader>gnb", "<cmd>Neogit branch<cr>",  desc = "Neogit Branch" },
+      { "<leader>gnl", "<cmd>Neogit log<cr>",     desc = "Neogit Log" },
+      { "<leader>gp",  "<cmd>Neogit pull<cr>",    desc = "Neogit Pull" },
+    },
+    opts = {
+      integrations = { diffview = true },
+    },
+  },
+
+  {
+    "akinsho/git-conflict.nvim",
+    event = "LazyFile",
+    opts = {
+      default_mappings = true,
+      disable_diagnostics = true,
+    },
+  },
+
+  {
+    "ThePrimeagen/harpoon",
+    branch = "harpoon2",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    keys = function()
+      local harpoon = require("harpoon")
+      return {
+        { "<leader>ha",  function() harpoon:list():add() end,                          desc = "Harpoon Add" },
+        { "<leader>hh",  function() harpoon.ui:toggle_quick_menu(harpoon:list()) end, desc = "Harpoon Menu" },
+        { "<leader>h1",  function() harpoon:list():select(1) end,                     desc = "Harpoon 1" },
+        { "<leader>h2",  function() harpoon:list():select(2) end,                     desc = "Harpoon 2" },
+        { "<leader>h3",  function() harpoon:list():select(3) end,                     desc = "Harpoon 3" },
+        { "<leader>h4",  function() harpoon:list():select(4) end,                     desc = "Harpoon 4" },
+      }
+    end,
+    opts = {},
+  },
+
+  {
+    "kevinhwang91/nvim-bqf",
+    ft = "qf",
+    opts = {
+      preview = { auto_preview = true },
+    },
+  },
+
+  {
+    "mg979/vim-visual-multi",
+    event = "LazyFile",
+    init = function()
+      vim.g.VM_maps = {
+        ["Find Under"]         = "<C-n>",
+        ["Find Subword Under"] = "<C-n>",
+      }
+    end,
+  },
+
+  {
+    "kevinhwang91/nvim-ufo",
+    dependencies = { "kevinhwang91/promise-async" },
+    event = "LazyFile",
+    opts = {
+      provider_selector = function(bufnr, filetype, buftype)
+        -- 使用 lsp 作为 main，indent 作为 fallback（比 treesitter 更稳定）
+        return { "lsp", "indent" }
+      end,
+    },
+    init = function()
+      vim.o.foldcolumn = "1"
+      vim.o.foldlevel = 99
+      vim.o.foldlevelstart = 99
+      vim.o.foldenable = true
+    end,
+    keys = {
+      { "zR", function() require("ufo").openAllFolds() end,  desc = "Open All Folds" },
+      { "zM", function() require("ufo").closeAllFolds() end, desc = "Close All Folds" },
+      { "zr", function() require("ufo").openFoldsExceptKinds() end, desc = "Open Folds (except kinds)" },
+      { "zm", function() require("ufo").closeFoldsWith() end, desc = "Close Folds" },
+      {
+        "K",
+        function()
+          local winid = require("ufo").peekFoldedLinesUnderCursor()
+          if not winid then
+            vim.lsp.buf.hover()
+          end
+        end,
+        desc = "Hover / Peek Fold",
+      },
+    },
+  },
 }
