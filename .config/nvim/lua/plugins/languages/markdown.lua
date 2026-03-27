@@ -23,7 +23,7 @@ return {
     "MeanderingProgrammer/render-markdown.nvim",
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
-      "nvim-mini/mini.nvim", -- 如果使用 mini.nvim 套件
+      "nvim-mini/mini.nvim",
       -- 'echasnovski/mini.icons' -- 如果使用独立 mini 插件
       -- 'nvim-tree/nvim-web-devicons' -- 如果偏好使用 nvim-web-devicons
     },

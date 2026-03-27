@@ -77,16 +77,19 @@ return {
             },
             { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
             { "filename", symbols = { modified = " ●", readonly = " " } },
-            -- { "buffers" }
+            -- Python venv 指示（仅在 Python 文件中显示）
             {
               function()
-                local file = vim.fn.expand("%:p")
-                if file == "" then
-                  return ""
+                local venv = vim.env.VIRTUAL_ENV or vim.env.CONDA_DEFAULT_ENV
+                if venv then
+                  return "󰌠 " .. vim.fn.fnamemodify(venv, ":t")
                 end
-                local permissions = vim.fn.getfperm(file)
-                return permissions ~= "" and "󰌋 " .. permissions or ""
+                return ""
               end,
+              cond = function()
+                return vim.bo.filetype == "python"
+              end,
+              color = { fg = "#ffbc03" },
             },
           },
           lualine_x = {
@@ -115,12 +118,34 @@ return {
             cond = require("lazy.status").has_updates,
             color = function() return { fg = Snacks.util.color("Special") } end,
           },
+            -- LSP 客户端：1个显示名称，多个显示数量，过滤噪音 LSP
+            {
+              function()
+                local skip = { typos_lsp = true, copilot = true }
+                local clients = vim.tbl_filter(function(c)
+                  return not skip[c.name]
+                end, vim.lsp.get_clients({ bufnr = 0 }))
+                if #clients == 0 then
+                  return ""
+                elseif #clients == 1 then
+                  return " " .. clients[1].name
+                else
+                  return " " .. #clients .. " LSPs"
+                end
+              end,
+              color = { fg = "#2aa198" },
+              cond = function()
+                return next(vim.lsp.get_clients({ bufnr = 0 })) ~= nil
+              end,
+            },
+            -- encoding：仅在非 UTF-8 时显示
             {
               "encoding",
               fmt = string.upper,
               icon = "󰃤",
-              -- green
-              -- color = { fg = "#8ec07c", gui = "bold" },
+              cond = function()
+                return (vim.bo.fenc or vim.o.enc):lower() ~= "utf-8"
+              end,
             },
             {
               "diff",
@@ -140,6 +165,7 @@ return {
                 end
               end,
             },
+            -- fileformat：仅在非 unix 时显示
             {
               "fileformat",
               symbols = {
@@ -147,8 +173,10 @@ return {
                 dos = "",
                 mac = "",
               },
-              -- cyan
-              color = { fg = "#8ec07c", gui = "bold" },
+              color = { fg = "#cb4b16", gui = "bold" },
+              cond = function()
+                return vim.bo.fileformat ~= "unix"
+              end,
             },
           },
           lualine_y = {
@@ -161,7 +189,7 @@ return {
             end,
           },
         },
-        extensions = { "neo-tree", "lazy", "fzf" },
+        extensions = { "lazy", "fzf", "trouble", "toggleterm", "quickfix" },
       }
 
       -- do not add trouble symbols if aerial is enabled
@@ -186,29 +214,6 @@ return {
           })
         end
       end
-      -- 添加 LSP 状态指示器
-      if LazyVim.has("nvim-lspconfig") then
-        table.insert(opts.sections.lualine_x, {
-          function()
-            local clients = vim.lsp.get_clients({ bufnr = 0 })
-            if #clients == 0 then
-              return ""
-            end
-
-            local names = {}
-            for _, client in ipairs(clients) do
-              table.insert(names, client.name)
-            end
-
-            return " " .. table.concat(names, ", ")
-          end,
-          color = { fg = "#8ec07c" },
-          cond = function()
-            return next(vim.lsp.get_clients({ bufnr = 0 })) ~= nil
-          end,
-        })
-      end
-
       return opts
     end,
   },
@@ -281,8 +286,7 @@ return {
     "Bekaboo/dropbar.nvim",
     -- optional, but required for fuzzy finder support
     dependencies = {
-      "nvim-telescope/telescope-fzf-native.nvim",
-      build = "make",
+      { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
     },
     config = function()
       local dropbar_api = require("dropbar.api")
@@ -361,12 +365,6 @@ return {
           return vim.trim(ret)
         end,
         offsets = {
-          {
-            filetype = "neo-tree",
-            text = "Neo-tree",
-            highlight = "Directory",
-            text_align = "left",
-          },
           {
             filetype = "snacks_layout_box",
             text = "File Explorer",

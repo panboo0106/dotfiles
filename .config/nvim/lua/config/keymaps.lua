@@ -29,7 +29,11 @@ map("n", "<leader>tv", function()
 end, { desc = "Vertical Split" })
 
 -- 新标签页终端
-map("n", "<leader>tt", "<cmd>tabnew | terminal<cr>", { desc = "New Tab" })
+map("n", "<leader>tt", function()
+	vim.cmd("tabnew")
+	vim.cmd("terminal")
+	vim.cmd("startinsert")
+end, { desc = "New Tab Terminal" })
 
 -- 右侧终端：切换
 map("n", "<leader>ta", function()

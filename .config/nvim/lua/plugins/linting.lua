@@ -8,11 +8,6 @@ return {
     config = function()
       local lint = require("lint")
       lint.linters_by_ft = {
-        javascript = { "eslint_d" },
-        typescript = { "eslint_d" },
-        javascriptreact = { "eslint_d" },
-        typescriptreact = { "eslint_d" },
-        svelte = { "eslint_d" },
         python = { "vulture" }, -- Ruff + Vulture（互补）
         go = { "golangcilint" },
         -- C/C++ (新增)
@@ -20,27 +15,13 @@ return {
         c = { "clangtidy" },
         objc = { "clangtidy" },
         cuda = { "clangtidy" },
-        -- Shell (已有)
+        -- Shell
+        sh = { "shellcheck" },
+        bash = { "shellcheck" },
         fish = { "fish" },
         -- Java (新增)
         java = { "checkstyle" },
       }
-
-      -- eslint_d 配置（如果安装了的话）
-      if vim.fn.exepath("eslint_d") ~= "" then
-        lint.linters.eslint_d = {
-          cmd = "eslint_d",
-          name = "eslint_d",
-          stdin = true,
-          append_fname = false,
-          args = {},
-          stream = "stdout",
-          ignore_exitcode = true,
-          parser = require("lint.parser").from_errorformat("%f:%l:%c: %m", {
-            source = "eslint_d",
-          }),
-        }
-      end
 
       -- ============ Vulture 配置（Python 死代码检测，新增）============
       -- vulture 配置（检测未使用的函数、类、变量）
@@ -194,7 +175,7 @@ return {
                 config_file = nvim_config
               end
             end
-            return config_file ~= "" and ("--config=" .. config_file) or ""
+            return config_file ~= "" and ("--config=" .. config_file) or nil
           end,
           function()
             return vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":h")
@@ -203,7 +184,7 @@ return {
         stream = "stdout",
         ignore_exitcode = true,
         name = "golangcilint",
-        parser = require("lint.parser").from_errorformat("%f:%l:%c: %t%*[^:]: %m", { source = "another-linter" }),
+        parser = require("lint.parser").from_errorformat("%f:%l:%c: %t%*[^:]: %m", { source = "golangci-lint" }),
       }
 
       vim.api.nvim_create_autocmd({ "BufWritePost", "InsertLeave" }, {

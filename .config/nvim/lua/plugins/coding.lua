@@ -4,10 +4,7 @@ return {
     version = "1.*",
     optional = true,
     dependencies = {
-      "codeium.nvim",
-      "saghen/blink.compat",
-      "L3MON4D3/LuaSnip",
-      version = "v2.*",
+      { "L3MON4D3/LuaSnip", version = "v2.*" },
     },
     opts = {
       snippets = {
@@ -15,14 +12,6 @@ return {
       },
       sources = {
         default = { "lsp", "path", "snippets", "buffer" },
-        compat = { "codeium" },
-        providers = {
-          codeium = {
-            kind = "Codeium",
-            score_offset = 100,
-            async = true,
-          },
-        },
       },
       fuzzy = { implementation = "prefer_rust" },
     },
@@ -32,8 +21,8 @@ return {
     recommended = true,
     config = function()
       -- load mason-nvim-dap here, after all adapters have been setup
-      if LazyVim.has("mason-nvim-dap.nvim") then
-        require("mason-nvim-dap").setup(LazyVim.opts("mason-nvim-dap.nvim"))
+      if LazyVim.has("mason-nvim-dap") then
+        require("mason-nvim-dap").setup({})
       end
 
       vim.api.nvim_set_hl(0, "DapStoppedLine", { default = true, link = "Visual" })
@@ -65,6 +54,52 @@ return {
             "debugpy", -- Python debugger
             "jdtls", -- Java LSP
           },
+        },
+      },
+
+      -- DAP UI（变量、堆栈、断点浮窗）
+      {
+        "rcarriga/nvim-dap-ui",
+        dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
+        keys = {
+          { "<leader>du", function() require("dapui").toggle() end, desc = "DAP UI Toggle" },
+          { "<leader>de", function() require("dapui").eval() end, mode = { "n", "v" }, desc = "DAP Eval" },
+        },
+        config = function()
+          local dap, dapui = require("dap"), require("dapui")
+          dapui.setup()
+          -- 开始/终止调试时自动打开/关闭 UI
+          dap.listeners.after.event_initialized["dapui_config"] = function() dapui.open() end
+          dap.listeners.before.event_terminated["dapui_config"] = function() dapui.close() end
+          dap.listeners.before.event_exited["dapui_config"] = function() dapui.close() end
+        end,
+      },
+
+      -- 调试时行内显示变量值
+      {
+        "theHamsta/nvim-dap-virtual-text",
+        dependencies = { "mfussenegger/nvim-dap", "nvim-treesitter/nvim-treesitter" },
+        opts = {
+          enabled = true,
+          enabled_commands = true,
+          highlight_changed_variables = true,
+          highlight_new_as_changed = false,
+          show_stop_reason = true,
+          commented = false,
+          virt_text_pos = "eol",
+          all_frames = false,
+          virt_lines = false,
+          virt_text_win_col = nil,
+        },
+      },
+
+      -- mason-nvim-dap：coding.lua 中已引用，补充安装
+      {
+        "jay-babu/mason-nvim-dap.nvim",
+        dependencies = { "mason-org/mason.nvim", "mfussenegger/nvim-dap" },
+        opts = {
+          ensure_installed = {},
+          automatic_installation = true,
         },
       },
 
@@ -348,30 +383,7 @@ return {
             },
           }
 
-          -- Java test debug configurations
-          dap.adapters.java = function(callback, config)
-            local jdtls = require("jdtls")
-            jdtls.start_or_attach({
-              cmd = { vim.fn.exepath("jdtls") },
-              root_dir = vim.fs.root(0, { ".git", "mvnw", "gradlew" }),
-              settings = {
-                java = {
-                  configuration = {
-                    runTestsOnBuild = false,
-                  },
-                },
-              },
-            })
-            callback({
-              type = "server",
-              host = "127.0.0.1",
-              port = 5005,
-              enrich_config = function(config, on_config)
-                local jdtls = require("jdtls")
-                jdtls.setup_dap_main_class_configs(config, on_config)
-              end,
-            })
-          end
+          -- Java DAP adapter 由 nvim-jdtls 的 setup_dap() 在 on_attach 中注册，此处无需重复定义
         end,
       },
     },
@@ -495,9 +507,9 @@ return {
   {
     "L3MON4D3/LuaSnip",
     lazy = true,
-    build = (not LazyVim.is_win())
-        and "echo 'NOTE: jsregexp is optional, so not a big deal if it fails to build'; make install_jsregexp"
-      or nil,
+    build = LazyVim.is_win()
+      and nil
+      or "echo 'NOTE: jsregexp is optional, so not a big deal if it fails to build'; make install_jsregexp",
     dependencies = {
       {
         "rafamadriz/friendly-snippets",
@@ -508,7 +520,6 @@ return {
       },
     },
     opts = function()
-      -- LazyVim snippet actions
       LazyVim.cmp.actions.snippet_forward = function()
         if require("luasnip").jumpable(1) then
           vim.schedule(function()
@@ -541,6 +552,7 @@ return {
       "nvim-neotest/neotest-python",
       "nvim-neotest/neotest-go",
       "rcasia/neotest-java",
+      "mrcjkb/rustaceanvim", -- neotest-rust 由 rustaceanvim 内置提供
     },
 
     opts = {
@@ -566,10 +578,12 @@ return {
 
         -- Java 适配器
         ["neotest-java"] = {
-          -- 自动下载 JUnit jar
           junit_jar = nil,
           incremental_build = true,
         },
+
+        -- Rust 适配器（rustaceanvim 内置）
+        ["rustaceanvim.neotest"] = {},
       },
 
       -- 状态配置
@@ -764,13 +778,7 @@ return {
       {
         "<leader>p",
         function()
-          if LazyVim.pick.picker.name == "telescope" then
-            require("telescope").extensions.yank_history.yank_history({})
-          elseif LazyVim.pick.picker.name == "snacks" then
-            Snacks.picker.yanky()
-          else
-            vim.cmd([[YankyRingHistory]])
-          end
+          Snacks.picker.yanky()
         end,
         mode = { "n", "x" },
         desc = "Open Yank History",
@@ -793,6 +801,16 @@ return {
       { "<P", "<Plug>(YankyPutIndentBeforeShiftLeft)", desc = "Put Before and Indent Left" },
       { "=p", "<Plug>(YankyPutAfterFilter)", desc = "Put After Applying a Filter" },
       { "=P", "<Plug>(YankyPutBeforeFilter)", desc = "Put Before Applying a Filter" },
+    },
+  },
+  {
+    "danymat/neogen",
+    cmd = "Neogen",
+    keys = {
+      { "<leader>cn", function() require("neogen").generate() end, desc = "Generate Annotations" },
+    },
+    opts = {
+      snippet_engine = "luasnip",
     },
   },
 }

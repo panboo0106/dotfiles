@@ -10,7 +10,6 @@ return {
       ensure_installed = {
         -- Lua
         "stylua",
-        "luacheck",
 
         -- Go
         "golangci-lint",
@@ -42,8 +41,23 @@ return {
         "clangd", -- Clang LSP（包含 clang-tidy 功能）
         -- 注意：clang-format 需要手动安装
 
+        -- Rust
+        "rust-analyzer",
+        "codelldb", -- Rust debugger
+
         -- Java Linter
         "checkstyle",
+
+        -- Shell LSP
+        "bash-language-server",
+
+        -- JavaScript/TypeScript debugger
+        "js-debug-adapter",
+
+        -- 格式化工具
+        "sql-formatter",
+        "buf",
+        "taplo",
 
         -- 其他
         "typos-lsp",
@@ -73,9 +87,9 @@ return {
         signs = {
           text = {
             [vim.diagnostic.severity.ERROR] = LazyVim.config.icons.diagnostics.Error,
-            [vim.diagnostic.severity.WARN] = LazyVim.config.icons.diagnostics.Warn,
-            [vim.diagnostic.severity.HINT] = LazyVim.config.icons.diagnostics.Hint,
-            [vim.diagnostic.severity.INFO] = LazyVim.config.icons.diagnostics.Info,
+            [vim.diagnostic.severity.WARN]  = LazyVim.config.icons.diagnostics.Warn,
+            [vim.diagnostic.severity.HINT]  = LazyVim.config.icons.diagnostics.Hint,
+            [vim.diagnostic.severity.INFO]  = LazyVim.config.icons.diagnostics.Info,
           },
         },
       },
@@ -154,7 +168,16 @@ return {
         },
 
         -- ============ Shell ============
-        -- Shell 没有 LSP，只使用 linter 和 formatter
+        bashls = {
+          settings = {
+            bashIde = {
+              globPattern = "*@(.sh|.inc|.bash|.command)",
+            },
+          },
+        },
+
+        -- ============ Rust (managed by rustaceanvim) ============
+        rust_analyzer = false,
 
         -- ============ Lua ============
         lua_ls = {
