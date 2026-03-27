@@ -98,7 +98,7 @@ install_shell_tools() {
         sudo apt-get install -y shellcheck
 
         # shfmt 需要从 GitHub 安装
-        SHFMT_VERSION="v3.6.0"
+        SHFMT_VERSION="v3.9.0"
         wget https://github.com/mvdan/sh/releases/download/$SHFMT_VERSION/shfmt_${SHFMT_VERSION}_linux_amd64 -O shfmt
         chmod +x shfmt
         sudo mv shfmt /usr/local/bin/
@@ -112,20 +112,20 @@ install_shell_tools() {
 install_python_tools() {
     echo ""
     echo -e "${BLUE}===================================="
-    echo "  安装 Python 工具 (Ruff + Pylint)"
+    echo "  安装 Python 工具 (Ruff + Vulture)"
     echo -e "====================================${NC}"
 
     if command -v python3 >/dev/null 2>&1; then
-        pip3 install --user ruff pylint
+        pip3 install --user ruff vulture
     elif command -v python >/dev/null 2>&1; then
-        pip install --user ruff pylint
+        pip install --user ruff vulture
     else
         echo -e "${YELLOW}⚠️  Python 未安装，跳过${NC}"
         return
     fi
 
     echo -e "${GREEN}✓ Ruff 安装完成${NC}"
-    echo -e "${GREEN}✓ Pylint 安装完成${NC}"
+    echo -e "${GREEN}✓ Vulture 安装完成${NC}"
 }
 
 # ============ 安装 Go 工具 ============
@@ -216,10 +216,10 @@ verify_installation() {
         tools_ok=false
     fi
 
-    if command -v pylint >/dev/null 2>&1; then
-        echo -e "${GREEN}✓${NC} Pylint"
+    if command -v vulture >/dev/null 2>&1; then
+        echo -e "${GREEN}✓${NC} Vulture"
     else
-        echo -e "${RED}✗${NC} Pylint"
+        echo -e "${RED}✗${NC} Vulture"
         tools_ok=false
     fi
 

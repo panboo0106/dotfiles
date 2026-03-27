@@ -113,15 +113,6 @@ return {
         end
 
         -- 添加 Java Test JAR 文件 (仅在存在时)
-        if java_debug_exists then
-          local java_debug_bundle =
-            vim.fn.glob(java_debug_path .. "/extension/server/com.microsoft.java.debug.plugin-*.jar", true)
-          if java_debug_bundle ~= "" then
-            table.insert(bundles, java_debug_bundle)
-          end
-        end
-
-        -- 添加 Java Test JAR 文件 (仅在存在时)
         if java_test_exists then
           local java_test_bundles = vim.split(vim.fn.glob(java_test_path .. "/extension/server/*.jar", true), "\n")
           for _, bundle in ipairs(java_test_bundles) do
@@ -523,19 +514,15 @@ return {
                 icon = { color = "blue", icon = "" },
               },
               {
-                "<leader>jc",
+                "<leader>jb",
                 "<cmd>lua require('jdtls').compile('full')<cr>",
                 desc = "Full Compile",
                 icon = { color = "orange", icon = "" },
               },
             }, { buffer = bufnr })
             -- DAP配置（如果安装了nvim-dap）
-            if vim.fn.exists("nvim-dap") ~= 0 then
-              -- 在这里添加DAP相关配置
-              local dap = require("dap")
-
-              -- 添加Java调试配置
-              -- ...
+            if pcall(require, "dap") then
+              require("jdtls").setup_dap({ hotcodereplace = "auto" })
             end
           end,
         }

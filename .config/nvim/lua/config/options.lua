@@ -8,14 +8,22 @@ vim.opt.shell = "zsh"
 vim.opt.spell = false
 -- 设置 Ruff 全局配置文件路径
 vim.env.RUFF_CONFIG = vim.fn.stdpath("config") .. "/ruff.toml"
-vim.g.lazyvim_python_lsp = "ruff"
-vim.g.lazyvim_python_ruff = "ruff"
 vim.g.build_cmd = "make"
--- 动态获取 Node 和 Go 路径
-local node_bin = os.getenv("NVM_BIN") -- NVM 会设置这个环境变量
-  or vim.fn.exepath("node"):match("(.+)/node$") -- 或者从当前 PATH 中查找
-  or vim.fn.expand("~/.nvm/versions/node/default/bin") -- 回退到默认
-vim.env.PATH = node_bin .. ":" .. vim.fn.expand("$HOME/.g/go/bin") .. ":" .. vim.env.PATH
+-- 动态获取 Node 和 Go 路径，追加到 PATH
+local node_bin = os.getenv("NVM_BIN")
+  or (vim.fn.exepath("node") ~= "" and vim.fn.exepath("node"):match("(.+)/node$") or nil)
+  or vim.fn.expand("~/.nvm/versions/node/default/bin")
+local go_bin = vim.fn.expand("$HOME/.g/go/bin")
+local extra_paths = {}
+if node_bin and node_bin ~= "" then
+  table.insert(extra_paths, node_bin)
+end
+if vim.fn.isdirectory(go_bin) == 1 then
+  table.insert(extra_paths, go_bin)
+end
+if #extra_paths > 0 then
+  vim.env.PATH = table.concat(extra_paths, ":") .. ":" .. vim.env.PATH
+end
 vim.filetype.add({
   pattern = {
     [".*/templates/.*%.yaml"] = "helm",

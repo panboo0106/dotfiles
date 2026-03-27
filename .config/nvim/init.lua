@@ -22,7 +22,7 @@ if vim.g.vscode then
 
   -- 加载 VS Code 专用配置
   local vscode_config = vim.fn.stdpath("config") .. "/lua/config/vscode.lua"
-  if vim.loop.fs_stat(vscode_config) then
+  if (vim.uv or vim.loop).fs_stat(vscode_config) then
     require("config.vscode")
   else
     vim.notify("VS Code config not found at: " .. vscode_config, vim.log.levels.WARN)

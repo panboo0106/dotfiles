@@ -59,7 +59,6 @@ return {
           before = { "#include <bits/stdc++.h>", "using namespace std;" },
           after = "int main() {}",
         },
-        before = true,
         ["golang"] = {
           before = { "package main" },
           after = "func main() {}",
@@ -372,17 +371,30 @@ return {
 
       -- 监听 Git 状态变化后刷新 explorer（explorer 本身已有 watch=true 监听文件变化）
       local group = vim.api.nvim_create_augroup("SnacksExplorerGitRefresh", { clear = true })
+      local function refresh_explorer()
+        vim.defer_fn(function()
+          if Snacks.explorer and Snacks.explorer.refresh then
+            Snacks.explorer.refresh()
+          end
+        end, 50)
+      end
       vim.api.nvim_create_autocmd("User", {
         group = group,
         pattern = { "GitSignsUpdate", "GitSignsChanged" },
-        callback = function()
-          vim.defer_fn(function()
-            if Snacks.explorer and Snacks.explorer.refresh then
-              Snacks.explorer.refresh()
-            end
-          end, 50)
-        end,
+        callback = refresh_explorer,
         desc = "Refresh explorer after git signs update",
+      })
+      -- 切回 nvim 焦点时刷新（外部 git 操作后最关键的触发器）
+      vim.api.nvim_create_autocmd("FocusGained", {
+        group = group,
+        callback = refresh_explorer,
+        desc = "Refresh explorer git status on focus",
+      })
+      -- 保存文件后刷新
+      vim.api.nvim_create_autocmd("BufWritePost", {
+        group = group,
+        callback = refresh_explorer,
+        desc = "Refresh explorer git status after write",
       })
     end,
   },
@@ -460,5 +472,46 @@ return {
         email = "leo.minorui@gmail.com",
       })
     end,
+  },
+  {
+    "stevearc/overseer.nvim",
+    cmd = { "OverseerOpen", "OverseerClose", "OverseerToggle", "OverseerRun", "OverseerTaskAction" },
+    keys = {
+      { "<leader>ow", "<cmd>OverseerToggle!<cr>",    desc = "Task list" },
+      { "<leader>oo", "<cmd>OverseerRun<cr>",         desc = "Run task" },
+      { "<leader>ot", "<cmd>OverseerTaskAction<cr>",  desc = "Task action" },
+    },
+    opts = {
+      dap = false,
+      task_list = {
+        keymaps = {
+          ["<C-j>"] = false,
+          ["<C-k>"] = false,
+        },
+      },
+      form     = { win_opts = { winblend = 0 } },
+      task_win = { win_opts = { winblend = 0 } },
+    },
+    config = function(_, opts)
+      require("overseer").setup(opts)
+      require("overseer").enable_dap()
+    end,
+  },
+  {
+    "nvim-neotest/neotest",
+    optional = true,
+    opts = function(_, opts)
+      opts.consumers = opts.consumers or {}
+      opts.consumers.overseer = require("neotest.consumers.overseer")
+    end,
+  },
+  {
+    "folke/which-key.nvim",
+    optional = true,
+    opts = {
+      spec = {
+        { "<leader>o", group = "overseer", icon = { icon = "󰑮", color = "orange" } },
+      },
+    },
   },
 }

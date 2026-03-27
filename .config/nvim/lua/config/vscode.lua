@@ -247,8 +247,8 @@ keymap("n", "<C-S-g>", action("workbench.view.scm"), { desc = "Source control" }
 
 -- ==================== 特殊功能 ====================
 
--- 多光标（使用 VS Code 原生功能）
-keymap("n", "<C-d>", action("editor.action.addSelectionToNextFindMatch"), { desc = "Add selection to next match" })
+-- 多光标（使用 VS Code 原生功能，在 Visual 模式下使用）
+keymap("v", "<C-d>", action("editor.action.addSelectionToNextFindMatch"), { desc = "Add selection to next match" })
 
 -- 快速打开
 keymap("n", "<C-p>", action("workbench.action.quickOpen"), { desc = "Quick open" })
@@ -297,7 +297,3 @@ vim.api.nvim_create_autocmd("FileType", {
 
 -- ==================== 通知用户配置已加载 ====================
 vim.notify("VS Code Neovim configuration loaded", vim.log.levels.INFO)
-
-print("✓ VS Code Neovim configuration loaded successfully")
-print("Leader key: <Space>")
-print("Use <Space> to see available commands via WhichKey")

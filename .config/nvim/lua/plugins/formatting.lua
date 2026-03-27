@@ -54,8 +54,8 @@ return {
 
       -- 新增文件类型
       toml = { "taplo" },
-      xml = { "xmlformat" },
-      sql = { "sqlfmt" },
+      xml = { "prettier" },
+      sql = { "sql_formatter" },
       proto = { "buf" },
     },
 
@@ -67,8 +67,6 @@ return {
           "-rm-unused",
           "-set-alias",
           "-format",
-          "-company-prefixes",
-          "sangfor.com/xdr",
           "$FILENAME",
         },
         stdin = false,
