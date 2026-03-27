@@ -813,4 +813,22 @@ return {
       snippet_engine = "luasnip",
     },
   },
+
+  {
+    "andythigpen/nvim-coverage",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    cmd = { "Coverage", "CoverageLoad", "CoverageShow", "CoverageHide", "CoverageToggle", "CoverageSummary" },
+    keys = {
+      { "<leader>TC",  "<cmd>CoverageToggle<cr>",  desc = "Coverage Toggle" },
+      { "<leader>TV",  "<cmd>CoverageSummary<cr>", desc = "Coverage Summary" },
+      { "<leader>TCl", "<cmd>CoverageLoad<cr>",    desc = "Coverage Load" },
+    },
+    opts = {
+      auto_reload = true,
+      lang = {
+        python = { coverage_file = ".coverage" },
+        go     = { coverage_file = "coverage.out" },
+      },
+    },
+  },
 }
