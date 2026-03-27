@@ -1,0 +1,30 @@
+# This is Git's per-user configuration file.
+[user]
+# Please adapt and uncomment the following lines:
+name = panboo
+email = leo.minorui@gmail.com
+
+[core]
+pager = delta
+editor = nvim
+
+[interactive]
+diffFilter = delta --color-only
+
+[delta]
+navigate = true
+side-by-side = true
+line-numbers = true
+syntax-theme = Dracula
+
+[diff]
+colorMoved = default
+
+[merge]
+conflictstyle = zdiff3
+
+[alias]
+st = status -sb
+co = checkout
+br = branch
+lg = log --oneline --graph --all

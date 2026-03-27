@@ -85,9 +85,13 @@ Library/
 Desktop/
 OrbStack/
 Google\ Drive/
+*Google*Drive*/
+*GoogleDrive*/
+*-GoogleDrive/
 go/
 alma/
 dev/
+.bytertc/
 
 # =============================================================================
 # Private Config
