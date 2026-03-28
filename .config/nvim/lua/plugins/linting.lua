@@ -7,8 +7,10 @@ return {
     },
     config = function()
       local lint = require("lint")
+      local mason_bin = vim.fn.stdpath("data") .. "/mason/bin/vulture"
+      local has_vulture = vim.fn.exepath("vulture") ~= "" or vim.fn.executable(mason_bin) == 1
       lint.linters_by_ft = {
-        python = { "vulture" }, -- Ruff + Vulture（互补）
+        python = has_vulture and { "vulture" } or {},
         go = { "golangcilint" },
         -- C/C++ (新增)
         cpp = { "clangtidy" },
@@ -25,9 +27,9 @@ return {
 
       -- ============ Vulture 配置（Python 死代码检测，新增）============
       -- vulture 配置（检测未使用的函数、类、变量）
-      if vim.fn.exepath("vulture") ~= "" then
+      if has_vulture then
         lint.linters.vulture = {
-          cmd = "vulture",
+          cmd = vim.fn.exepath("vulture") ~= "" and vim.fn.exepath("vulture") or mason_bin,
           name = "vulture",
           stdin = false,
           append_fname = true,

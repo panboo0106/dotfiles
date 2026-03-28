@@ -21,7 +21,8 @@ return {
   },
   {
     "nvim-lualine/lualine.nvim",
-    event = "VeryLazy",
+    enabled = true,
+    lazy = false,
     priority = 1000,
     dependencies = { "folke/snacks.nvim" },
     init = function()

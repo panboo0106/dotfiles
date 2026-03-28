@@ -1,8 +1,10 @@
 return {
+  -- 禁用 LazyVim 默认的 nvim-cmp，使用 blink.cmp
+  { "hrsh7th/nvim-cmp", enabled = false },
   {
     "saghen/blink.cmp",
     version = "1.*",
-    optional = true,
+    event = "InsertEnter",
     dependencies = {
       { "L3MON4D3/LuaSnip", version = "v2.*" },
     },

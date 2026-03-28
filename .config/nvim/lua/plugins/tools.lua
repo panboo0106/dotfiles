@@ -187,13 +187,6 @@ return {
         margin = { top = 0, right = 1, bottom = 0 },
         padding = true,
         sort = { "level", "added" },
-        -- 保留通知历史
-        history = {
-          -- 最大保存的通知数量
-          max = 128,
-          -- 是否在关闭时保留历史
-          keep_closed = true,
-        },
         style = "compact",
       },
       explorer = {
@@ -361,10 +354,7 @@ return {
         desc = "Refresh Explorer",
       },
     },
-    config = function(_, opts)
-      -- 设置 snacks 选项
-      require("snacks").setup(opts)
-
+    init = function()
       -- 监听 Git 状态变化后刷新 explorer（explorer 本身已有 watch=true 监听文件变化）
       local group = vim.api.nvim_create_augroup("SnacksExplorerGitRefresh", { clear = true })
       local function refresh_explorer()
