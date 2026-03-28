@@ -94,7 +94,7 @@ return {
       },
       ruff_format = {
         command = "ruff",
-        args = { "format", "--config=~/.config/nvim/ruff.toml", "--stdin-filename", "$FILENAME", "-" },
+        args = { "format", "--config=" .. vim.fn.expand("~/.config/nvim/ruff.toml"), "--stdin-filename", "$FILENAME", "-" },
         stdin = true,
       },
       yamlfmt = {

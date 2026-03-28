@@ -246,14 +246,6 @@ return {
           end
         end,
 
-        view_opened = function(view)
-          -- 视图打开时的处理
-        end,
-
-        view_closed = function(view)
-          -- 视图关闭时的处理
-        end,
-
         view_entered = function(view)
           -- 进入视图时自动聚焦到文件面板
           if view.panel then

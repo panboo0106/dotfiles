@@ -29,9 +29,6 @@ return {
             args = { js_debug, "${port}" },
           },
         }
-      end
-
-      for _, lang in ipairs({ "javascript", "typescript", "javascriptreact", "typescriptreact" }) do
         dap.configurations[lang] = {
           {
             type = lang,

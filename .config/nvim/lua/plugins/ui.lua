@@ -375,7 +375,7 @@ return {
   },
 
   {
-    "norcalli/nvim-colorizer.lua",
+    "NvChad/nvim-colorizer.lua",
     event = "LazyFile",
     opts = {
       "*",

@@ -72,7 +72,6 @@ return {
           append_fname = true,
           args = {
             "--config-file=" .. vim.fn.stdpath("config") .. "/.clang-tidy",
-            "--background-index",
           },
           stream = "stdout",
           ignore_exitcode = true,
@@ -187,7 +186,7 @@ return {
         parser = require("lint.parser").from_errorformat("%f:%l:%c: %t%*[^:]: %m", { source = "golangci-lint" }),
       }
 
-      vim.api.nvim_create_autocmd({ "BufWritePost", "InsertLeave" }, {
+      vim.api.nvim_create_autocmd({ "BufWritePost" }, {
         group = lint_augroup,
         callback = function()
           lint.try_lint()

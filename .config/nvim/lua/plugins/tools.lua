@@ -18,14 +18,10 @@ return {
     "kawre/leetcode.nvim",
     build = ":TSUpdate html",
     dependencies = {
-      "nvim-telescope/telescope.nvim",
-      "nvim-lua/plenary.nvim", -- required by telescope
+      "nvim-lua/plenary.nvim",
       "MunifTanjim/nui.nvim",
-
-      -- optional
       "nvim-treesitter/nvim-treesitter",
       "folke/noice.nvim",
-      "nvim-tree/nvim-web-devicons",
     },
     opts = {
       ---@type string
@@ -494,7 +490,6 @@ return {
     },
     config = function(_, opts)
       require("overseer").setup(opts)
-      require("overseer").enable_dap()
     end,
   },
   {
