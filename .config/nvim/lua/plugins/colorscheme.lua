@@ -88,7 +88,7 @@ return {
 
       vim.api.nvim_create_user_command("ToggleSolarized", function()
         vim.o.background = vim.o.background == "dark" and "light" or "dark"
-        print("Background: " .. vim.o.background)
+        vim.notify("Background: " .. vim.o.background, vim.log.levels.INFO)
       end, {})
     end,
   },

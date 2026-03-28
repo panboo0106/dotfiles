@@ -10,9 +10,10 @@ vim.opt.spell = false
 vim.env.RUFF_CONFIG = vim.fn.stdpath("config") .. "/ruff.toml"
 vim.g.build_cmd = "make"
 -- 动态获取 Node 和 Go 路径，追加到 PATH
+local _nvm_default = vim.fn.expand("~/.nvm/versions/node/default/bin")
 local node_bin = os.getenv("NVM_BIN")
   or (vim.fn.exepath("node") ~= "" and vim.fn.exepath("node"):match("(.+)/node$") or nil)
-  or vim.fn.expand("~/.nvm/versions/node/default/bin")
+  or (vim.fn.isdirectory(_nvm_default) == 1 and _nvm_default or nil)
 local go_bin = vim.fn.expand("$HOME/.g/go/bin")
 local extra_paths = {}
 if node_bin and node_bin ~= "" then

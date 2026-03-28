@@ -52,9 +52,6 @@ return {
         end
 
         local root_dir = find_java_project_root()
-        -- 找到项目根目录
-        local root_markers = { "gradlew", "mvnw", ".git", "pom.xml", "build.gradle" }
-        -- local root_dir = jdtls_setup.find_root(root_markers) or vim.fn.getcwd()
 
         -- 工作空间目录
         local project_name = vim.fn.fnamemodify(root_dir, ":p:h:t")
@@ -88,21 +85,6 @@ return {
             vim.log.levels.WARN
           )
         end
-        -- 定期清理工作空间
-        local function cleanup_jdtls_workspace()
-          local workspace_base = vim.fn.expand("~/.cache/jdtls/workspace/")
-          -- 清理旧的日志文件
-          vim.fn.system("find " .. workspace_base .. ' -name "*.log" -delete 2>/dev/null')
-          -- 清理超过7天的临时文件
-          vim.fn.system("find " .. workspace_base .. " -type f -mtime +7 -delete 2>/dev/null")
-        end
-
-        -- 启动时清理
-        vim.api.nvim_create_autocmd("VimEnter", {
-          callback = cleanup_jdtls_workspace,
-          once = true,
-        })
-
         -- 添加 Java Debug JAR (仅在存在时)
         if java_debug_exists then
           local java_debug_bundle =
@@ -300,7 +282,7 @@ return {
               format = {
                 enabled = true,
                 settings = {
-                  url = "~/.config/nvim/apex-formatter.xml",
+                  url = vim.fn.expand("~/.config/nvim/apex-formatter.xml"),
                 },
               },
               saveActions = { -- 添加：保存时操作
@@ -407,9 +389,6 @@ return {
 
           -- 按键映射和其他附加功能
           on_attach = function(client, bufnr)
-            -- 添加代码操作和调试支持
-            local opts = { noremap = true, silent = true, buffer = bufnr }
-
             require("which-key").add({
               { "<leader>j", group = "Java", icon = "☕" },
 

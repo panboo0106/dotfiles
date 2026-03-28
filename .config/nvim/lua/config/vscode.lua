@@ -101,12 +101,10 @@ keymap("n", "<leader>nh", "<cmd>noh<CR>", { noremap = true, silent = true, desc 
 
 -- 保存文件
 keymap("n", "<C-s>", action("workbench.action.files.save"), { desc = "Save file" })
-keymap(
-  "i",
-  "<C-s>",
-  "<Esc><cmd>lua require('vscode-neovim').call('workbench.action.files.save')<CR>",
-  { desc = "Save file" }
-)
+keymap("i", "<C-s>", function()
+  vim.cmd("stopinsert")
+  call_vscode("workbench.action.files.save")
+end, { desc = "Save file" })
 
 -- ==================== Leader 键绑定（配合 WhichKey） ====================
 
@@ -295,5 +293,3 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- ==================== 通知用户配置已加载 ====================
-vim.notify("VS Code Neovim configuration loaded", vim.log.levels.INFO)

@@ -149,20 +149,16 @@ return {
           keys = {
             { "<leader>cR", "<cmd>ClangdReset<cr>", desc = "Clangd Reset" },
           },
-          settings = {
-            clangd = {
-              -- 使用已创建的 .clang-tidy 配置
-              arguments = {
-                "--config-file=" .. vim.fn.stdpath("config") .. "/.clang-tidy",
-                "--header-insertion=never",
-                "--completion-style=detailed",
-                "--background-index",
-                "--clang-tidy",
-              },
-              -- 使用已创建的 .clang-format 配置
-              fallback_flags = {
-                "--style=file:" .. vim.fn.stdpath("config") .. "/.clang-format",
-              },
+          cmd = {
+            "clangd",
+            "--header-insertion=never",
+            "--completion-style=detailed",
+            "--background-index",
+            "--clang-tidy",
+          },
+          init_options = {
+            fallback_flags = {
+              "--style=file:" .. vim.fn.stdpath("config") .. "/.clang-format",
             },
           },
         },
@@ -293,7 +289,7 @@ return {
         typos_lsp = {
           enabled = true,
           init_options = {
-            config = "~/.config/nvim/typos.toml",
+            config = vim.fn.expand("~/.config/nvim/typos.toml"),
             diagnosticSeverity = "Info",
           },
         },
