@@ -44,22 +44,7 @@ export PATH="$HOME/go/bin:$PATH"
 # Local bin - only if exists
 [ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
 
-# Conda
-__conda_setup="$('/opt/homebrew/Caskroom/miniconda/base/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh" ]; then
-        . "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh"
-    else
-        export PATH="/opt/homebrew/Caskroom/miniconda/base/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-
 # Additional PATH entries
-export PATH="$PATH:/Users/leo/Library/Application Support/JetBrains/Toolbox/scripts"
-export PATH="/Users/leo/.codeium/windsurf/bin:$PATH"
 
 # ============================================
 # Oh-My-Zsh Configuration

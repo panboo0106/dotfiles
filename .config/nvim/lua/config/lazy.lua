@@ -38,6 +38,8 @@ require("lazy").setup({
     { import = "lazyvim.plugins.extras.lang.typescript" },
     { import = "lazyvim.plugins.extras.lang.json" },
     { import = "lazyvim.plugins.extras.lang.git" },
+    -- 禁用 LazyVim 默认的 lualine，使用自定义配置
+    { "nvim-lualine/lualine.nvim", enabled = false },
     -- import/override with your plugins
     { import = "plugins" },
   },

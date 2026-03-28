@@ -234,22 +234,26 @@ return {
         },
 
         -- ============ Python ============
-        -- Pyright 配置（类型检查）
+        -- Pyright 配置（只负责类型检查，linting 交给 Ruff）
         pyright = {
           settings = {
+            pyright = {
+              -- 禁用 import 整理，由 Ruff 负责
+              disableOrganizeImports = true,
+            },
             python = {
               analysis = {
                 autoSearchPaths = true,
-                diagnosticMode = "workspace",
+                -- 只分析当前打开的文件，减少后台分析压力
+                diagnosticMode = "openFilesOnly",
                 useLibraryCodeForTypes = true,
-                typeCheckingMode = "basic", -- 或 "strict"
-                -- Pyright 只能检测变量和参数，不能检测未使用函数
+                typeCheckingMode = "basic",
+                -- 关闭与 Ruff 重叠的 lint 规则，只保留类型检查
                 diagnosticSeverityOverrides = {
-                  reportUnusedVariable = "warning",
-                  reportUnusedImport = "warning",
-                  reportUnusedParameter = "warning",
-                  reportUnusedCallResult = "warning",
-                  -- 注意：Pyright 没有 reportUnusedFunction 选项
+                  reportUnusedImport = "none",
+                  reportUnusedVariable = "none",
+                  reportUnusedParameter = "none",
+                  reportUnusedCallResult = "none",
                 },
               },
             },
