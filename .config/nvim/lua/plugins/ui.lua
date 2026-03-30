@@ -52,6 +52,11 @@ return {
           theme = "auto",
           globalstatus = vim.o.laststatus == 3,
           disabled_filetypes = { statusline = { "dashboard", "alpha", "ministarter", "snacks_dashboard" } },
+          refresh = {
+            statusline = 1000,
+            tabline = 1000,
+            winbar = 1000,
+          },
         },
         sections = {
           lualine_a = {
@@ -191,9 +196,12 @@ return {
             { "location", padding = { left = 0, right = 1 } },
           },
           lualine_z = {
-            function()
-              return " " .. os.date("%R")
-            end,
+            {
+              function()
+                return " " .. os.date("%R")
+              end,
+              refresh = 60000,
+            },
           },
         },
         extensions = { "lazy", "fzf", "trouble", "toggleterm", "quickfix" },
