@@ -4,6 +4,9 @@
 # Inserts a blank line between shell prompts
 add_newline = true
 
+# 全局命令超时，防止慢命令阻塞 prompt（单位 ms，默认 500）
+command_timeout = 2000
+
 # Replace the '❯' symbol in the prompt with '➜'
 [character] # The name of the module we are configuring is 'character'
 success_symbol = '[➜](bold green)' # The 'success_symbol' segment is being set to '➜' with the color 'bold green'
@@ -172,3 +175,28 @@ symbol = " "
 [zig]
 symbol = " "
 
+
+# ── 大仓库性能优化 ────────────────────────────────────────────────
+
+[git_status]
+# 大仓库优化：300ms 超时，超时后跳过显示不阻塞 prompt
+scan_timeout = 300
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+untracked = "?${count}"
+stashed = "${count}"
+modified = "!${count}"
+staged = "+${count}"
+renamed = "»${count}"
+deleted = "✘${count}"
+# 极大仓库可直接禁用：
+# disabled = true
+
+[git_metrics]
+# 执行 git diff --stat，大仓库非常慢，显式关闭（默认已禁用）
+disabled = true
+
+[git_commit]
+# 只在 detached HEAD 时显示 commit hash，减少不必要的 git 调用
+only_detached = true
