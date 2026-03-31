@@ -180,7 +180,6 @@ symbol = " "
 
 [git_status]
 # 大仓库优化：300ms 超时，超时后跳过显示不阻塞 prompt
-scan_timeout = 300
 ahead = "⇡${count}"
 behind = "⇣${count}"
 diverged = "⇕⇡${ahead_count}⇣${behind_count}"
