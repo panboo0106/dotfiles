@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>Label</key>
-	<string>io.sing-box</string>
+	<string>homebrew.mxcl.sing-box</string>
 	<key>ProgramArguments</key>
 	<array>
 		<string>/opt/homebrew/opt/sing-box/bin/sing-box</string>
