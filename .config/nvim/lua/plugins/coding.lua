@@ -16,6 +16,40 @@ return {
         default = { "lsp", "path", "snippets", "buffer" },
       },
       fuzzy = { implementation = "prefer_rust" },
+      keymap = {
+        ["<Tab>"] = {
+          function(cmp)
+            if cmp.snippet_active() then
+              return cmp.accept()
+            end
+          end,
+          function()
+            local luasnip = require("luasnip")
+            if luasnip.locally_jumpable(1) then
+              luasnip.jump(1)
+              return true
+            end
+          end,
+          "fallback",
+        },
+        ["<S-Tab>"] = {
+          function()
+            local luasnip = require("luasnip")
+            if luasnip.locally_jumpable(-1) then
+              luasnip.jump(-1)
+              return true
+            end
+          end,
+          "fallback",
+        },
+      },
+    },
+  },
+  {
+    "kawre/neotab.nvim",
+    event = "InsertEnter",
+    opts = {
+      act_as_tab = true,
     },
   },
   {
@@ -64,16 +98,35 @@ return {
         "rcarriga/nvim-dap-ui",
         dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
         keys = {
-          { "<leader>du", function() require("dapui").toggle() end, desc = "DAP UI Toggle" },
-          { "<leader>de", function() require("dapui").eval() end, mode = { "n", "v" }, desc = "DAP Eval" },
+          {
+            "<leader>du",
+            function()
+              require("dapui").toggle()
+            end,
+            desc = "DAP UI Toggle",
+          },
+          {
+            "<leader>de",
+            function()
+              require("dapui").eval()
+            end,
+            mode = { "n", "v" },
+            desc = "DAP Eval",
+          },
         },
         config = function()
           local dap, dapui = require("dap"), require("dapui")
           dapui.setup()
           -- 开始/终止调试时自动打开/关闭 UI
-          dap.listeners.after.event_initialized["dapui_config"] = function() dapui.open() end
-          dap.listeners.before.event_terminated["dapui_config"] = function() dapui.close() end
-          dap.listeners.before.event_exited["dapui_config"] = function() dapui.close() end
+          dap.listeners.after.event_initialized["dapui_config"] = function()
+            dapui.open()
+          end
+          dap.listeners.before.event_terminated["dapui_config"] = function()
+            dapui.close()
+          end
+          dap.listeners.before.event_exited["dapui_config"] = function()
+            dapui.close()
+          end
         end,
       },
 
@@ -509,8 +562,7 @@ return {
   {
     "L3MON4D3/LuaSnip",
     lazy = true,
-    build = LazyVim.is_win()
-      and nil
+    build = LazyVim.is_win() and nil
       or "echo 'NOTE: jsregexp is optional, so not a big deal if it fails to build'; make install_jsregexp",
     dependencies = {
       {
@@ -808,7 +860,13 @@ return {
     "danymat/neogen",
     cmd = "Neogen",
     keys = {
-      { "<leader>cn", function() require("neogen").generate() end, desc = "Generate Annotations" },
+      {
+        "<leader>cn",
+        function()
+          require("neogen").generate()
+        end,
+        desc = "Generate Annotations",
+      },
     },
     opts = {
       snippet_engine = "luasnip",
@@ -820,15 +878,15 @@ return {
     dependencies = { "nvim-lua/plenary.nvim" },
     cmd = { "Coverage", "CoverageLoad", "CoverageShow", "CoverageHide", "CoverageToggle", "CoverageSummary" },
     keys = {
-      { "<leader>TC",  "<cmd>CoverageToggle<cr>",  desc = "Coverage Toggle" },
-      { "<leader>TV",  "<cmd>CoverageSummary<cr>", desc = "Coverage Summary" },
-      { "<leader>TCl", "<cmd>CoverageLoad<cr>",    desc = "Coverage Load" },
+      { "<leader>TC", "<cmd>CoverageToggle<cr>", desc = "Coverage Toggle" },
+      { "<leader>TV", "<cmd>CoverageSummary<cr>", desc = "Coverage Summary" },
+      { "<leader>TCl", "<cmd>CoverageLoad<cr>", desc = "Coverage Load" },
     },
     opts = {
       auto_reload = true,
       lang = {
         python = { coverage_file = ".coverage" },
-        go     = { coverage_file = "coverage.out" },
+        go = { coverage_file = "coverage.out" },
       },
     },
   },

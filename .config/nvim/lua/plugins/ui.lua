@@ -130,7 +130,7 @@ return {
             cond = require("lazy.status").has_updates,
             color = function() return package.loaded["snacks"] and { fg = Snacks.util.color("Special") } or {} end,
           },
-            -- LSP 客户端：1个显示名称，多个显示数量，过滤噪音 LSP
+            -- LSP 客户端：≤3个显示名称，超出部分显示 +N，过滤噪音 LSP
             {
               function()
                 local skip = { typos_lsp = true, copilot = true }
@@ -139,11 +139,16 @@ return {
                 end, vim.lsp.get_clients({ bufnr = 0 }))
                 if #clients == 0 then
                   return ""
-                elseif #clients == 1 then
-                  return " " .. clients[1].name
-                else
-                  return " " .. #clients .. " LSPs"
                 end
+                local names = {}
+                for i = 1, math.min(2, #clients) do
+                  table.insert(names, clients[i].name)
+                end
+                local result = " " .. table.concat(names, ", ")
+                if #clients > 2 then
+                  result = result .. " +" .. (#clients - 2)
+                end
+                return result
               end,
               color = { fg = "#2aa198" },
               cond = function()

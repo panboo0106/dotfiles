@@ -1,4 +1,10 @@
 return {
+  -- 替代 Treesitter 的 Python indent（TS Python indent 有长期 bug）
+  -- https://github.com/nvim-treesitter/nvim-treesitter/issues/2947
+  {
+    "Vimjas/vim-python-pep8-indent",
+    ft = "python",
+  },
   {
     "linux-cultist/venv-selector.nvim",
     branch = "main",
