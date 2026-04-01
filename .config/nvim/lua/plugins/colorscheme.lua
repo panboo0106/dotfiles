@@ -61,8 +61,8 @@ return {
         hl.Special    = { fg = c.cyan }
 
         -- UI
-        hl.Visual     = { bg = c.bg2 }
-        hl.VisualNOS  = { bg = c.bg2 }
+        hl.Visual     = { bg = c.bg5 }
+        hl.VisualNOS  = { bg = c.bg5 }
         hl.Search     = { bg = c.bg2,    fg = c.fg }
         hl.IncSearch  = { bg = c.yellow, fg = is_dark and c.bg or c.fg_max }
         hl.MatchParen = { bg = c.fg3,    fg = c.fg }

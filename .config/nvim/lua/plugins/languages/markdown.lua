@@ -365,8 +365,9 @@ return {
       -- 自动补全配置
       completions = {
         lsp = { enabled = true }, -- 推荐方式
-        -- blink = { enabled = false },
-        -- coq = { enabled = false },
+        blink = { enabled = false },
+        coq = { enabled = false },
+        cmp = { enabled = false },
       },
 
       -- 覆盖配置 - 针对不同文件类型的细化配置

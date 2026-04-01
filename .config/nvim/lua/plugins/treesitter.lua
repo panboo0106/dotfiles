@@ -24,7 +24,7 @@ return {
     ---@class lazyvim.TSConfig: TSConfig
     opts = {
       -- LazyVim config for treesitter
-      indent = { enable = true },
+      indent = { enable = true, disable = { "python" } },
       highlight = { enable = true },
       folds = { enable = true },
       ensure_installed = {
