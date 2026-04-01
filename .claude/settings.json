@@ -1,4 +1,11 @@
 {
+  "env": {
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "permissions": {
     "allow": [
       "Bash(ls:*)",
@@ -6,14 +13,25 @@
     ],
     "defaultMode": "plan"
   },
-  "enabledPlugins": {
-    "skill-creator@claude-plugins-official": true
-  },
-  "skipDangerousModePermissionPrompt": true,
   "statusLine": {
     "type": "command",
-    "command": "~/.claude/statusline.sh"
+    "command": "bash \"$HOME/.claude/statusline.sh\""
   },
-  "alwaysThinkingEnabled": false,
+  "enabledPlugins": {
+    "skill-creator@claude-plugins-official": true,
+    "github@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true,
+    "codex@openai-codex": true
+  },
+  "extraKnownMarketplaces": {
+    "openai-codex": {
+      "source": {
+        "source": "github",
+        "repo": "openai/codex-plugin-cc"
+      }
+    }
+  },
+  "skipDangerousModePermissionPrompt": true,
+  "terminalTheme": "dark",
   "hasCompletedOnboarding": true
 }
