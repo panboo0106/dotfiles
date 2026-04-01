@@ -393,8 +393,12 @@ return {
       -- or leave it empty to use the default settings
       -- refer to the configuration section below
       spec = {
-        { "<leader>k", group = "kitools", icon = { icon = "", color = "cyan" } },
-        { "<leader>T", group = "test", icon = { icon = "󰙨", color = "green" } },
+        { "<leader>h",  group = "Harpoon",  icon = { icon = "󰖙",  color = "orange" } },
+        { "<leader>k",  group = "kitools",  icon = { icon = "",  color = "cyan"   } },
+        { "<leader>kh", group = "HTTP",     icon = { icon = "󰖟",  color = "blue"   } },
+        { "<leader>kd", group = "Database", icon = { icon = "󰄞",  color = "yellow" } },
+        { "<leader>km", group = "Mermaid",  icon = { icon = "󰟵",  color = "green"  } },
+        { "<leader>T",  group = "test",     icon = { icon = "󰙨",  color = "green"  } },
       },
     },
     keys = {

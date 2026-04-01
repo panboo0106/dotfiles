@@ -57,6 +57,7 @@ return {
         "vimdoc",
         "xml",
         "yaml",
+        "mermaid",
       },
     },
     ---@param opts lazyvim.TSConfig
