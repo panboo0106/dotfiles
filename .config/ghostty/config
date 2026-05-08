@@ -10,7 +10,7 @@ term = xterm-256color
 # shell-integration supports: detect, bash, zsh, fish, elvish
 # kitty's no-cursor/no-notify options are not available
 shell-integration = detect
-scrollback-limit = 100000
+scrollback-limit = 10000000
 mouse-hide-while-typing = true
 
 # =============================================================================
@@ -28,6 +28,7 @@ background-opacity = 0.98
 # Font rendering
 font-size = 16
 adjust-cell-height = 20%
+font-thicken = true
 # Render bold ANSI as Regular weight — eliminates bold/regular thickness gap.
 # ghostty-only; kitty unaffected. Colors unchanged (unlike bold-is-bright).
 font-style-bold = Regular
@@ -45,7 +46,7 @@ cursor-style-blink = false
 # =============================================================================
 # macOS Core Text registers non-standard weights as separate families.
 # Use "JetBrainsMono NFM Thin" directly — font-style = SemiBold is ignored.
-font-family = JetBrainsMono Nerd Font Mono
+font-family = JetBrainsMono NFM
 # NF v2 PUA: U+E000-U+F8FF, NF v3 Plane 15: U+F0000-U+FFFFF
 font-codepoint-map = U+E000-U+F8FF,U+F0000-U+FFFFF=JetBrainsMono Nerd Font Mono
 # CJK fallback: safe to add now because font-codepoint-map pins NF icons to
@@ -65,7 +66,7 @@ theme = light:solarized-zen-light,dark:solarized-zen-dark
 # macOS: use non-native fullscreen (kitty: macos_traditional_fullscreen yes)
 macos-non-native-fullscreen = true
 # Transparent titlebar blends with terminal bg and shows tab bar
-macos-titlebar-style = transparent
+macos-titlebar-style = tabs
 window-decoration = true
 
 window-padding-x = 1
@@ -151,8 +152,7 @@ keybind = ctrl+shift+n=jump_to_prompt:1
 
 # --- Clipboard ---
 keybind = ctrl+shift+y=copy_to_clipboard
-# Note: ctrl+shift+p is used for scroll_to_prompt above; paste moved
-keybind = ctrl+shift+insert=paste_from_clipboard
+keybind = ctrl+shift+p=paste_from_clipboard
 
 # --- Utilities ---
 keybind = ctrl+shift+semicolon=clear_screen

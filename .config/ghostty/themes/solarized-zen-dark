@@ -8,7 +8,7 @@ selection-background = #268bd3
 selection-foreground = #ffffff
 
 # Normal (0-7)
-palette = 0=#002b36
+palette = 0=#2a4e5a
 palette = 1=#db302d
 palette = 2=#849900
 palette = 3=#b28500
@@ -25,4 +25,8 @@ palette = 11=#cc9b00
 palette = 12=#4aa3e3
 palette = 13=#e04a95
 palette = 14=#35bdb2
-palette = 15=#a0b2b2
+palette = 15=#c4d0d0
+
+# Extended (16-17)
+palette = 16=#c94c16
+palette = 17=#f55350

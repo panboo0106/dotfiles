@@ -139,3 +139,8 @@ unalias rg 2>/dev/null || true
 
 # Use local bin fd and rg
 export PATH="$HOME/.local/bin:$PATH"
+
+# Ghostty theme toggle (F5)
+toggle_ghostty_theme() { ~/.config/ghostty/toggle-theme.sh }
+zle -N toggle_ghostty_theme
+bindkey '^[[15~' toggle_ghostty_theme
