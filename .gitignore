@@ -66,7 +66,11 @@
 .config/alma/
 .config/oh-my-zsh/
 .config/raycast/
-.config/zed/
+.config/zed/prompts/
+.config/zed/EOF
+.config/zed/*.backup*
+.config/zed/*.fixed
+.config/zed/*.minimal
 .config/coding/
 .config/fontconfig/
 .config/mole/
