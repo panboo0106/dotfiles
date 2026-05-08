@@ -1,0 +1,195 @@
+# =============================================================================
+# Ghostty Configuration
+# Migrated from kitty
+# =============================================================================
+
+# =============================================================================
+# Terminal
+# =============================================================================
+term = xterm-256color
+# shell-integration supports: detect, bash, zsh, fish, elvish
+# kitty's no-cursor/no-notify options are not available
+shell-integration = detect
+scrollback-limit = 100000
+mouse-hide-while-typing = true
+
+# =============================================================================
+# Shell & Environment
+# =============================================================================
+# shell is auto-detected from $SHELL; set explicitly if needed:
+# shell = /bin/zsh
+env = PATH=$PATH:/opt/homebrew/bin
+
+# =============================================================================
+# Appearance
+# =============================================================================
+background-opacity = 0.98
+
+# Font rendering
+font-size = 16
+adjust-cell-height = 20%
+# Render bold ANSI as Regular weight — eliminates bold/regular thickness gap.
+# ghostty-only; kitty unaffected. Colors unchanged (unlike bold-is-bright).
+font-style-bold = Regular
+font-style-bold-italic = Regular
+
+# Ligatures (kitty: disable_ligatures never)
+font-feature = +liga
+
+# Cursor (kitty: cursor_shape beam, no blink)
+cursor-style = bar
+cursor-style-blink = false
+
+# =============================================================================
+# Fonts
+# =============================================================================
+# macOS Core Text registers non-standard weights as separate families.
+# Use "JetBrainsMono NFM Thin" directly — font-style = SemiBold is ignored.
+font-family = JetBrainsMono Nerd Font Mono
+# NF v2 PUA: U+E000-U+F8FF, NF v3 Plane 15: U+F0000-U+FFFFF
+font-codepoint-map = U+E000-U+F8FF,U+F0000-U+FFFFF=JetBrainsMono Nerd Font Mono
+# CJK fallback: safe to add now because font-codepoint-map pins NF icons to
+# JetBrainsMono, so LXGW no longer interferes with icon metrics.
+font-family = LXGW WenKai Mono
+
+# =============================================================================
+# Theme — follows macOS system light/dark appearance automatically
+# Format: theme = <light-theme>,<dark-theme>
+# To force one theme: theme = solarized-zen-light
+# =============================================================================
+theme = light:solarized-zen-light,dark:solarized-zen-dark
+
+# =============================================================================
+# Window
+# =============================================================================
+# macOS: use non-native fullscreen (kitty: macos_traditional_fullscreen yes)
+macos-non-native-fullscreen = true
+# Transparent titlebar blends with terminal bg and shows tab bar
+macos-titlebar-style = transparent
+window-decoration = true
+
+window-padding-x = 1
+window-padding-y = 1
+
+# Initial window size in cells
+window-width = 140
+window-height = 40
+
+# Do not confirm on close (kitty: confirm_os_window_close 0)
+confirm-close-surface = false
+
+# =============================================================================
+# Keybindings
+# kitty_mod = ctrl+shift
+# NOTE: kitty's original config had two conflicts which are fixed here:
+#   - ctrl+shift+f was bound to both toggle_fullscreen AND scroll_page_down
+#   - ctrl+shift+e was bound to both edit_scrollback AND edit_config_file
+#   - ctrl+shift+n was bound twice for scroll_to_prompt in both directions
+# =============================================================================
+
+# --- Tab management ---
+keybind = ctrl+shift+t=new_tab
+keybind = ctrl+shift+q=close_tab
+
+# Tab navigation (vim-style ]b/[b)
+keybind = ctrl+shift+]=next_tab
+keybind = ctrl+shift+[=previous_tab
+
+# Move tab position
+keybind = ctrl+shift+period=move_tab:1
+keybind = ctrl+shift+comma=move_tab:-1
+
+# Quick tab switch (alt+number)
+keybind = alt+one=goto_tab:1
+keybind = alt+two=goto_tab:2
+keybind = alt+three=goto_tab:3
+keybind = alt+four=goto_tab:4
+keybind = alt+five=goto_tab:5
+keybind = alt+six=goto_tab:6
+keybind = alt+seven=goto_tab:7
+keybind = alt+eight=goto_tab:8
+keybind = alt+nine=goto_tab:9
+# alt+0: no last_tab action in ghostty; use alt+9 to reach tab 9 or next_tab repeatedly
+
+# --- Split management (vim-style ctrl+w+s/v) ---
+# Horizontal split / split below (ctrl+w+s)
+keybind = ctrl+shift+s=new_split:down
+# Vertical split / split right (ctrl+w+v)
+keybind = ctrl+shift+v=new_split:right
+# Close pane (ctrl+w+q)
+keybind = ctrl+shift+x=close_surface
+
+# Navigate panes (ctrl+w + h/j/k/l)
+keybind = ctrl+shift+h=goto_split:left
+keybind = ctrl+shift+j=goto_split:down
+keybind = ctrl+shift+k=goto_split:up
+keybind = ctrl+shift+l=goto_split:right
+
+# Resize panes: resize_split:direction,amount gives InvalidFormat in this ghostty version
+# keybind = alt+h=resize_split:left,10
+# keybind = alt+l=resize_split:right,10
+# keybind = alt+k=resize_split:up,10
+# keybind = alt+j=resize_split:down,10
+
+# --- Scrolling (vim-style) ---
+keybind = ctrl+shift+u=scroll_page_up
+keybind = ctrl+shift+d=scroll_page_down
+keybind = ctrl+shift+b=scroll_page_up
+# ctrl+shift+f freed from toggle_fullscreen conflict; used for page down
+keybind = ctrl+shift+f=scroll_page_down
+
+# Scroll to top/bottom (kitty: ctrl+shift+gg / ctrl+shift+g)
+keybind = ctrl+shift+home=scroll_to_top
+keybind = ctrl+shift+end=scroll_to_bottom
+
+# ctrl+shift+up/down line-scroll: no clean equivalent in ghostty without negative params
+# page scrolling is already on ctrl+shift+u/d/b/f
+
+# Navigate shell prompts (kitty: scroll_to_prompt 1/-1)
+# scroll_to_prompt only accepts non-negative integers; forward nav only
+keybind = ctrl+shift+n=jump_to_prompt:1
+
+# --- Clipboard ---
+keybind = ctrl+shift+y=copy_to_clipboard
+# Note: ctrl+shift+p is used for scroll_to_prompt above; paste moved
+keybind = ctrl+shift+insert=paste_from_clipboard
+
+# --- Utilities ---
+keybind = ctrl+shift+semicolon=clear_screen
+
+# --- Configuration ---
+keybind = ctrl+shift+r=reload_config
+# Open config file (kitty: edit_config_file)
+keybind = ctrl+shift+e=open_config
+
+# --- Window control ---
+keybind = ctrl+shift+m=toggle_maximize
+# Fullscreen moved off ctrl+shift+f (was conflicting with scroll_page_down)
+keybind = ctrl+shift+enter=toggle_fullscreen
+
+# --- Font size ---
+keybind = ctrl+shift+equal=increase_font_size:2
+keybind = ctrl+shift+minus=decrease_font_size:2
+keybind = ctrl+shift+zero=reset_font_size
+
+# =============================================================================
+# Not migrated (no ghostty equivalent):
+#   - tab_bar_style powerline / tab_powerline_style angled (native tab bar only)
+#   - active_tab_font_style bold (not configurable)
+#   - active_tab_background/foreground colors (native tab bar)
+#   - dynamic_background_opacity (opacity is static)
+#   - cursor_trail (not supported)
+#   - window_border_width (not supported)
+#   - window_resize_step_cells (not supported)
+#   - url_style curly (not supported)
+#   - allow_remote_control (no socket remote control)
+#   - notify_on_cmd_finish / filter_notification (not supported)
+#   - text_composition_strategy (not supported)
+#   - terminal_selectable_mark_characters (not supported)
+#   - repaint_delay / input_delay / sync_to_monitor (not needed; ghostty is fast)
+#   - session save/restore (save_session.sh had no ghostty equivalent)
+#   - F5/F6 theme hot-switching (use macOS system appearance toggle instead;
+#     ghostty follows it automatically via theme = light,dark above)
+#   - set_tab_title keybind (no interactive rename in ghostty)
+#   - show_kitty_env_vars (no equivalent)
+# =============================================================================

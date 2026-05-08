@@ -8,12 +8,9 @@ return {
       vim.fn["mkdp#util#install"]()
     end,
     keys = {
-      {
-        "<leader>cp",
-        ft = { "markdown", "md", "mkd", "markdown.md" },
-        "<cmd>MarkdownPreviewToggle<cr>",
-        desc = "Markdown Preview",
-      },
+      { "<leader>mp", "<cmd>MarkdownPreview<cr>",       desc = "Markdown Preview" },
+      { "<leader>ms", "<cmd>MarkdownPreviewStop<cr>",   desc = "Markdown Preview Stop" },
+      { "<leader>mt", "<cmd>MarkdownPreviewToggle<cr>", desc = "Markdown Preview Toggle" },
     },
     config = function()
       vim.cmd([[do FileType]])
@@ -30,10 +27,10 @@ return {
     ft = { "markdown", "Avante" }, -- 懒加载，仅在 markdown 文件中加载
     cmd = { "RenderMarkdown" }, -- 也可以通过命令触发加载
     keys = {
-      { "<leader>mr", "<cmd>RenderMarkdown toggle<cr>", ft = "markdown", desc = "Toggle Markdown Rendering" },
-      { "<leader>me", "<cmd>RenderMarkdown expand<cr>", ft = "markdown", desc = "Expand Anti-conceal" },
-      { "<leader>mc", "<cmd>RenderMarkdown contract<cr>", ft = "markdown", desc = "Contract Anti-conceal" },
-      { "<leader>md", "<cmd>RenderMarkdown debug<cr>", ft = "markdown", desc = "Debug Markdown" },
+      { "<leader>mr", "<cmd>RenderMarkdown toggle<cr>",  desc = "Toggle Markdown Rendering" },
+      { "<leader>me", "<cmd>RenderMarkdown expand<cr>",  desc = "Expand Anti-conceal" },
+      { "<leader>mc", "<cmd>RenderMarkdown contract<cr>", desc = "Contract Anti-conceal" },
+      { "<leader>md", "<cmd>RenderMarkdown debug<cr>",   desc = "Debug Markdown" },
     },
     opts = {
       -- 是否默认渲染 markdown

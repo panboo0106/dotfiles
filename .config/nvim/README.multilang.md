@@ -12,16 +12,16 @@
 
 ### 已创建的配置文件
 
-| 文件名 | 用途 | 适用语言 |
-|--------|------|----------|
-| `.eslintrc.json` | ESLint 配置 | JavaScript |
-| `.prettierrc.json` | Prettier 配置 | JavaScript |
-| `.clang-tidy` | clang-tidy 配置 | C/C++ |
-| `.clang-format` | clang-format 配置 | C/C++ |
-| `.shellcheckrc` | ShellCheck 配置 | Shell |
-| `.editorconfig` | 编辑器配置 | 所有语言 |
-| `Makefile.multilang` | 开发命令 | 所有语言 |
-| `pre-commit.multilang` | Git Hook | 所有语言 |
+| 文件名                 | 用途              | 适用语言   |
+| ---------------------- | ----------------- | ---------- |
+| `.eslintrc.json`       | ESLint 配置       | JavaScript |
+| `.prettierrc.json`     | Prettier 配置     | JavaScript |
+| `.clang-tidy`          | clang-tidy 配置   | C/C++      |
+| `.clang-format`        | clang-format 配置 | C/C++      |
+| `.shellcheckrc`        | ShellCheck 配置   | Shell      |
+| `.editorconfig`        | 编辑器配置        | 所有语言   |
+| `Makefile.multilang`   | 开发命令          | 所有语言   |
+| `pre-commit.multilang` | Git Hook          | 所有语言   |
 
 ---
 
@@ -30,6 +30,7 @@
 ### 1. 安装工具
 
 #### macOS
+
 ```bash
 # JavaScript
 npm install -g eslint prettier
@@ -48,6 +49,7 @@ pip install ruff pylint
 ```
 
 #### Linux (Ubuntu/Debian)
+
 ```bash
 # JavaScript
 sudo npm install -g eslint prettier
@@ -112,6 +114,7 @@ chmod +x .git/hooks/pre-commit
 ```
 
 或者使用 git config（推荐）：
+
 ```bash
 # 在项目根目录运行
 git config core.hooksPath .githooks
@@ -129,6 +132,7 @@ chmod +x .githooks/pre-commit
 **工具**: ESLint + Prettier
 
 **检查规则**:
+
 - ✅ 函数命名 ≥3 字符
 - ✅ 使用 `===` 而非 `==`
 - ✅ 禁止 `eval`，使用 `JSON.parse`
@@ -136,6 +140,7 @@ chmod +x .githooks/pre-commit
 - ✅ 单页面模式禁止全局变量
 
 **使用方法**:
+
 ```bash
 # 检查
 eslint . --ext .js,.jsx
@@ -154,6 +159,7 @@ prettier --write "**/*.{js,jsx}"
 **工具**: clang-tidy + clang-format
 
 **检查规则**:
+
 - ✅ 成员初始化
 - ✅ explicit 使用
 - ✅ 虚析构函数
@@ -161,6 +167,7 @@ prettier --write "**/*.{js,jsx}"
 - ✅ 智能指针使用
 
 **使用方法**:
+
 ```bash
 # 检查
 clang-tidy file.cpp --config-file=~/.config/nvim/.clang-tidy
@@ -179,6 +186,7 @@ find . -name "*.cpp" | xargs clang-tidy
 **工具**: ShellCheck + shfmt
 
 **检查规则**:
+
 - ✅ 函数长度 ≤50 行
 - ✅ 参数使用有意义的变量名
 - ✅ 字符串比较使用双引号
@@ -186,6 +194,7 @@ find . -name "*.cpp" | xargs clang-tidy
 - ✅ 检查命令返回值
 
 **使用方法**:
+
 ```bash
 # 检查
 shellcheck script.sh
@@ -204,11 +213,13 @@ find . -name "*.sh" -exec shellcheck {} \;
 **工具**: Ruff + Pylint (已配置)
 
 **检查规则**:
+
 - ✅ 77 项检查
 - ✅ 风格、导入、安全
 - ✅ 并发、国际化
 
 **使用方法**:
+
 ```bash
 # Ruff 检查
 ruff check --config=~/.config/nvim/ruff_company.toml .
@@ -227,10 +238,12 @@ pylint --rcfile=~/.config/nvim/.pylintrc .
 **工具**: golangci-lint + gofmt (已配置)
 
 **检查规则**:
+
 - ✅ 56 项检查
 - ✅ 风格、错误处理、并发
 
 **使用方法**:
+
 ```bash
 # golangci-lint 检查
 golangci-lint run --config=~/.config/nvim/.golangci.yml
@@ -246,6 +259,7 @@ gofmt -w -s .
 ### .editorconfig
 
 统一的编辑器配置，支持：
+
 - UTF-8 编码
 - LF 换行
 - 4 空格缩进（Go 用 Tab）
@@ -253,6 +267,7 @@ gofmt -w -s .
 - 文件末尾添加换行
 
 **支持的编辑器**:
+
 - VSCode
 - Vim/Neovim
 - JetBrains IDE
@@ -265,37 +280,41 @@ gofmt -w -s .
 ### .eslintrc.json
 
 ESLint 配置，映射到 SANGFOR JavaScript Checklist：
-- 01. style: 命名、缩进、注释、代码行数、大括号
-- 02. exception: 外部输入、参数检查、返回值检查
-- 03. practice: `===`、变量定义、eval 使用
-- 04. extjs: 全局变量控制
+
+- 1.  style: 命名、缩进、注释、代码行数、大括号
+- 2.  exception: 外部输入、参数检查、返回值检查
+- 3.  practice: `===`、变量定义、eval 使用
+- 4.  extjs: 全局变量控制
 
 ---
 
 ### .clang-tidy
 
 clang-tidy 配置，映射到 SANGFOR C++ Checklist：
-- 01. 构造与析构 (10 项)
-- 02. C++异常 (3 项)
-- 03. C++类 (4 项)
-- 04. C++模板 (3 项)
-- 05. 运算符重载 (2 项)
-- 06. C++标准库 (9 项)
+
+- 1.  构造与析构 (10 项)
+- 2.  C++异常 (3 项)
+- 3.  C++类 (4 项)
+- 4.  C++模板 (3 项)
+- 5.  运算符重载 (2 项)
+- 6.  C++标准库 (9 项)
 
 ---
 
 ### .shellcheckrc
 
 ShellCheck 配置，映射到 SANGFOR Shell Checklist：
-- 01. style: 命名、缩进、注释、代码行数、参数命名
-- 02. exception: 参数检查、数据检查、返回值检查
-- 03. spec: 局部变量、字符串比较、条件测试、管道、防注入
+
+- 1.  style: 命名、缩进、注释、代码行数、参数命名
+- 2.  exception: 参数检查、数据检查、返回值检查
+- 3.  spec: 局部变量、字符串比较、条件测试、管道、防注入
 
 ---
 
 ## 📚 相关文档
 
 编码规范分析报告位置：
+
 ```
 ~/GoogleDrive/Note/leo's note/sangfor/编码checklist/
 ├── javascript.md  ✅
@@ -320,11 +339,13 @@ ShellCheck 配置，映射到 SANGFOR Shell Checklist：
 ### CI/CD 集成
 
 在 CI 中运行：
+
 ```yaml
 - make all
 ```
 
 或分别运行：
+
 ```yaml
 - make js-verify
 - make cpp-verify
@@ -340,6 +361,7 @@ ShellCheck 配置，映射到 SANGFOR Shell Checklist：
 ### Q: 配置文件不生效？
 
 A: 检查文件路径：
+
 - ESLint: 项目根目录或 `~/.eslintrc.json`
 - clang-tidy: 使用 `--config-file` 参数指定
 - ShellCheck: 项目根目录或 `~/.shellcheckrc`
@@ -350,18 +372,21 @@ A: 检查文件路径：
 A: 可以在代码中使用注释忽略：
 
 **JavaScript**:
+
 ```javascript
 // eslint-disable-next-line no-eval
 eval(someCode);
 ```
 
 **C++**:
+
 ```cpp
 // NOLINTNEXTLINE
 int x = 42;
 ```
 
 **Shell**:
+
 ```bash
 # shellcheck disable=SC2001
 echo "$(cmd)"
@@ -370,6 +395,7 @@ echo "$(cmd)"
 ### Q: 想自定义规则？
 
 A: 编辑对应的配置文件：
+
 - `.eslintrc.json`: 修改 rules
 - `.clang-tidy`: 修改 Checks 和 CheckOptions
 - `.shellcheckrc`: 修改 ignore 规则
@@ -378,3 +404,11 @@ A: 编辑对应的配置文件：
 
 **更新日期**: 2026-01-17
 **版本**: v1.0
+
+```mermaid
+
+flowchart TD
+
+A[hello] --> B[world
+]
+```

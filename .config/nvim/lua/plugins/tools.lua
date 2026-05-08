@@ -343,26 +343,28 @@ return {
         end,
         desc = "Explorer",
       },
-      {
-        "<leader>er",
-        function()
-          -- 手动刷新 explorer
-          if Snacks.explorer then
-            Snacks.explorer.refresh()
-          end
-        end,
-        desc = "Refresh Explorer",
-      },
     },
     init = function()
-      -- 监听 Git 状态变化后刷新 explorer（explorer 本身已有 watch=true 监听文件变化）
+      -- 监听 Git 状态变化后刷新 explorer
+      -- 注意：Snacks.explorer.refresh() 不存在，正确流程是：
+      --   1. Git.refresh(cwd) 将 15 分钟 git 状态缓存标记为脏（last = 0）
+      --   2. Watch.refresh() 检测到脏后调用 picker:find() 重新获取状态
       local group = vim.api.nvim_create_augroup("SnacksExplorerGitRefresh", { clear = true })
       local function refresh_explorer()
         vim.defer_fn(function()
-          if Snacks.explorer and Snacks.explorer.refresh then
-            Snacks.explorer.refresh()
+          local ok_git, Git = pcall(require, "snacks.explorer.git")
+          local ok_watch, Watch = pcall(require, "snacks.explorer.watch")
+          if not ok_git or not ok_watch then
+            return
           end
-        end, 50)
+          local pickers = Snacks.picker.get({ source = "explorer", tab = false })
+          for _, picker in ipairs(pickers) do
+            if picker and not picker.closed then
+              Git.refresh(picker:cwd())
+            end
+          end
+          Watch.refresh()
+        end, 300) -- 300ms 确保外部工具已完成写入，git 已更新文件状态
       end
       vim.api.nvim_create_autocmd("User", {
         group = group,
@@ -370,11 +372,23 @@ return {
         callback = refresh_explorer,
         desc = "Refresh explorer after git signs update",
       })
-      -- 切回 nvim 焦点时刷新（外部 git 操作后最关键的触发器）
+      -- 切回 nvim 焦点时刷新（AI 工具或外部 git 操作后最关键的触发器）
       vim.api.nvim_create_autocmd("FocusGained", {
         group = group,
         callback = refresh_explorer,
         desc = "Refresh explorer git status on focus",
+      })
+      -- 光标静止 updatetime 秒后刷新（AI 工具在 nvim 内部终端运行时不会切焦点，靠此兜底）
+      vim.api.nvim_create_autocmd("CursorHold", {
+        group = group,
+        callback = refresh_explorer,
+        desc = "Refresh explorer git status on cursor hold",
+      })
+      -- vim 从 :stop / ctrl+z 挂起恢复时刷新
+      vim.api.nvim_create_autocmd("VimResume", {
+        group = group,
+        callback = refresh_explorer,
+        desc = "Refresh explorer git status on vim resume",
       })
       -- 保存文件后刷新
       vim.api.nvim_create_autocmd("BufWritePost", {
@@ -397,7 +411,8 @@ return {
         { "<leader>k",  group = "kitools",  icon = { icon = "",  color = "cyan"   } },
         { "<leader>kh", group = "HTTP",     icon = { icon = "󰖟",  color = "blue"   } },
         { "<leader>kd", group = "Database", icon = { icon = "󰄞",  color = "yellow" } },
-        { "<leader>km", group = "Mermaid",  icon = { icon = "󰟵",  color = "green"  } },
+        { "<leader>km", group = "Mermaid",   icon = { icon = "󰟵",  color = "green"  } },
+        { "<leader>m",  group = "Markdown", icon = { icon = "󰍔",  color = "blue"   } },
         { "<leader>T",  group = "test",     icon = { icon = "󰙨",  color = "green"  } },
       },
     },
