@@ -1,14 +1,14 @@
 background = #00242c
 foreground = #839395
 
-cursor-color = #839395
+cursor-color = #29a298
 cursor-text = #00242c
 
 selection-background = #268bd3
 selection-foreground = #ffffff
 
 # Normal (0-7)
-palette = 0=#2a4e5a
+palette = 0=#4a7080
 palette = 1=#db302d
 palette = 2=#849900
 palette = 3=#b28500

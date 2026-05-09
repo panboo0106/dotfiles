@@ -21,7 +21,7 @@ M.dark = {
   -- sidebar, statusbar, tab bar | kitty: tab_bar_background
   bg1  = "#002830",
   -- popup, visual, inactive tab | kitty: inactive_tab_background
-  bg2  = "#002c38",
+  bg2  = "#0a3848",
   -- lualine section c depth
   bg3  = "#003440",
   -- cursor line highlight
@@ -41,7 +41,7 @@ M.dark = {
 
   -- ANSI normal (color0–7)
   -- color0 | kitty: color0
-  black   = "#002b36",
+  black   = "#4a7080",
   -- color1 | kitty: color1
   red     = "#db302d",
   -- color2 | kitty: color2
@@ -95,76 +95,76 @@ M.dark = {
 -- ---------------------------------------------------------------------------
 M.light = {
   -- Backgrounds (light → dark)
-  -- main background (Solarized base3) | kitty: background
-  bg   = "#fdf6e3",
+  -- main background | kitty: background
+  bg   = "#f4f0e2",
   -- sidebar, inactive tab | kitty: inactive_tab_background
-  bg1  = "#eee8d5",
+  bg1  = "#e8e2cf",
   -- selection, popup, visual | kitty: selection_background
-  bg2  = "#e8dcc8",
+  bg2  = "#b8d4ea",
   -- cursor line highlight
-  bg3  = "#ddd0b0",
+  bg3  = "#e0d8cc",
   -- tab bar background | kitty: tab_bar_background
-  bg4  = "#e5dfc8",
+  bg4  = "#c8bfa8",
   -- lualine inactive depth
-  bg5  = "#d4c5a9",
+  bg5  = "#c4baaa",
 
   -- Foregrounds (dark → light)
   -- main foreground | kitty: foreground
-  fg      = "#073642",
-  -- secondary text (Solarized base01)
-  fg2     = "#586e75",
+  fg      = "#1c2d38",
+  -- secondary text
+  fg2     = "#3d5468",
   -- muted: lineNr, comment | kitty: inactive_border_color
-  fg3     = "#93a1a1",
+  fg3     = "#8fa4ae",
   -- max contrast text = br_white | kitty: color15
-  fg_max  = "#002b36",
+  fg_max  = "#001a28",
 
   -- ANSI normal (color0–7)
-  -- color0 (near-bg UI fill) | kitty: color0
-  black   = "#eee8d5",
+  -- color0 | kitty: color0
+  black   = "#3d5260",
   -- color1 | kitty: color1
-  red     = "#dc322f",
+  red     = "#bf3535",
   -- color2 | kitty: color2
-  green   = "#859900",
+  green   = "#3a7800",
   -- color3 | kitty: color3
-  yellow  = "#b58900",
+  yellow  = "#6a5e00",
   -- color4 | kitty: color4
-  blue    = "#268bd2",
+  blue    = "#1a6faf",
   -- color5 | kitty: color5
-  magenta = "#d33682",
+  magenta = "#883c8c",
   -- color6 | kitty: color6
-  cyan    = "#2aa198",
+  cyan    = "#107870",
   -- color7 | kitty: color7
-  white   = "#93a1a1",
+  white   = "#4a6878",
 
-  -- ANSI bright (color8–15, darker on light bg)
+  -- ANSI bright (color8–15, deeper on light bg)
   -- color8 | kitty: color8
-  br_black   = "#586e75",
+  br_black   = "#293e4c",
   -- color9 | kitty: color9
-  br_red     = "#cb4b16",
+  br_red     = "#c02828",
   -- color10 | kitty: color10
-  br_green   = "#6a8a00",
+  br_green   = "#007840",
   -- color11 | kitty: color11
-  br_yellow  = "#7a6200",
+  br_yellow  = "#6e6200",
   -- color12 | kitty: color12
-  br_blue    = "#1565a8",
+  br_blue    = "#1060a0",
   -- color13 | kitty: color13
-  br_magenta = "#a0236a",
+  br_magenta = "#9640a0",
   -- color14 | kitty: color14
-  br_cyan    = "#1a8077",
+  br_cyan    = "#0c6460",
   -- color15 | kitty: color15
-  br_white   = "#002b36",
+  br_white   = "#001a28",
 
   -- Extended
   -- color16 | kitty: color16
-  orange    = "#cb4b16",
+  orange    = "#b04400",
   -- color17 | kitty: color17
-  br_orange = "#dc322f",
+  br_orange = "#903800",
 
   -- Semantic UI
   -- kitty: selection_background
-  selection     = "#e8dcc8",
+  selection     = "#b8d4ea",
   -- kitty: url_color
-  url           = "#268bd2",
+  url           = "#1a6faf",
   -- LspReference read/text (light blue)
   lsp_ref       = "#dde8f0",
   -- LspReference write (light orange)
