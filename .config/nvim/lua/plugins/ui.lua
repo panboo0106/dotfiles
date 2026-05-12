@@ -276,6 +276,13 @@ return {
           },
           view = "mini",
         },
+        {
+          filter = {
+            event = "msg_show",
+            find = "Plugin Updates",
+          },
+          view = "notify",
+        },
       },
       presets = {
         bottom_search = true,
