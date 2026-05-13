@@ -124,8 +124,6 @@ return {
   },
   {
     "3rd/image.nvim",
-    -- Disable on Windows system
-    enabled = not vim.g.vscode,
     dependencies = {
       "leafo/magick",
     },
