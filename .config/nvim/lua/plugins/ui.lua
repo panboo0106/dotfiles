@@ -48,7 +48,7 @@ return {
       local opts = {
         options = {
           component_separators = { left = "", right = "" },
-          section_separators = { left = "", right = "" },
+          section_separators = { left = "", right = "" },
           theme = "auto",
           globalstatus = vim.o.laststatus == 3,
           disabled_filetypes = { statusline = { "dashboard", "alpha", "ministarter", "snacks_dashboard" } },
@@ -68,7 +68,27 @@ return {
               separator = { left = "", right = "" },
             },
           },
-          lualine_b = { "branch" },
+          lualine_b = {
+            "branch",
+            {
+              "diff",
+              symbols = {
+                added = icons.git.added,
+                modified = icons.git.modified,
+                removed = icons.git.removed,
+              },
+              source = function()
+                local gitsigns = vim.b.gitsigns_status_dict
+                if gitsigns then
+                  return {
+                    added = gitsigns.added,
+                    modified = gitsigns.changed,
+                    removed = gitsigns.removed,
+                  }
+                end
+              end,
+            },
+          },
 
           lualine_c = {
             LazyVim.lualine.root_dir(),
@@ -97,39 +117,62 @@ return {
               end,
               color = { fg = "#ffbc03" },
             },
+            -- 宏录制指示器
+            {
+              function()
+                return "● @" .. vim.fn.reg_recording()
+              end,
+              cond = function()
+                return vim.fn.reg_recording() ~= ""
+              end,
+              color = { fg = "#fb4934", gui = "bold" },
+            },
           },
           lualine_x = {
-            function()
-              if package.loaded["snacks"] then
-                local status = Snacks.profiler.status()
-                return type(status) == "string" and status or ""
-              end
-              return ""
-            end,
-          -- stylua: ignore
-          {
-            function() return require("noice").api.status.command.get() end,
-            cond = function() return package.loaded["noice"] and require("noice").api.status.command.has() end,
-            color = function() return package.loaded["snacks"] and { fg = Snacks.util.color("Statement") } or {} end,
-          },
-          -- stylua: ignore
-          {
-            function() return require("noice").api.status.mode.get() end,
-            cond = function() return package.loaded["noice"] and require("noice").api.status.mode.has() end,
-            color = function() return package.loaded["snacks"] and { fg = Snacks.util.color("Constant") } or {} end,
-          },
-          -- stylua: ignore
-          {
-            function() return "  " .. require("dap").status() end,
-            cond = function() return package.loaded["dap"] and require("dap").status() ~= "" end,
-            color = function() return package.loaded["snacks"] and { fg = Snacks.util.color("Debug") } or {} end,
-          },
-          -- stylua: ignore
-          {
-            require("lazy.status").updates,
-            cond = require("lazy.status").has_updates,
-            color = function() return package.loaded["snacks"] and { fg = Snacks.util.color("Special") } or {} end,
-          },
+            {
+              function()
+                return Snacks.profiler.status()
+              end,
+              cond = function()
+                return package.loaded["snacks"]
+                  and type(Snacks.profiler.status()) == "string"
+                  and Snacks.profiler.status() ~= ""
+              end,
+            },
+            -- stylua: ignore
+            { function() return require("noice").api.status.command.get() end, cond = function() return package.loaded["noice"] and require("noice").api.status.command.has() end, color = function() return package.loaded["snacks"] and { fg = Snacks.util.color("Statement") } or {} end },
+            -- stylua: ignore
+            { function() return require("noice").api.status.mode.get() end, cond = function() return package.loaded["noice"] and require("noice").api.status.mode.has() end, color = function() return package.loaded["snacks"] and { fg = Snacks.util.color("Constant") } or {} end },
+            -- stylua: ignore
+            { function() return "  " .. require("dap").status() end, cond = function() return package.loaded["dap"] and require("dap").status() ~= "" end, color = function() return package.loaded["snacks"] and { fg = Snacks.util.color("Debug") } or {} end },
+            -- stylua: ignore
+            { require("lazy.status").updates, cond = require("lazy.status").has_updates, color = function() return package.loaded["snacks"] and { fg = Snacks.util.color("Special") } or {} end },
+            -- 搜索计数（搜索时显示 3/15，不搜索时隐藏）
+            {
+              function()
+                local ok, result = pcall(vim.fn.searchcount, { recompute = true, maxcount = 999 })
+                if not ok or type(result) ~= "table" or result.incomplete == 1 then return "?/?" end
+                return result.current .. "/" .. math.min(result.total, result.maxcount)
+              end,
+              cond = function()
+                return vim.v.hlsearch == 1
+              end,
+              icon = "",
+              color = { fg = "#b8bb26" },
+            },
+            -- LSP 加载进度（带 spinner，仅 LSP 初始化时显示）
+            {
+              function()
+                local spinners = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
+                local frame = math.floor(vim.uv.now() / 120) % #spinners
+                local msg = vim.lsp.status()
+                return spinners[frame + 1] .. " " .. msg
+              end,
+              cond = function()
+                return vim.lsp.status ~= nil and vim.lsp.status() ~= ""
+              end,
+              color = { fg = "#aaaaaa" },
+            },
             -- LSP 客户端：≤3个显示名称，超出部分显示 +N，过滤噪音 LSP
             {
               function()
@@ -155,6 +198,34 @@ return {
                 return next(vim.lsp.get_clients({ bufnr = 0 })) ~= nil
               end,
             },
+            -- Formatter 显示（仅显示已安装的，≤2个名称，超出显示 +N）
+            {
+              function()
+                local ok, conform = pcall(require, "conform")
+                if not ok then return "" end
+                local formatters = vim.tbl_filter(function(f)
+                  return f.available
+                end, conform.list_formatters(0))
+                if #formatters == 0 then return "" end
+                local names = {}
+                for i = 1, math.min(2, #formatters) do
+                  table.insert(names, formatters[i].name)
+                end
+                local result = "󰉢 " .. table.concat(names, ", ")
+                if #formatters > 2 then result = result .. " +" .. (#formatters - 2) end
+                return result
+              end,
+              cond = function()
+                local ok, conform = pcall(require, "conform")
+                if not ok then return false end
+                return #vim.tbl_filter(function(f)
+                  return f.available
+                end, conform.list_formatters(0)) > 0
+              end,
+              color = function()
+                return package.loaded["snacks"] and { fg = Snacks.util.color("Special") } or {}
+              end,
+            },
             -- encoding：仅在非 UTF-8 时显示
             {
               "encoding",
@@ -162,24 +233,6 @@ return {
               icon = "󰃤",
               cond = function()
                 return (vim.bo.fenc or vim.o.enc):lower() ~= "utf-8"
-              end,
-            },
-            {
-              "diff",
-              symbols = {
-                added = icons.git.added,
-                modified = icons.git.modified,
-                removed = icons.git.removed,
-              },
-              source = function()
-                local gitsigns = vim.b.gitsigns_status_dict
-                if gitsigns then
-                  return {
-                    added = gitsigns.added,
-                    modified = gitsigns.changed,
-                    removed = gitsigns.removed,
-                  }
-                end
               end,
             },
             -- fileformat：仅在非 unix 时显示
