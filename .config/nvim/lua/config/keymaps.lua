@@ -14,14 +14,14 @@ vim.keymap.set("t", "jj", "<C-\\><C-n>", { noremap = true, silent = true })
 -- ==================== 终端快捷键（<leader>t）====================
 local map = vim.keymap.set
 
--- 水平分割打开终端
+-- 水平分割打开终端（每次新建独立实例，用 <C-d> 或 :bd 关闭）
 map("n", "<leader>th", function()
 	vim.cmd("split")
 	vim.cmd("terminal")
 	vim.cmd("startinsert")
 end, { desc = "Horizontal Split" })
 
--- 垂直分割打开终端
+-- 垂直分割打开终端（每次新建独立实例，用 <C-d> 或 :bd 关闭）
 map("n", "<leader>tv", function()
 	vim.cmd("vsplit")
 	vim.cmd("terminal")
@@ -38,6 +38,7 @@ end, { desc = "New Tab Terminal" })
 -- 右侧终端：切换
 map("n", "<leader>ta", function()
 	Snacks.terminal.toggle(nil, {
+		id = "right",
 		win = {
 			position = "right",
 			width = 40,
@@ -69,6 +70,7 @@ map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit Terminal (Double Esc)" })
 -- 覆盖 LazyVim 默认 <C-/> 终端：relative=win，仅在代码区下方分割，不遮挡左树
 map({ "n", "t" }, "<c-/>", function()
 	Snacks.terminal.toggle(nil, {
+		id = "bottom",
 		cwd = LazyVim.root(),
 		win = {
 			relative = "win",
@@ -80,6 +82,7 @@ map({ "n", "t" }, "<c-/>", function()
 end, { desc = "Terminal (Root Dir)" })
 map({ "n", "t" }, "<c-_>", function()
 	Snacks.terminal.toggle(nil, {
+		id = "bottom",
 		cwd = LazyVim.root(),
 		win = {
 			relative = "win",
@@ -93,6 +96,7 @@ end, { desc = "which_key_ignore" })
 -- 浮动终端（额外）
 map({ "n", "t" }, "<leader>tf", function()
 	Snacks.terminal.toggle(nil, {
+		id = "float",
 		win = {
 			position = "float",
 			border = "rounded",
