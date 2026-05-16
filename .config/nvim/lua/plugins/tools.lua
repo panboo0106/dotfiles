@@ -212,9 +212,9 @@ return {
           explorer = {
             -- 文件显示配置
             hidden = true, -- 显示隐藏文件（推荐 true，这样能看到 .env 等配置）
-            ignored = false, -- 不显示 gitignore 的文件（推荐 false）
+            ignored = true, -- 隐藏 .gitignore 里的文件（node_modules/dist/build 等自动过滤）
 
-            -- 排除列表（推荐配置）
+            -- 排除列表：只排除真正不需要看的文件，避免误杀同名业务目录
             exclude = {
               -- 系统垃圾文件
               ".DS_Store",
@@ -227,42 +227,10 @@ return {
               ".svn",
               ".hg",
 
-              -- Node.js
-              "node_modules",
-              "package-lock.json",
-              "yarn.lock",
-              "pnpm-lock.yaml",
-
-              -- Python
-              "__pycache__",
-              "*.pyc",
-              "*.pyo",
-              ".pytest_cache",
-              ".venv",
-              "venv",
-              ".tox",
-
-              -- 构建产物
-              "dist",
-              "build",
-              "out",
-              ".next",
-              ".nuxt",
-              "target",
-              "*.o",
-              "*.so",
-              "*.dylib",
-
-              -- 缓存
-              ".cache",
+              -- 编辑器临时文件
               "*.swp",
               "*.swo",
               "*~",
-
-              -- IDE/编辑器
-              ".idea",
-              ".vscode",
-              "*.sublime-*",
             },
             -- Explorer 特定配置
             tree = true,
@@ -277,6 +245,35 @@ return {
             auto_close = false,
             jump = { close = false },
 
+            -- 动态调整 Explorer 宽度
+            -- actions 里的函数签名是 (picker, item, action)，是正确的 picker 对象
+            actions = {
+              -- position="left" 是 split 窗口，dim_box 对 split root 读取实际窗口大小
+              -- 所以必须直接 nvim_win_set_width(root.win)，WinResized 后 snacks 自动重排子窗口
+              explorer_shrink = function(picker)
+                local root = picker.layout and picker.layout.root
+                local win = root and root.win
+                if win and vim.api.nvim_win_is_valid(win) then
+                  vim.api.nvim_win_set_width(win, math.max(10, vim.api.nvim_win_get_width(win) - 5))
+                end
+              end,
+              explorer_grow = function(picker)
+                local root = picker.layout and picker.layout.root
+                local win = root and root.win
+                if win and vim.api.nvim_win_is_valid(win) then
+                  vim.api.nvim_win_set_width(win, vim.api.nvim_win_get_width(win) + 5)
+                end
+              end,
+            },
+            win = {
+              list = {
+                keys = {
+                  ["<S-Left>"]  = "explorer_shrink",
+                  ["<S-Right>"] = "explorer_grow",
+                },
+              },
+            },
+
             -- 布局配置（注意嵌套结构）
             layout = {
               cycle = false,
@@ -285,7 +282,7 @@ return {
               layout = { -- 这里是关键的第二层 layout
                 backdrop = true,
                 width = 30, -- 宽度：30 列
-                min_width = 30, -- 最小宽度
+                min_width = 10, -- 最小宽度（允许缩小）
                 position = "left", -- 位置：left 或 right
                 border = "none",
                 box = "vertical",
@@ -431,33 +428,33 @@ return {
     config = function()
       require("transfer").setup({})
       require("which-key").add({
-        { "<leader>r", group = "Upload / Download", icon = { icon = "", color = "yellow" } },
+        { "<leader>R", group = "Upload / Download", icon = { icon = "", color = "yellow" } },
         {
-          "<leader>rd",
+          "<leader>Rd",
           "<cmd>TransferDownload<cr>",
           desc = "Download from remote server (scp)",
           icon = { color = "green", icon = "󰇚" },
         },
         {
-          "<leader>rf",
+          "<leader>Rf",
           "<cmd>DiffRemote<cr>",
           desc = "Diff file with remote server (scp)",
           icon = { color = "green", icon = "" },
         },
         {
-          "<leader>ri",
+          "<leader>Ri",
           "<cmd>TransferInit<cr>",
           desc = "Init/Edit Deployment config",
           icon = { color = "green", icon = "" },
         },
         {
-          "<leader>rr",
+          "<leader>Rr",
           "<cmd>TransferRepeat<cr>",
           desc = "Repeat transfer command",
           icon = { color = "green", icon = "" },
         },
         {
-          "<leader>ru",
+          "<leader>Ru",
           "<cmd>TransferUpload<cr>",
           desc = "Upload to remote server (scp)",
           icon = { color = "green", icon = "󰕒" },

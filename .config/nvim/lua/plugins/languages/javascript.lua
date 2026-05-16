@@ -19,7 +19,7 @@ return {
         return
       end
 
-      for _, lang in ipairs({ "javascript", "typescript", "javascriptreact", "typescriptreact" }) do
+      for _, lang in ipairs({ "javascript", "typescript", "javascriptreact", "typescriptreact", "vue" }) do
         dap.adapters[lang] = {
           type = "server",
           host = "localhost",

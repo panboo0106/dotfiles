@@ -385,7 +385,10 @@ return {
             bundles = bundles,
           },
           -- LazyVim集成: 添加capabilities
-          capabilities = require("blink.cmp").get_lsp_capabilities(capabilities),
+          capabilities = (function()
+            local ok, blink = pcall(require, "blink.cmp")
+            return ok and blink.get_lsp_capabilities(capabilities) or capabilities
+          end)(),
 
           -- 按键映射和其他附加功能
           on_attach = function(client, bufnr)

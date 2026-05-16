@@ -126,11 +126,11 @@ keybind = ctrl+shift+j=goto_split:down
 keybind = ctrl+shift+k=goto_split:up
 keybind = ctrl+shift+l=goto_split:right
 
-# Resize panes: resize_split:direction,amount gives InvalidFormat in this ghostty version
-# keybind = alt+h=resize_split:left,10
-# keybind = alt+l=resize_split:right,10
-# keybind = alt+k=resize_split:up,10
-# keybind = alt+j=resize_split:down,10
+# Resize panes (alt+hjkl, vim-style)
+keybind = alt+h=resize_split:left,10
+keybind = alt+l=resize_split:right,10
+keybind = alt+k=resize_split:up,10
+keybind = alt+j=resize_split:down,10
 
 # --- Scrolling (vim-style) ---
 keybind = ctrl+shift+u=scroll_page_up
