@@ -66,6 +66,42 @@ map("t", "<C-l>", "<cmd>wincmd l<cr>", { desc = "Right Window" })
 -- 快速退出终端模式
 map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit Terminal (Double Esc)" })
 
+-- 覆盖 LazyVim 默认 <C-/> 终端：relative=win，仅在代码区下方分割，不遮挡左树
+map({ "n", "t" }, "<c-/>", function()
+	Snacks.terminal.toggle(nil, {
+		cwd = LazyVim.root(),
+		win = {
+			relative = "win",
+			position = "bottom",
+			height = 0.4,
+			border = "rounded",
+		},
+	})
+end, { desc = "Terminal (Root Dir)" })
+map({ "n", "t" }, "<c-_>", function()
+	Snacks.terminal.toggle(nil, {
+		cwd = LazyVim.root(),
+		win = {
+			relative = "win",
+			position = "bottom",
+			height = 0.4,
+			border = "rounded",
+		},
+	})
+end, { desc = "which_key_ignore" })
+
+-- 浮动终端（额外）
+map({ "n", "t" }, "<leader>tf", function()
+	Snacks.terminal.toggle(nil, {
+		win = {
+			position = "float",
+			border = "rounded",
+			width = 0.8,
+			height = 0.8,
+		},
+	})
+end, { desc = "Float Terminal" })
+
 -- ==================== Scratch 临时笔记（<leader>N）===================
 map("n", "<leader>Nn", function()
 	Snacks.scratch()
@@ -98,6 +134,7 @@ wk.add({
 	{ "<leader>tt", icon = { icon = "󰓩", color = "grey" } },
 	{ "<leader>ta", icon = { icon = "󰆽", color = "grey" } },
 	{ "<leader>tn", icon = { icon = "󰆓", color = "grey" } },
+	{ "<leader>tf", icon = { icon = "󰹑", color = "grey" } },
 	-- Scratch 组
 	{ "<leader>N", group = "Scratch", icon = { icon = "󰆓", color = "yellow" } },
 	{ "<leader>Nn", icon = { icon = "󰝖", color = "yellow" } },
