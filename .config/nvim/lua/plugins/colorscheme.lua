@@ -93,49 +93,4 @@ return {
     end,
   },
 
-  -- -------------------------------------------------------------------------
-  -- Lualine
-  -- -------------------------------------------------------------------------
-  {
-    "nvim-lualine/lualine.nvim",
-    opts = function(_, opts)
-      local c = p()
-
-      opts.options = opts.options or {}
-      opts.options.theme = {
-        normal = {
-          a = { bg = c.blue,    fg = c.bg,  gui = "bold" },
-          b = { bg = c.bg2,     fg = c.fg },
-          c = { bg = c.bg,      fg = c.fg2 },
-        },
-        insert = {
-          a = { bg = c.green,   fg = c.bg,  gui = "bold" },
-          b = { bg = c.bg2,     fg = c.fg },
-          c = { bg = c.bg,      fg = c.fg2 },
-        },
-        visual = {
-          a = { bg = c.magenta, fg = c.bg,  gui = "bold" },
-          b = { bg = c.bg2,     fg = c.fg },
-          c = { bg = c.bg,      fg = c.fg2 },
-        },
-        replace = {
-          a = { bg = c.red,     fg = c.bg,  gui = "bold" },
-          b = { bg = c.bg2,     fg = c.fg },
-          c = { bg = c.bg,      fg = c.fg2 },
-        },
-        command = {
-          a = { bg = c.yellow,  fg = c.fg_max, gui = "bold" },
-          b = { bg = c.bg2,     fg = c.fg },
-          c = { bg = c.bg,      fg = c.fg2 },
-        },
-        inactive = {
-          a = { bg = c.bg3,     fg = c.fg3, gui = "bold" },
-          b = { bg = c.bg2,     fg = c.fg3 },
-          c = { bg = c.bg,      fg = c.fg3 },
-        },
-      }
-
-      return opts
-    end,
-  },
 }

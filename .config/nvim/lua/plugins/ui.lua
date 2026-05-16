@@ -77,6 +77,20 @@ return {
                 modified = icons.git.modified,
                 removed = icons.git.removed,
               },
+              diff_color = {
+                added = function()
+                  local c = require("config.palette")[vim.o.background == "dark" and "dark" or "light"]
+                  return { fg = c.br_green }
+                end,
+                modified = function()
+                  local c = require("config.palette")[vim.o.background == "dark" and "dark" or "light"]
+                  return { fg = c.br_yellow }
+                end,
+                removed = function()
+                  local c = require("config.palette")[vim.o.background == "dark" and "dark" or "light"]
+                  return { fg = c.br_red }
+                end,
+              },
               source = function()
                 local gitsigns = vim.b.gitsigns_status_dict
                 if gitsigns then
@@ -290,6 +304,18 @@ return {
       return opts
     end,
     config = function(_, opts)
+      local function make_theme()
+        local c = require("config.palette")[vim.o.background == "dark" and "dark" or "light"]
+        return {
+          normal   = { a = { bg = c.blue,    fg = c.bg,     gui = "bold" }, b = { bg = c.bg2, fg = c.fg }, c = { bg = c.bg1, fg = c.fg2 } },
+          insert   = { a = { bg = c.green,   fg = c.bg,     gui = "bold" }, b = { bg = c.bg2, fg = c.fg }, c = { bg = c.bg1, fg = c.fg2 } },
+          visual   = { a = { bg = c.magenta, fg = c.bg,     gui = "bold" }, b = { bg = c.bg2, fg = c.fg }, c = { bg = c.bg1, fg = c.fg2 } },
+          replace  = { a = { bg = c.red,     fg = c.bg,     gui = "bold" }, b = { bg = c.bg2, fg = c.fg }, c = { bg = c.bg1, fg = c.fg2 } },
+          command  = { a = { bg = c.yellow,  fg = c.fg_max, gui = "bold" }, b = { bg = c.bg2, fg = c.fg }, c = { bg = c.bg1, fg = c.fg2 } },
+          inactive = { a = { bg = c.bg3,     fg = c.fg3,    gui = "bold" }, b = { bg = c.bg2, fg = c.fg3 }, c = { bg = c.bg1, fg = c.fg3 } },
+        }
+      end
+      opts.options.theme = make_theme()
       require("lualine").setup(opts)
     end,
   },
