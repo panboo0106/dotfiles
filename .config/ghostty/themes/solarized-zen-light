@@ -1,32 +1,32 @@
 background = #f4f0e2
-foreground = #1c2d38
+foreground = #1c1c1e
 
-cursor-color = #1a6faf
+cursor-color = #0550ae
 cursor-text = #f4f0e2
 
-selection-background = #b8d4ea
-selection-foreground = #1c2d38
+selection-background = #b8d0e8
+selection-foreground = #1c1c1e
 
 # Normal (0-7)
-palette = 0=#3d5260
-palette = 1=#bf3535
-palette = 2=#3a7800
-palette = 3=#6a5e00
-palette = 4=#1a6faf
-palette = 5=#883c8c
-palette = 6=#107870
-palette = 7=#4a6878
+palette = 0=#3d4551
+palette = 1=#be1e2d
+palette = 2=#0a7c3c
+palette = 3=#8a6200
+palette = 4=#1565c0
+palette = 5=#7c3aed
+palette = 6=#0e7490
+palette = 7=#57606a
 
 # Bright (8-15)
-palette = 8=#293e4c
-palette = 9=#c02828
-palette = 10=#007840
-palette = 11=#6e6200
-palette = 12=#1060a0
-palette = 13=#9640a0
-palette = 14=#0c6460
-palette = 15=#001a28
+palette = 8=#24292f
+palette = 9=#9e1823
+palette = 10=#065f46
+palette = 11=#7c5200
+palette = 12=#1e40af
+palette = 13=#5b21b6
+palette = 14=#155e75
+palette = 15=#0d0d0d
 
 # Extended (16-17)
-palette = 16=#b04400
-palette = 17=#903800
+palette = 16=#b84600
+palette = 17=#922f00

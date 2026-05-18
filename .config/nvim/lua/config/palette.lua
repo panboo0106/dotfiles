@@ -98,73 +98,73 @@ M.light = {
   -- main background | kitty: background
   bg   = "#f4f0e2",
   -- sidebar, inactive tab | kitty: inactive_tab_background
-  bg1  = "#e8e2cf",
+  bg1  = "#e4dfcc",
   -- selection, popup, visual | kitty: selection_background
-  bg2  = "#b8d4ea",
+  bg2  = "#b8d0e8",
   -- cursor line highlight
-  bg3  = "#e0d8cc",
+  bg3  = "#dcd8ca",
   -- tab bar background | kitty: tab_bar_background
-  bg4  = "#c8bfa8",
+  bg4  = "#c8c0aa",
   -- lualine inactive depth
-  bg5  = "#c4baaa",
+  bg5  = "#c4bcaa",
 
   -- Foregrounds (dark → light)
   -- main foreground | kitty: foreground
-  fg      = "#1c2d38",
+  fg      = "#1c1c1e",
   -- secondary text
-  fg2     = "#3d5468",
+  fg2     = "#44444c",
   -- muted: lineNr, comment | kitty: inactive_border_color
-  fg3     = "#8fa4ae",
+  fg3     = "#9a9aa4",
   -- max contrast text = br_white | kitty: color15
-  fg_max  = "#001a28",
+  fg_max  = "#0d0d0d",
 
   -- ANSI normal (color0–7)
   -- color0 | kitty: color0
-  black   = "#3d5260",
+  black   = "#3d4551",
   -- color1 | kitty: color1
-  red     = "#bf3535",
+  red     = "#be1e2d",
   -- color2 | kitty: color2
-  green   = "#3a7800",
+  green   = "#0a7c3c",
   -- color3 | kitty: color3
-  yellow  = "#6a5e00",
+  yellow  = "#8a6200",
   -- color4 | kitty: color4
-  blue    = "#1a6faf",
+  blue    = "#1565c0",
   -- color5 | kitty: color5
-  magenta = "#883c8c",
+  magenta = "#7c3aed",
   -- color6 | kitty: color6
-  cyan    = "#107870",
+  cyan    = "#0e7490",
   -- color7 | kitty: color7
-  white   = "#4a6878",
+  white   = "#57606a",
 
   -- ANSI bright (color8–15, deeper on light bg)
   -- color8 | kitty: color8
-  br_black   = "#293e4c",
+  br_black   = "#24292f",
   -- color9 | kitty: color9
-  br_red     = "#c02828",
+  br_red     = "#9e1823",
   -- color10 | kitty: color10
-  br_green   = "#007840",
+  br_green   = "#065f46",
   -- color11 | kitty: color11
-  br_yellow  = "#6e6200",
+  br_yellow  = "#7c5200",
   -- color12 | kitty: color12
-  br_blue    = "#1060a0",
+  br_blue    = "#1e40af",
   -- color13 | kitty: color13
-  br_magenta = "#9640a0",
+  br_magenta = "#5b21b6",
   -- color14 | kitty: color14
-  br_cyan    = "#0c6460",
+  br_cyan    = "#155e75",
   -- color15 | kitty: color15
-  br_white   = "#001a28",
+  br_white   = "#0d0d0d",
 
   -- Extended
   -- color16 | kitty: color16
-  orange    = "#b04400",
+  orange    = "#b84600",
   -- color17 | kitty: color17
-  br_orange = "#903800",
+  br_orange = "#922f00",
 
   -- Semantic UI
   -- kitty: selection_background
-  selection     = "#b8d4ea",
-  -- kitty: url_color
-  url           = "#1a6faf",
+  selection     = "#b8d0e8",
+  -- kitty: cursor / active_border_color
+  url           = "#0550ae",
   -- LspReference read/text (light blue)
   lsp_ref       = "#dde8f0",
   -- LspReference write (light orange)
