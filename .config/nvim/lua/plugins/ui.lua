@@ -393,6 +393,7 @@ return {
   },
   {
     "Bekaboo/dropbar.nvim",
+    event = "VeryLazy",
     -- optional, but required for fuzzy finder support
     dependencies = {
       { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
@@ -478,9 +479,7 @@ return {
     "NvChad/nvim-colorizer.lua",
     event = "LazyFile",
     opts = {
-      "*",
-      css = { css = true },
-      html = { css = true },
+      filetypes = { "*", css = { css = true }, html = { css = true } },
     },
     config = function(_, opts)
       require("colorizer").setup(opts)

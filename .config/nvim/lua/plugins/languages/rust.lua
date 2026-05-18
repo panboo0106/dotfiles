@@ -127,6 +127,9 @@ return {
   {
     "saecki/crates.nvim",
     ft = "toml",
+    cond = function()
+      return vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":t") == "Cargo.toml"
+    end,
     opts = {
       lsp = {
         enabled = true,

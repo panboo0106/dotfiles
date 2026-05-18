@@ -26,7 +26,6 @@ return {
       -- LazyVim config for treesitter
       indent = { enable = true, disable = { "python" } },
       highlight = { enable = true },
-      folds = { enable = true },
       ensure_installed = {
         "bash",
         "c",
@@ -166,7 +165,7 @@ return {
       trim_scope = "outer",
     },
     keys = {
-      { "[c", function() require("treesitter-context").go_to_context(vim.v.count1) end, desc = "Jump to context" },
+      { "g[c", function() require("treesitter-context").go_to_context(vim.v.count1) end, desc = "Jump to context" },
     },
   },
 }

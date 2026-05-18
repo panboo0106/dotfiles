@@ -16,6 +16,7 @@ return {
   },
   {
     "kawre/leetcode.nvim",
+    event = "VeryLazy",
     build = ":TSUpdate html",
     dependencies = {
       "nvim-lua/plenary.nvim",
@@ -129,6 +130,7 @@ return {
     },
     cond = function()
       return vim.fn.has("win32") ~= 1
+        and (vim.env.KITTY_WINDOW_ID ~= nil or vim.env.TERM == "xterm-kitty")
     end,
     opts = {
       -- image.nvim config
@@ -374,9 +376,15 @@ return {
         desc = "Refresh explorer git status on focus",
       })
       -- 光标静止 updatetime 秒后刷新（AI 工具在 nvim 内部终端运行时不会切焦点，靠此兜底）
+      local _cursor_hold_last = 0
       vim.api.nvim_create_autocmd("CursorHold", {
         group = group,
-        callback = refresh_explorer,
+        callback = function()
+          local now = vim.uv.now()
+          if now - _cursor_hold_last < 30000 then return end
+          _cursor_hold_last = now
+          refresh_explorer()
+        end,
         desc = "Refresh explorer git status on cursor hold",
       })
       -- vim 从 :stop / ctrl+z 挂起恢复时刷新

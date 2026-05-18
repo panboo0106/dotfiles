@@ -362,7 +362,7 @@ return {
       -- 自动补全配置
       completions = {
         lsp = { enabled = true }, -- 推荐方式
-        blink = { enabled = false },
+        blink = { enabled = true },
         coq = { enabled = false },
         cmp = { enabled = false },
       },

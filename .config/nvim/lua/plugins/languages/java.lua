@@ -124,7 +124,7 @@ return {
 
             -- 内存配置（IDEA 级别）
             "--jvm-arg=-Xms1g", -- 初始堆内存 1GB
-            "--jvm-arg=-Xmx6g", -- 最大堆内存 6GB（接近 IDEA 默认配置）
+            "--jvm-arg=-Xmx3g", -- 最大堆内存 3GB
             "--jvm-arg=-XX:ReservedCodeCacheSize=512m", -- 代码缓存 512MB
 
             -- GC 优化（IDEA 同款配置）
@@ -281,9 +281,6 @@ return {
               },
               format = {
                 enabled = true,
-                settings = {
-                  url = vim.fn.expand("~/.config/nvim/apex-formatter.xml"),
-                },
               },
               saveActions = { -- 添加：保存时操作
                 organizeImports = true,

@@ -63,6 +63,7 @@ return {
         "typos-lsp",
         "markdownlint-cli2",
         "markdown-toc",
+        "yamlfmt",
       },
     },
   },
@@ -103,11 +104,6 @@ return {
 
       folds = { enabled = false }, -- nvim-ufo 接管折叠
 
-      format = {
-        formatting_options = nil,
-        timeout_ms = nil,
-      },
-
       ---@type table<string, lazyvim.lsp.Config|boolean>
       servers = {
         jdtls = false,
@@ -119,15 +115,10 @@ return {
           settings = {
             validate = "on",
             packageManager = "npm",
-            codeActionOnSave = {
-              enable = true,
-              mode = "all",
-            },
             format = true,
             nodePath = "",
             rules = {},
             workingDirectory = { mode = "location" },
-            useESLintClass = true,
             experimental = {
               useFlatConfig = true,
             },
@@ -138,7 +129,7 @@ return {
           settings = {
             typescript = {
               format = {
-                enable = true,
+                enable = false,
               },
             },
           },
@@ -155,11 +146,6 @@ return {
             "--completion-style=detailed",
             "--background-index",
             "--clang-tidy",
-          },
-          init_options = {
-            fallback_flags = {
-              "--style=file:" .. vim.fn.stdpath("config") .. "/.clang-format",
-            },
           },
         },
 

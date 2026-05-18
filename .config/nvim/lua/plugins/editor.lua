@@ -258,29 +258,10 @@ return {
       keymaps = {
         disable_defaults = false,
         view = {
-          -- 与 LazyVim 快捷键风格一致
           ["<tab>"] = "<cmd>DiffviewToggleFiles<cr>",
-          ["gf"] = "<cmd>DiffviewGotoFile<cr>",
-          ["<C-w>gf"] = "<cmd>DiffviewGotoFile split<cr>",
-          ["[x"] = "<cmd>DiffviewPrevConflict<cr>",
-          ["]x"] = "<cmd>DiffviewNextConflict<cr>",
-          ["<leader>co"] = "<cmd>DiffviewConflictChooseOurs<cr>",
-          ["<leader>ct"] = "<cmd>DiffviewConflictChooseTheirs<cr>",
-          ["<leader>cb"] = "<cmd>DiffviewConflictChooseBoth<cr>",
-          ["<leader>ca"] = "<cmd>DiffviewConflictChooseAll<cr>",
-          ["dx"] = "<cmd>DiffviewConflictDelete<cr>",
         },
-        diff3 = {
-          -- 三方合并视图快捷键
-          { { "n", "x" }, "2do", "<cmd>DiffviewDiffGet('ours')<cr>", { desc = "Get ours" } },
-          { { "n", "x" }, "3do", "<cmd>DiffviewDiffGet('theirs')<cr>", { desc = "Get theirs" } },
-        },
-        diff4 = {
-          -- 四方合并视图快捷键
-          { { "n", "x" }, "1do", "<cmd>DiffviewDiffGet('base')<cr>", { desc = "Get base" } },
-          { { "n", "x" }, "2do", "<cmd>DiffviewDiffGet('ours')<cr>", { desc = "Get ours" } },
-          { { "n", "x" }, "3do", "<cmd>DiffviewDiffGet('theirs')<cr>", { desc = "Get theirs" } },
-        },
+        diff3 = {},
+        diff4 = {},
         file_panel = {
           ["j"] = "<cmd>DiffviewNextEntry<cr>",
           ["<down>"] = "<cmd>DiffviewNextEntry<cr>",
@@ -328,6 +309,26 @@ return {
       },
     },
     config = function(_, opts)
+      local actions = require("diffview.actions")
+      local vk = opts.keymaps.view
+      vk["gf"]         = actions.goto_file_edit
+      vk["<C-w>gf"]   = actions.goto_file_split
+      vk["[x"]         = actions.prev_conflict
+      vk["]x"]         = actions.next_conflict
+      vk["<leader>co"] = actions.conflict_choose("ours")
+      vk["<leader>ct"] = actions.conflict_choose("theirs")
+      vk["<leader>cb"] = actions.conflict_choose("base")
+      vk["<leader>ca"] = actions.conflict_choose("all")
+      vk["dx"]         = actions.conflict_choose("none")
+      opts.keymaps.diff3 = {
+        { { "n", "x" }, "2do", actions.diffget("ours"),   { desc = "Get ours" } },
+        { { "n", "x" }, "3do", actions.diffget("theirs"), { desc = "Get theirs" } },
+      }
+      opts.keymaps.diff4 = {
+        { { "n", "x" }, "1do", actions.diffget("base"),   { desc = "Get base" } },
+        { { "n", "x" }, "2do", actions.diffget("ours"),   { desc = "Get ours" } },
+        { { "n", "x" }, "3do", actions.diffget("theirs"), { desc = "Get theirs" } },
+      }
       require("diffview").setup(opts)
 
       -- 额外的配置或自动命令
@@ -383,17 +384,14 @@ return {
     "ThePrimeagen/harpoon",
     branch = "harpoon2",
     dependencies = { "nvim-lua/plenary.nvim" },
-    keys = function()
-      local harpoon = require("harpoon")
-      return {
-        { "<leader>ha",  function() harpoon:list():add() end,                          desc = "Harpoon Add" },
-        { "<leader>hh",  function() harpoon.ui:toggle_quick_menu(harpoon:list()) end, desc = "Harpoon Menu" },
-        { "<leader>h1",  function() harpoon:list():select(1) end,                     desc = "Harpoon 1" },
-        { "<leader>h2",  function() harpoon:list():select(2) end,                     desc = "Harpoon 2" },
-        { "<leader>h3",  function() harpoon:list():select(3) end,                     desc = "Harpoon 3" },
-        { "<leader>h4",  function() harpoon:list():select(4) end,                     desc = "Harpoon 4" },
-      }
-    end,
+    keys = {
+      { "<leader>ha", function() require("harpoon"):list():add() end,                                             desc = "Harpoon Add" },
+      { "<leader>hh", function() require("harpoon").ui:toggle_quick_menu(require("harpoon"):list()) end,          desc = "Harpoon Menu" },
+      { "<leader>h1", function() require("harpoon"):list():select(1) end,                                         desc = "Harpoon 1" },
+      { "<leader>h2", function() require("harpoon"):list():select(2) end,                                         desc = "Harpoon 2" },
+      { "<leader>h3", function() require("harpoon"):list():select(3) end,                                         desc = "Harpoon 3" },
+      { "<leader>h4", function() require("harpoon"):list():select(4) end,                                         desc = "Harpoon 4" },
+    },
     opts = {},
   },
 

@@ -14,7 +14,7 @@ return {
       lua = { "stylua" },
 
       -- Go 语言（保持顺序，先导入整理后格式化）
-      go = { "gofumpt", "goimports", "goimports-reviser" },
+      go = { "goimports", "gofumpt", "goimports-reviser" },
 
       -- Web 开发（添加备选格式化工具）
       javascript = { "prettierd", "prettier" },
@@ -73,9 +73,6 @@ return {
       },
       shfmt = {
         args = { "-i", "2", "-ci" }, -- 使用 2 空格缩进
-      },
-      prettier = {
-        args = { "--print-width", "100", "--single-quote" },
       },
       black = {
         args = { "--line-length", "88" },
