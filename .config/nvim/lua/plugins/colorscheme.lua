@@ -79,6 +79,20 @@ return {
         hl.LspReferenceText  = { bg = c.lsp_ref }
         hl.LspReferenceRead  = { bg = c.lsp_ref }
         hl.LspReferenceWrite = { bg = c.lsp_ref_write }
+
+        -- render-markdown headings (low-saturation bg + solarized fg)
+        hl.RenderMarkdownH1   = { fg = c.br_blue,  bold = true }
+        hl.RenderMarkdownH2   = { fg = c.blue,    bold = true }
+        hl.RenderMarkdownH3   = { fg = c.br_cyan,  bold = true }
+        hl.RenderMarkdownH4   = { fg = c.cyan,    bold = true }
+        hl.RenderMarkdownH5   = { fg = c.fg,      bold = true }
+        hl.RenderMarkdownH6   = { fg = c.fg2,     bold = true }
+        hl.RenderMarkdownH1Bg = { bg = is_dark and "#0f2e52" or "#c8dff5" }
+        hl.RenderMarkdownH2Bg = { bg = is_dark and "#0b2644" or "#d2e6f7" }
+        hl.RenderMarkdownH3Bg = { bg = is_dark and "#081e38" or "#daedf8" }
+        hl.RenderMarkdownH4Bg = { bg = is_dark and "#05182e" or "#e2f1fa" }
+        hl.RenderMarkdownH5Bg = { bg = is_dark and "#031228" or "#eaf5fc" }
+        hl.RenderMarkdownH6Bg = { bg = is_dark and "#020e20" or "#f2f8fd" }
       end,
     },
 

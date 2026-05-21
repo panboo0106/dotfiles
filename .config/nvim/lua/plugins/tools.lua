@@ -214,7 +214,7 @@ return {
           explorer = {
             -- 文件显示配置
             hidden = true, -- 显示隐藏文件（推荐 true，这样能看到 .env 等配置）
-            ignored = true, -- 隐藏 .gitignore 里的文件（node_modules/dist/build 等自动过滤）
+            ignored = true, -- 显示 .gitignore 里的文件
 
             -- 排除列表：只排除真正不需要看的文件，避免误杀同名业务目录
             exclude = {
@@ -241,7 +241,7 @@ return {
             diagnostics_open = true,
             git_status = true,
             git_status_open = true,
-            git_untracked = true,
+            git_untracked = false, -- 关闭扫描 untracked 文件（移除 -unormal 参数，git status 速度大幅提升）
             follow_file = true,
             focus = "list",
             auto_close = false,
@@ -342,62 +342,49 @@ return {
       },
     },
     init = function()
-      -- 监听 Git 状态变化后刷新 explorer
-      -- 注意：Snacks.explorer.refresh() 不存在，正确流程是：
-      --   1. Git.refresh(cwd) 将 15 分钟 git 状态缓存标记为脏（last = 0）
-      --   2. Watch.refresh() 检测到脏后调用 picker:find() 重新获取状态
       local group = vim.api.nvim_create_augroup("SnacksExplorerGitRefresh", { clear = true })
       local function refresh_explorer()
         vim.defer_fn(function()
-          local ok_git, Git = pcall(require, "snacks.explorer.git")
-          local ok_watch, Watch = pcall(require, "snacks.explorer.watch")
-          if not ok_git or not ok_watch then
-            return
-          end
           local pickers = Snacks.picker.get({ source = "explorer", tab = false })
           for _, picker in ipairs(pickers) do
             if picker and not picker.closed then
-              Git.refresh(picker:cwd())
+              -- explorer_update = Tree:refresh(cwd) + M.update(picker)
+              -- Tree:refresh 同时清除 expanded 状态（让目录重新扫描）并标记 git 缓存失效
+              -- 仅用 Git.refresh() 无法触发文件系统变化（新增/删除文件）的更新
+              picker:action("explorer_update")
             end
           end
-          Watch.refresh()
-        end, 300) -- 300ms 确保外部工具已完成写入，git 已更新文件状态
+        end, 150)
       end
-      vim.api.nvim_create_autocmd("User", {
-        group = group,
-        pattern = { "GitSignsUpdate", "GitSignsChanged" },
-        callback = refresh_explorer,
-        desc = "Refresh explorer after git signs update",
-      })
-      -- 切回 nvim 焦点时刷新（AI 工具或外部 git 操作后最关键的触发器）
+      -- 切回 nvim 焦点时刷新（外部 git 操作、Claude Code、lazygit 后的主要触发器）
       vim.api.nvim_create_autocmd("FocusGained", {
         group = group,
         callback = refresh_explorer,
-        desc = "Refresh explorer git status on focus",
+        desc = "Refresh explorer on focus regain",
       })
-      -- 光标静止 updatetime 秒后刷新（AI 工具在 nvim 内部终端运行时不会切焦点，靠此兜底）
-      local _cursor_hold_last = 0
-      vim.api.nvim_create_autocmd("CursorHold", {
+      -- 离开 nvim 内置终端时刷新（在 nvim terminal 里跑 git 命令不会触发 FocusGained）
+      vim.api.nvim_create_autocmd("TermLeave", {
         group = group,
-        callback = function()
-          local now = vim.uv.now()
-          if now - _cursor_hold_last < 30000 then return end
-          _cursor_hold_last = now
-          refresh_explorer()
-        end,
-        desc = "Refresh explorer git status on cursor hold",
+        callback = refresh_explorer,
+        desc = "Refresh explorer after leaving terminal mode",
       })
       -- vim 从 :stop / ctrl+z 挂起恢复时刷新
       vim.api.nvim_create_autocmd("VimResume", {
         group = group,
         callback = refresh_explorer,
-        desc = "Refresh explorer git status on vim resume",
+        desc = "Refresh explorer on vim resume",
       })
-      -- 保存文件后刷新
-      vim.api.nvim_create_autocmd("BufWritePost", {
+      -- CursorHold 兜底：AI 工具在 nvim terminal 内持续运行时无法自动触发上述事件
+      local _last_hold = 0
+      vim.api.nvim_create_autocmd("CursorHold", {
         group = group,
-        callback = refresh_explorer,
-        desc = "Refresh explorer git status after write",
+        callback = function()
+          local now = vim.uv.now()
+          if now - _last_hold < 10000 then return end
+          _last_hold = now
+          refresh_explorer()
+        end,
+        desc = "Refresh explorer on cursor hold (fallback)",
       })
     end,
   },

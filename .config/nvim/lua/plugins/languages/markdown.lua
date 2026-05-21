@@ -71,10 +71,10 @@ return {
         enabled = true,
         sign = false, -- 关闭 sign 列图标，减少干扰
         icons = { "󰉫 ", "󰉬 ", "󰉭 ", "󰉮 ", "󰉯 ", "󰉰 " },
-        position = "overlay",
+        position = "inline",
         width = { "full", "full", "block", "block", "block", "block" }, -- H1/H2 铺满整行，H3+ 仅高亮文字
         left_margin = 0,
-        left_pad = 1, -- 图标左侧留一格，更透气
+        left_pad = 0,
         right_pad = 1,
         min_width = 0,
         border = true,         -- 启用上下装饰线
@@ -313,12 +313,7 @@ return {
 
       -- 缩进配置 (org-mode 风格)
       indent = {
-        enabled = true,
-        per_level = 2,
-        skip_level = 1,   -- H1 不缩进
-        skip_heading = true, -- 标题行本身不缩进
-        icon = "▎",
-        highlight = "RenderMarkdownIndent",
+        enabled = false,
       },
 
       -- LaTeX 支持
@@ -374,6 +369,7 @@ return {
             render_modes = true,
             padding = { highlight = "NormalFloat" },
             sign = { enabled = false },
+            code = { left_pad = 0, right_pad = 0 },
           },
         },
       },
