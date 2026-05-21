@@ -20,7 +20,6 @@
 # Application Data
 # =============================================================================
 .cache/
-.claude/
 .claude.json
 .claude.json.backup*
 .docker/
