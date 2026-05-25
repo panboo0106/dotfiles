@@ -65,7 +65,7 @@ return {
         hl.VisualNOS  = { bg = c.bg5 }
         hl.Search     = { bg = c.bg2,    fg = c.fg }
         hl.IncSearch  = { bg = c.yellow, fg = is_dark and c.bg or c.fg_max }
-        hl.MatchParen = { bg = c.fg3,    fg = c.fg }
+        hl.MatchParen = { bg = c.fg3,    fg = c.br_cyan }
         hl.Underlined = { fg = c.blue,   underline = true }
         hl.Error      = { fg = c.red,    bold = true }
         hl.Todo       = { fg = c.magenta, bold = true }
