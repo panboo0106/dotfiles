@@ -118,3 +118,4 @@ Google Drive/
 .pnpm-store/
 .python-version
 .pyenv/
+.claude

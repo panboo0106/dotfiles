@@ -75,6 +75,10 @@ return {
         hl.ModeMsg    = { fg = c.fg }
         hl.MoreMsg    = { fg = c.cyan }
 
+        -- Winbar (dropbar.nvim) — must match editor bg to avoid black end-cap
+        hl.WinBar   = { bg = c.bg, fg = c.fg2 }
+        hl.WinBarNC = { bg = c.bg, fg = c.fg3 }
+
         -- LSP references
         hl.LspReferenceText  = { bg = c.lsp_ref }
         hl.LspReferenceRead  = { bg = c.lsp_ref }

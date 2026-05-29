@@ -64,7 +64,6 @@ return {
               "mode",
               icons_enabled = true,
               icon = "󰊠",
-              color = { gui = "bold" },
               separator = { left = "", right = "" },
             },
           },
