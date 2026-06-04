@@ -97,6 +97,8 @@ return {
         hl.RenderMarkdownH4Bg = { bg = is_dark and "#05182e" or "#e2f1fa" }
         hl.RenderMarkdownH5Bg = { bg = is_dark and "#031228" or "#eaf5fc" }
         hl.RenderMarkdownH6Bg = { bg = is_dark and "#020e20" or "#f2f8fd" }
+
+        hl["@markup.strong"] = { bold = true, fg = c.fg_strong }
       end,
     },
 
