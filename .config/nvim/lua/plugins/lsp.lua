@@ -63,6 +63,7 @@ return {
         "typos-lsp",
         "markdownlint-cli2",
         "markdown-toc",
+        "markdown-oxide", -- Obsidian wikilink LSP（跳转/反链/补全）
         "yamlfmt",
       },
     },
@@ -108,7 +109,15 @@ return {
       servers = {
         jdtls = false,
 
-        marksman = {},
+        -- 用 markdown-oxide 取代 marksman：原生支持 Obsidian [[wikilink]] 跳转/反链/补全
+        marksman = false,
+        markdown_oxide = {
+          capabilities = {
+            workspace = {
+              didChangeWatchedFiles = { dynamicRegistration = true },
+            },
+          },
+        },
 
         -- ============ JavaScript/TypeScript ============
         eslint = {
