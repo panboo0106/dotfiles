@@ -39,7 +39,7 @@ M.dark = {
   -- max contrast on colored bg (e.g. lualine command mode)
   fg_max  = "#fdf6e3",
   -- one step below fg_max — bold/strong emphasis without going full white
-  fg_strong = "#c0c4bc",
+  fg_strong = "#aeb2aa",
 
   -- ANSI normal (color0–7)
   -- color0 | kitty: color0
@@ -120,7 +120,7 @@ M.light = {
   -- max contrast text = br_white | kitty: color15
   fg_max  = "#0d0d0d",
   -- one step below fg_max — bold/strong emphasis (light mode has little headroom)
-  fg_strong = "#131313",
+  fg_strong = "#232323",
 
   -- ANSI normal (color0–7)
   -- color0 | kitty: color0

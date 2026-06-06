@@ -241,7 +241,7 @@ return {
             diagnostics_open = true,
             git_status = true,
             git_status_open = true,
-            git_untracked = false, -- 关闭扫描 untracked 文件（移除 -unormal 参数，git status 速度大幅提升）
+            git_untracked = true, -- 必须 true：snacks 同时传 --ignored=matching，与 -uno 不兼容会让 git status 整体失败
             follow_file = true,
             focus = "list",
             auto_close = false,
