@@ -1,6 +1,9 @@
 # =============================================================================
 # Ghostty Configuration
-# Migrated from kitty
+# Migrated from kitty — v2 (2026-06-25): corrected action mappings
+# Diff vs v1: re-added prompt_tab_title / last_tab / line-scroll / prompt-backward /
+#             opacity-toggle (all were wrongly marked unsupported); fixed the
+#             macOS no-op toggle_maximize binding. Font block untouched.
 # =============================================================================
 
 # =============================================================================
@@ -8,8 +11,10 @@
 # =============================================================================
 term = xterm-256color
 # shell-integration supports: detect, bash, zsh, fish, elvish
-# kitty's no-cursor/no-notify options are not available
+# Features (prefix no- to disable); flip cursor->no-cursor so shell integration
+# doesn't override cursor-style=bar at the prompt (kitty: shell_integration ... no-cursor).
 shell-integration = detect
+shell-integration-features = no-cursor,no-sudo,title,no-ssh-env,no-ssh-terminfo,path
 scrollback-limit = 10000000
 mouse-hide-while-typing = true
 
@@ -25,7 +30,9 @@ env = PATH=$PATH:/opt/homebrew/bin
 # =============================================================================
 background-opacity = 0.98
 
-# Font rendering
+# -----------------------------------------------------------------------------
+# Font rendering  (DO NOT CHANGE — per user request)
+# -----------------------------------------------------------------------------
 font-size = 16
 adjust-cell-height = 20%
 font-thicken = true
@@ -41,8 +48,15 @@ font-feature = +liga
 cursor-style = bar
 cursor-style-blink = false
 
+# Cursor trail (kitty: cursor_trail 1). Ghostty has no native trail, so this
+# GLSL shader mimics kitty's comet trail. always = keep animating on unfocus
+# (needed for cursor-style=bar). Tune color/duration/length/blur at the top of
+# shaders/cursor_tail.glsl. Source: github.com/sahaj-b/ghostty-cursor-shaders
+custom-shader = shaders/cursor_tail.glsl
+custom-shader-animation = always
+
 # =============================================================================
-# Fonts
+# Fonts  (DO NOT CHANGE — per user request)
 # =============================================================================
 # macOS Core Text registers non-standard weights as separate families.
 # Use "JetBrainsMono NFM Thin" directly — font-style = SemiBold is ignored.
@@ -54,11 +68,12 @@ font-codepoint-map = U+E000-U+F8FF,U+F0000-U+FFFFF=JetBrainsMono Nerd Font Mono
 font-family = LXGW WenKai Mono
 
 # =============================================================================
-# Theme — follows macOS system light/dark appearance automatically
-# Format: theme = <light-theme>,<dark-theme>
-# To force one theme: theme = solarized-zen-light
+# Theme — currently LOCKED to dark (last set via toggle-theme.sh).
+# To follow macOS system light/dark automatically:
+#   theme = light:solarized-zen-light,dark:solarized-zen-dark
+# To force light: theme = solarized-zen-light
 # =============================================================================
-theme = light:solarized-zen-light,dark:solarized-zen-dark
+theme = solarized-zen-dark
 
 # =============================================================================
 # Window
@@ -82,15 +97,18 @@ confirm-close-surface = false
 # =============================================================================
 # Keybindings
 # kitty_mod = ctrl+shift
-# NOTE: kitty's original config had two conflicts which are fixed here:
-#   - ctrl+shift+f was bound to both toggle_fullscreen AND scroll_page_down
-#   - ctrl+shift+e was bound to both edit_scrollback AND edit_config_file
-#   - ctrl+shift+n was bound twice for scroll_to_prompt in both directions
+# NOTE: kitty's original config had several conflicts, resolved here:
+#   - ctrl+shift+f  → scroll_page_down  (fullscreen moved to ctrl+shift+enter)
+#   - ctrl+shift+e  → open_config       (edit_scrollback has no equivalent)
+#   - ctrl+shift+n  → jump_to_prompt forward  (backward added on ctrl+shift+alt+n)
 # =============================================================================
 
 # --- Tab management ---
 keybind = ctrl+shift+t=new_tab
 keybind = ctrl+shift+q=close_tab
+# Interactive rename (kitty: kitty_mod+apostrophe). Ghostty action is prompt_tab_title
+# (set_tab_title takes a fixed title arg; prompt_tab_title opens an input popup).
+keybind = ctrl+shift+apostrophe=prompt_tab_title
 
 # Tab navigation (vim-style ]b/[b)
 keybind = ctrl+shift+]=next_tab
@@ -100,7 +118,7 @@ keybind = ctrl+shift+[=previous_tab
 keybind = ctrl+shift+period=move_tab:1
 keybind = ctrl+shift+comma=move_tab:-1
 
-# Quick tab switch (alt+number)
+# Quick tab switch (alt+number); alt+0 → last tab (kitty: goto_tab 10)
 keybind = alt+one=goto_tab:1
 keybind = alt+two=goto_tab:2
 keybind = alt+three=goto_tab:3
@@ -110,7 +128,7 @@ keybind = alt+six=goto_tab:6
 keybind = alt+seven=goto_tab:7
 keybind = alt+eight=goto_tab:8
 keybind = alt+nine=goto_tab:9
-# alt+0: no last_tab action in ghostty; use alt+9 to reach tab 9 or next_tab repeatedly
+keybind = alt+zero=last_tab
 
 # --- Split management (vim-style ctrl+w+s/v) ---
 # Horizontal split / split below (ctrl+w+s)
@@ -136,19 +154,20 @@ keybind = alt+j=resize_split:down,10
 keybind = ctrl+shift+u=scroll_page_up
 keybind = ctrl+shift+d=scroll_page_down
 keybind = ctrl+shift+b=scroll_page_up
-# ctrl+shift+f freed from toggle_fullscreen conflict; used for page down
 keybind = ctrl+shift+f=scroll_page_down
+
+# Line scroll (kitty: ctrl+shift+up/down). Negative count scrolls up.
+keybind = ctrl+shift+up=scroll_page_lines:-1
+keybind = ctrl+shift+down=scroll_page_lines:1
 
 # Scroll to top/bottom (kitty: ctrl+shift+gg / ctrl+shift+g)
 keybind = ctrl+shift+home=scroll_to_top
 keybind = ctrl+shift+end=scroll_to_bottom
 
-# ctrl+shift+up/down line-scroll: no clean equivalent in ghostty without negative params
-# page scrolling is already on ctrl+shift+u/d/b/f
-
-# Navigate shell prompts (kitty: scroll_to_prompt 1/-1)
-# scroll_to_prompt only accepts non-negative integers; forward nav only
+# Navigate shell prompts (kitty: scroll_to_prompt 1/-1). Requires shell integration.
+# jump_to_prompt accepts negative counts for backward navigation.
 keybind = ctrl+shift+n=jump_to_prompt:1
+keybind = ctrl+shift+alt+n=jump_to_prompt:-1
 
 # --- Clipboard ---
 keybind = ctrl+shift+y=copy_to_clipboard
@@ -156,6 +175,8 @@ keybind = ctrl+shift+p=paste_from_clipboard
 
 # --- Utilities ---
 keybind = ctrl+shift+semicolon=clear_screen
+# Toggle transparency (kitty: dynamic_background_opacity). macOS only.
+keybind = ctrl+shift+o=toggle_background_opacity
 
 # --- Configuration ---
 keybind = ctrl+shift+r=reload_config
@@ -163,7 +184,10 @@ keybind = ctrl+shift+r=reload_config
 keybind = ctrl+shift+e=open_config
 
 # --- Window control ---
-keybind = ctrl+shift+m=toggle_maximize
+# kitty: kitty_mod+m toggle_maximized. Ghostty toggle_maximize is a macOS NO-OP
+# (macOS has no maximize concept). toggle_split_zoom is the useful equivalent:
+# it zooms the focused split to fill the tab. Revert to toggle_maximize if undesired.
+keybind = ctrl+shift+m=toggle_split_zoom
 # Fullscreen moved off ctrl+shift+f (was conflicting with scroll_page_down)
 keybind = ctrl+shift+enter=toggle_fullscreen
 
@@ -173,23 +197,18 @@ keybind = ctrl+shift+minus=decrease_font_size:2
 keybind = ctrl+shift+zero=reset_font_size
 
 # =============================================================================
-# Not migrated (no ghostty equivalent):
+# Confirmed NOT available in Ghostty (no native equivalent):
 #   - tab_bar_style powerline / tab_powerline_style angled (native tab bar only)
-#   - active_tab_font_style bold (not configurable)
-#   - active_tab_background/foreground colors (native tab bar)
-#   - dynamic_background_opacity (opacity is static)
-#   - cursor_trail (not supported)
-#   - window_border_width (not supported)
-#   - window_resize_step_cells (not supported)
-#   - url_style curly (not supported)
-#   - allow_remote_control (no socket remote control)
-#   - notify_on_cmd_finish / filter_notification (not supported)
-#   - text_composition_strategy (not supported)
-#   - terminal_selectable_mark_characters (not supported)
+#   - active_tab_font_style bold / active_tab colors (native tab bar styling)
+#   - cursor_trail — no NATIVE option, but now ACTIVE via custom shader
+#     (see custom-shader in Appearance above). Original kitty one-liner has no
+#     direct native equivalent; this GLSL approach is the only way in Ghostty.
+#   - window_border_width / window_resize_step_cells / url_style curly
+#   - text_composition_strategy / terminal_selectable_mark_characters
 #   - repaint_delay / input_delay / sync_to_monitor (not needed; ghostty is fast)
-#   - session save/restore (save_session.sh had no ghostty equivalent)
-#   - F5/F6 theme hot-switching (use macOS system appearance toggle instead;
-#     ghostty follows it automatically via theme = light,dark above)
-#   - set_tab_title keybind (no interactive rename in ghostty)
-#   - show_kitty_env_vars (no equivalent)
+#   - allow_remote_control socket (no IPC remote control) → save_session.sh unusable
+#   - notify_on_cmd_finish / filter_notification
+#   - session save/restore (no ghostty equivalent; use tmux/zellij if needed)
+#   - F5/F6 theme hot-switch via keybind (keybinds can't run shell scripts);
+#     use toggle-theme.sh + `kill -USR2`, or rely on system appearance auto-switch
 # =============================================================================
