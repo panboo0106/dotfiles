@@ -184,10 +184,9 @@ keybind = ctrl+shift+r=reload_config
 keybind = ctrl+shift+e=open_config
 
 # --- Window control ---
-# kitty: kitty_mod+m toggle_maximized. Ghostty toggle_maximize is a macOS NO-OP
-# (macOS has no maximize concept). toggle_split_zoom is the useful equivalent:
-# it zooms the focused split to fill the tab. Revert to toggle_maximize if undesired.
-keybind = ctrl+shift+m=toggle_split_zoom
+# kitty: kitty_mod+m toggle_maximized. toggle_maximize works on macOS since 1.1.0
+# (fills the screen, stays windowed — not fullscreen).
+keybind = ctrl+shift+m=toggle_maximize
 # Fullscreen moved off ctrl+shift+f (was conflicting with scroll_page_down)
 keybind = ctrl+shift+enter=toggle_fullscreen
 
