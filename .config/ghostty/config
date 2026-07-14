@@ -58,9 +58,10 @@ custom-shader-animation = always
 # =============================================================================
 # Fonts  (DO NOT CHANGE — per user request)
 # =============================================================================
-# macOS Core Text registers non-standard weights as separate families.
-# Use "JetBrainsMono NFM Thin" directly — font-style = SemiBold is ignored.
-font-family = JetBrainsMono NFM
+# Primary font — registered family name (PS prefix JetBrainsMonoNFM-).
+# Was "JetBrainsMono NFM" (Core Text PS shorthand); switched to the family
+# name to match Zed. Both resolve to JetBrainsMonoNFM-Regular.
+font-family = JetBrainsMono Nerd Font Mono
 # NF v2 PUA: U+E000-U+F8FF, NF v3 Plane 15: U+F0000-U+FFFFF
 font-codepoint-map = U+E000-U+F8FF,U+F0000-U+FFFFF=JetBrainsMono Nerd Font Mono
 # CJK fallback: safe to add now because font-codepoint-map pins NF icons to

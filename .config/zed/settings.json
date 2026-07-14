@@ -20,6 +20,11 @@
   "ui_font_size": 16,
   "buffer_font_size": 15,
   "buffer_font_family": "JetBrainsMono Nerd Font Mono",
+  "buffer_font_fallbacks": ["LXGW WenKai Mono"],
+  "buffer_font_features": {
+    "calt": true,
+    "liga": true
+  },
   "buffer_line_height": "comfortable",
   "cursor_blink": false,
   "cursor_shape": "bar",
@@ -34,6 +39,7 @@
   },
   "terminal": {
     "font_family": "JetBrainsMono Nerd Font Mono",
+    "font_fallbacks": ["LXGW WenKai Mono"],
     "font_size": 14,
     "line_height": "comfortable"
   },

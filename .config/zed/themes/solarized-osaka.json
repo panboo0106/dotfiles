@@ -196,7 +196,7 @@
         "terminal.ansi.bright_blue":    "#4aa3e3",
         "terminal.ansi.bright_magenta": "#e04a95",
         "terminal.ansi.bright_cyan":    "#35bdb2",
-        "terminal.ansi.bright_white":   "#a0b2b2"
+        "terminal.ansi.bright_white":   "#c4d0d0"
       }
     }
   ]

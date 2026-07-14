@@ -130,7 +130,11 @@ return {
     },
     cond = function()
       return vim.fn.has("win32") ~= 1
-        and (vim.env.KITTY_WINDOW_ID ~= nil or vim.env.TERM == "xterm-kitty")
+        and (
+          vim.env.KITTY_WINDOW_ID ~= nil
+          or vim.env.TERM == "xterm-kitty"
+          or vim.env.TERM_PROGRAM == "ghostty"
+        )
     end,
     opts = {
       -- image.nvim config
