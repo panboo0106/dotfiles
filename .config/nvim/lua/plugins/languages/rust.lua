@@ -123,20 +123,6 @@ return {
     end,
   },
 
-  -- Cargo.toml 依赖版本提示
-  {
-    "saecki/crates.nvim",
-    ft = "toml",
-    cond = function()
-      return vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":t") == "Cargo.toml"
-    end,
-    opts = {
-      lsp = {
-        enabled = true,
-        actions = true,
-        completion = true,
-        hover = true,
-      },
-    },
-  },
+  -- crates.nvim: now entirely from extras.lang.rust (event="BufRead Cargo.toml" fixes the
+  -- old cond-based bug where opening Cargo.toml mid-session never loaded the plugin)
 }

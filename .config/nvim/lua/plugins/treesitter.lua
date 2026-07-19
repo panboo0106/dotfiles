@@ -1,107 +1,13 @@
 return {
 
-  -- Treesitter is a new parser generator tool that we can
-  -- use in Neovim to power faster and more accurate
-  -- syntax highlighting.
+  -- Treesitter config/build/event/cmd now entirely from LazyVim core (was a stale hand-copy
+  -- that predated upstream's indent/fold wiring and silently dropped indentexpr/foldexpr).
+  -- Only the project's own parser additions survive here; opts_extend merges them into core's list.
   {
     "nvim-treesitter/nvim-treesitter",
-    branch = "main",
-    version = false, -- last release is way too old and doesn't work on Windows
-    build = function()
-      local TS = require("nvim-treesitter")
-      if not TS.get_installed then
-        LazyVim.error("Please restart Neovim and run `:TSUpdate` to use the `nvim-treesitter` **main** branch.")
-        return
-      end
-      LazyVim.treesitter.ensure_treesitter_cli(function()
-        TS.update(nil, { summary = true })
-      end)
-    end,
-    lazy = vim.fn.argc(-1) == 0, -- load treesitter early when opening a file from the cmdline
-    event = { "LazyFile", "VeryLazy" },
-    cmd = { "TSUpdate", "TSInstall", "TSLog", "TSUninstall" },
-    opts_extend = { "ensure_installed" },
-    ---@class lazyvim.TSConfig: TSConfig
     opts = {
-      -- LazyVim config for treesitter
-      indent = { enable = true, disable = { "python" } },
-      highlight = { enable = true },
-      ensure_installed = {
-        "bash",
-        "c",
-        "diff",
-        "go",
-        "gomod",
-        "gosum",
-        "html",
-        "java",
-        "javascript",
-        "jsdoc",
-        "json",
-        "jsonc",
-        "lua",
-        "luadoc",
-        "luap",
-        "markdown",
-        "markdown_inline",
-        "printf",
-        "python",
-        "query",
-        "regex",
-        "rust",
-        "toml",
-        "tsx",
-        "typescript",
-        "vim",
-        "vimdoc",
-        "xml",
-        "yaml",
-        "mermaid",
-      },
+      ensure_installed = { "go", "gomod", "gosum", "java", "jsonc", "rust", "mermaid" },
     },
-    ---@param opts lazyvim.TSConfig
-    config = function(_, opts)
-      local TS = require("nvim-treesitter")
-
-      -- some quick sanity checks
-      if not TS.get_installed then
-        return LazyVim.error("Please use `:Lazy` and update `nvim-treesitter`")
-      elseif type(opts.ensure_installed) ~= "table" then
-        return LazyVim.error("`nvim-treesitter` opts.ensure_installed must be a table")
-      end
-
-      -- setup treesitter
-      TS.setup(opts)
-      LazyVim.treesitter.get_installed(true) -- initialize the installed langs
-
-      -- install missing parsers
-      local install = vim.tbl_filter(function(lang)
-        return not LazyVim.treesitter.have(lang)
-      end, opts.ensure_installed or {})
-      if #install > 0 then
-        LazyVim.treesitter.ensure_treesitter_cli(function()
-          TS.install(install, { summary = true }):await(function()
-            LazyVim.treesitter.get_installed(true) -- refresh the installed langs
-          end)
-        end)
-      end
-
-      vim.api.nvim_create_autocmd("FileType", {
-        group = vim.api.nvim_create_augroup("lazyvim_treesitter", { clear = true }),
-        callback = function(ev)
-          if not LazyVim.treesitter.have(ev.match) then
-            return
-          end
-
-          -- highlighting
-          if vim.tbl_get(opts, "highlight", "enable") ~= false then
-            pcall(vim.treesitter.start)
-          end
-
-
-        end,
-      })
-    end,
   },
 
   {

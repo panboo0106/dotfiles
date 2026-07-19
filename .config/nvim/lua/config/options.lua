@@ -6,9 +6,6 @@ vim.opt.relativenumber = false
 vim.opt.timeoutlen = 300
 vim.opt.shell = "zsh"
 vim.opt.spell = false
--- 设置 Ruff 全局配置文件路径
-vim.env.RUFF_CONFIG = vim.fn.stdpath("config") .. "/ruff.toml"
-vim.g.build_cmd = "make"
 -- 动态获取 Node 和 Go 路径，追加到 PATH
 local _nvm_default = vim.fn.expand("~/.nvm/versions/node/default/bin")
 local _node_exe = vim.fn.exepath("node")
@@ -30,10 +27,6 @@ vim.filetype.add({
   pattern = {
     [".*/templates/.*%.yaml"] = "helm",
   },
-  extension = {
-    sh = "sh",
-  },
 })
-vim.opt.showtabline = 0
 -- 启用保存时自动格式化
 vim.g.autoformat = true

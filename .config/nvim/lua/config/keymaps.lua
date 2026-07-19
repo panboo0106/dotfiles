@@ -3,9 +3,9 @@
 -- Add any additional keymaps here
 --
 -- windows resize cmd
-vim.keymap.set("n", "<S-Up>",    ":resize +2<CR>",          { noremap = true, silent = true })
-vim.keymap.set("n", "<S-Down>",  ":resize -2<CR>",          { noremap = true, silent = true })
-vim.keymap.set("n", "<S-Left>",  ":vertical resize -2<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<S-Up>", ":resize +2<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<S-Down>", ":resize -2<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<S-Left>", ":vertical resize -2<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<S-Right>", ":vertical resize +2<CR>", { noremap = true, silent = true })
 --  esc replace
 vim.keymap.set("i", "jj", "<ESC>", { noremap = true, silent = true })
@@ -16,46 +16,46 @@ local map = vim.keymap.set
 
 -- 水平分割打开终端（每次新建独立实例，用 <C-d> 或 :bd 关闭）
 map("n", "<leader>th", function()
-	vim.cmd("split")
-	vim.cmd("terminal")
-	vim.cmd("startinsert")
+  vim.cmd("split")
+  vim.cmd("terminal")
+  vim.cmd("startinsert")
 end, { desc = "Horizontal Split" })
 
 -- 垂直分割打开终端（每次新建独立实例，用 <C-d> 或 :bd 关闭）
 map("n", "<leader>tv", function()
-	vim.cmd("vsplit")
-	vim.cmd("terminal")
-	vim.cmd("startinsert")
+  vim.cmd("vsplit")
+  vim.cmd("terminal")
+  vim.cmd("startinsert")
 end, { desc = "Vertical Split" })
 
 -- 新标签页终端
 map("n", "<leader>tt", function()
-	vim.cmd("tabnew")
-	vim.cmd("terminal")
-	vim.cmd("startinsert")
+  vim.cmd("tabnew")
+  vim.cmd("terminal")
+  vim.cmd("startinsert")
 end, { desc = "New Tab Terminal" })
 
 -- 右侧终端：切换
 map("n", "<leader>ta", function()
-	Snacks.terminal.toggle(nil, {
-		id = "right",
-		win = {
-			position = "right",
-			width = 40,
-			border = "rounded",
-		},
-	})
+  Snacks.terminal.toggle(nil, {
+    id = "right",
+    win = {
+      position = "right",
+      width = 40,
+      border = "rounded",
+    },
+  })
 end, { desc = "Toggle Right" })
 
 -- 右侧终端：新建
 map("n", "<leader>tn", function()
-	Snacks.terminal.open(nil, {
-		win = {
-			position = "right",
-			width = 40,
-			border = "rounded",
-		},
-	})
+  Snacks.terminal.open(nil, {
+    win = {
+      position = "right",
+      width = 40,
+      border = "rounded",
+    },
+  })
 end, { desc = "New Right" })
 
 -- 终端模式下的窗口切换快捷键
@@ -69,70 +69,70 @@ map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit Terminal (Double Esc)" })
 
 -- 覆盖 LazyVim 默认 <C-/> 终端：relative=win，仅在代码区下方分割，不遮挡左树
 local _toggle_bottom_terminal = function()
-	Snacks.terminal.toggle(nil, {
-		id = "bottom",
-		cwd = LazyVim.root(),
-		win = {
-			relative = "win",
-			position = "bottom",
-			height = 0.4,
-			border = "rounded",
-		},
-	})
+  Snacks.terminal.toggle(nil, {
+    id = "bottom",
+    cwd = LazyVim.root(),
+    win = {
+      relative = "win",
+      position = "bottom",
+      height = 0.4,
+      border = "rounded",
+    },
+  })
 end
 map({ "n", "t" }, "<c-/>", _toggle_bottom_terminal, { desc = "Terminal (Root Dir)" })
 map({ "n", "t" }, "<c-_>", _toggle_bottom_terminal, { desc = "which_key_ignore" })
 
 -- 浮动终端（额外）
 map({ "n", "t" }, "<leader>tf", function()
-	Snacks.terminal.toggle(nil, {
-		id = "float",
-		win = {
-			position = "float",
-			border = "rounded",
-			width = 0.8,
-			height = 0.8,
-		},
-	})
+  Snacks.terminal.toggle(nil, {
+    id = "float",
+    win = {
+      position = "float",
+      border = "rounded",
+      width = 0.8,
+      height = 0.8,
+    },
+  })
 end, { desc = "Float Terminal" })
 
 -- ==================== Scratch 临时笔记（<leader>N）===================
 map("n", "<leader>Nn", function()
-	Snacks.scratch()
+  Snacks.scratch()
 end, { desc = "New Scratch" })
 
 map("n", "<leader>Ns", function()
-	local scratch_dir = vim.fn.stdpath("data") .. "/scratch"
-	vim.fn.mkdir(scratch_dir, "p")
-	Snacks.scratch({ root = scratch_dir })
+  local scratch_dir = vim.fn.stdpath("data") .. "/scratch"
+  vim.fn.mkdir(scratch_dir, "p")
+  Snacks.scratch({ root = scratch_dir })
 end, { desc = "Save to File" })
 
 map("n", "<leader>Nd", function()
-	local scratch_dir = vim.fn.stdpath("data") .. "/scratch"
-	vim.fn.mkdir(scratch_dir, "p")
-	local filename = os.date("%Y-%m-%d") .. ".md"
-	Snacks.scratch({
-		name = filename,
-		root = scratch_dir,
-	})
+  local scratch_dir = vim.fn.stdpath("data") .. "/scratch"
+  vim.fn.mkdir(scratch_dir, "p")
+  local filename = os.date("%Y-%m-%d") .. ".md"
+  Snacks.scratch({
+    name = filename,
+    root = scratch_dir,
+  })
 end, { desc = "Daily Note" })
 
 -- ==================== Which-Key 图标注册 ====================
 vim.schedule(function()
-local wk = require("which-key")
-wk.add({
-	-- 终端组
-	{ "<leader>t", group = "terminal", icon = { icon = "", color = "grey" } },
-	{ "<leader>th", icon = { icon = "", color = "grey" } },
-	{ "<leader>tv", icon = { icon = "", color = "grey" } },
-	{ "<leader>tt", icon = { icon = "󰓩", color = "grey" } },
-	{ "<leader>ta", icon = { icon = "󰆽", color = "grey" } },
-	{ "<leader>tn", icon = { icon = "󰆓", color = "grey" } },
-	{ "<leader>tf", icon = { icon = "󰹑", color = "grey" } },
-	-- Scratch 组
-	{ "<leader>N", group = "Scratch", icon = { icon = "󰆓", color = "yellow" } },
-	{ "<leader>Nn", icon = { icon = "󰝖", color = "yellow" } },
-	{ "<leader>Ns", icon = { icon = "󰆓", color = "yellow" } },
-	{ "<leader>Nd", icon = { icon = "󰃭", color = "yellow" } },
-})
+  local wk = require("which-key")
+  wk.add({
+    -- 终端组
+    { "<leader>t", group = "terminal", icon = { icon = "", color = "grey" } },
+    { "<leader>th", icon = { icon = "", color = "grey" } },
+    { "<leader>tv", icon = { icon = "", color = "grey" } },
+    { "<leader>tt", icon = { icon = "󰓩", color = "grey" } },
+    { "<leader>ta", icon = { icon = "󰆽", color = "grey" } },
+    { "<leader>tn", icon = { icon = "󰆓", color = "grey" } },
+    { "<leader>tf", icon = { icon = "󰹑", color = "grey" } },
+    -- Scratch 组
+    { "<leader>N", group = "Scratch", icon = { icon = "󰆓", color = "yellow" } },
+    { "<leader>Nn", icon = { icon = "󰝖", color = "yellow" } },
+    { "<leader>Ns", icon = { icon = "󰆓", color = "yellow" } },
+    { "<leader>Nd", icon = { icon = "󰃭", color = "yellow" } },
+  })
 end)

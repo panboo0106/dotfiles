@@ -22,8 +22,7 @@ return {
   {
     "nvim-lualine/lualine.nvim",
     enabled = true,
-    lazy = false,
-    priority = 1000,
+    event = "VeryLazy",
     dependencies = { "folke/snacks.nvim" },
     init = function()
       vim.g.lualine_laststatus = vim.o.laststatus
@@ -53,9 +52,9 @@ return {
           globalstatus = vim.o.laststatus == 3,
           disabled_filetypes = { statusline = { "dashboard", "alpha", "ministarter", "snacks_dashboard" } },
           refresh = {
-            statusline = 1000,
-            tabline = 1000,
-            winbar = 1000,
+            statusline = 2000,
+            tabline = 2000,
+            winbar = 2000,
           },
         },
         sections = {
@@ -163,8 +162,10 @@ return {
             -- 搜索计数（搜索时显示 3/15，不搜索时隐藏）
             {
               function()
-                local ok, result = pcall(vim.fn.searchcount, { recompute = true, maxcount = 999 })
-                if not ok or type(result) ~= "table" or result.incomplete == 1 then return "?/?" end
+                local ok, result = pcall(vim.fn.searchcount, { recompute = false, maxcount = 999 })
+                if not ok or type(result) ~= "table" or result.incomplete == 1 then
+                  return "?/?"
+                end
                 return result.current .. "/" .. math.min(result.total, result.maxcount)
               end,
               cond = function()
@@ -215,22 +216,30 @@ return {
             {
               function()
                 local ok, conform = pcall(require, "conform")
-                if not ok then return "" end
+                if not ok then
+                  return ""
+                end
                 local formatters = vim.tbl_filter(function(f)
                   return f.available
                 end, conform.list_formatters(0))
-                if #formatters == 0 then return "" end
+                if #formatters == 0 then
+                  return ""
+                end
                 local names = {}
                 for i = 1, math.min(2, #formatters) do
                   table.insert(names, formatters[i].name)
                 end
                 local result = "󰉢 " .. table.concat(names, ", ")
-                if #formatters > 2 then result = result .. " +" .. (#formatters - 2) end
+                if #formatters > 2 then
+                  result = result .. " +" .. (#formatters - 2)
+                end
                 return result
               end,
               cond = function()
                 local ok, conform = pcall(require, "conform")
-                if not ok then return false end
+                if not ok then
+                  return false
+                end
                 return #vim.tbl_filter(function(f)
                   return f.available
                 end, conform.list_formatters(0)) > 0
@@ -278,40 +287,42 @@ return {
         extensions = { "lazy", "fzf", "trouble", "toggleterm", "quickfix" },
       }
 
-      -- do not add trouble symbols if aerial is enabled
-      -- And allow it to be overriden for some buffer types (see autocmds)
-      if vim.g.trouble_lualine and LazyVim.has("trouble.nvim") then
-        local trouble = require("trouble")
-        local symbols = trouble.statusline({
-          mode = "symbols",
-          groups = {},
-          title = false,
-          filter = { range = true },
-          format = "{kind_icon}{symbol.name:Normal}",
-          hl_group = "lualine_c_normal",
-        })
-        -- 只有当 symbols 有效时才添加组件
-        if symbols then
-          table.insert(opts.sections.lualine_c, {
-            symbols.get,
-            cond = function()
-              return vim.b.trouble_lualine ~= false and symbols.has()
-            end,
-          })
-        end
-      end
       return opts
     end,
     config = function(_, opts)
       local function make_theme()
         local c = require("config.palette")[vim.o.background == "dark" and "dark" or "light"]
         return {
-          normal   = { a = { bg = c.blue,    fg = c.bg,     gui = "bold" }, b = { bg = c.bg2, fg = c.fg }, c = { bg = c.bg1, fg = c.fg2 } },
-          insert   = { a = { bg = c.green,   fg = c.bg,     gui = "bold" }, b = { bg = c.bg2, fg = c.fg }, c = { bg = c.bg1, fg = c.fg2 } },
-          visual   = { a = { bg = c.magenta, fg = c.bg,     gui = "bold" }, b = { bg = c.bg2, fg = c.fg }, c = { bg = c.bg1, fg = c.fg2 } },
-          replace  = { a = { bg = c.red,     fg = c.bg,     gui = "bold" }, b = { bg = c.bg2, fg = c.fg }, c = { bg = c.bg1, fg = c.fg2 } },
-          command  = { a = { bg = c.yellow,  fg = c.fg_max, gui = "bold" }, b = { bg = c.bg2, fg = c.fg }, c = { bg = c.bg1, fg = c.fg2 } },
-          inactive = { a = { bg = c.bg3,     fg = c.fg3,    gui = "bold" }, b = { bg = c.bg2, fg = c.fg3 }, c = { bg = c.bg1, fg = c.fg3 } },
+          normal = {
+            a = { bg = c.blue, fg = c.bg, gui = "bold" },
+            b = { bg = c.bg2, fg = c.fg },
+            c = { bg = c.bg1, fg = c.fg2 },
+          },
+          insert = {
+            a = { bg = c.green, fg = c.bg, gui = "bold" },
+            b = { bg = c.bg2, fg = c.fg },
+            c = { bg = c.bg1, fg = c.fg2 },
+          },
+          visual = {
+            a = { bg = c.magenta, fg = c.bg, gui = "bold" },
+            b = { bg = c.bg2, fg = c.fg },
+            c = { bg = c.bg1, fg = c.fg2 },
+          },
+          replace = {
+            a = { bg = c.red, fg = c.bg, gui = "bold" },
+            b = { bg = c.bg2, fg = c.fg },
+            c = { bg = c.bg1, fg = c.fg2 },
+          },
+          command = {
+            a = { bg = c.yellow, fg = c.fg_max, gui = "bold" },
+            b = { bg = c.bg2, fg = c.fg },
+            c = { bg = c.bg1, fg = c.fg2 },
+          },
+          inactive = {
+            a = { bg = c.bg3, fg = c.fg3, gui = "bold" },
+            b = { bg = c.bg2, fg = c.fg3 },
+            c = { bg = c.bg1, fg = c.fg3 },
+          },
         }
       end
       opts.options.theme = make_theme()
@@ -409,8 +420,8 @@ return {
     event = "VeryLazy",
     dependencies = { "folke/snacks.nvim", lazy = true },
     keys = {
-      { "<leader>-", "<cmd>Yazi<cr>",     mode = { "n", "v" }, desc = "Open Yazi" },
-      { "<c-up>",    "<cmd>Yazi toggle<cr>",                    desc = "Resume Yazi" },
+      { "<leader>-", "<cmd>Yazi<cr>", mode = { "n", "v" }, desc = "Open Yazi" },
+      { "<c-up>", "<cmd>Yazi toggle<cr>", desc = "Resume Yazi" },
     },
     opts = {
       open_for_directories = false,
@@ -463,19 +474,11 @@ return {
     },
     config = function(_, opts)
       require("bufferline").setup(opts)
-      -- Fix bufferline when restoring a session
-      vim.api.nvim_create_autocmd({ "BufAdd", "BufDelete" }, {
-        callback = function()
-          vim.schedule(function()
-            pcall(nvim_bufferline)
-          end)
-        end,
-      })
     end,
   },
 
   {
-    "NvChad/nvim-colorizer.lua",
+    "catgoose/nvim-colorizer.lua", -- NvChad/nvim-colorizer.lua is archived; same content, active fork
     event = "LazyFile",
     opts = {
       filetypes = { "*", css = { css = true }, html = { css = true } },

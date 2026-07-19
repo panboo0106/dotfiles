@@ -20,11 +20,10 @@ return {
     "MeanderingProgrammer/render-markdown.nvim",
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
-      "nvim-mini/mini.nvim",
-      -- 'echasnovski/mini.icons' -- 如果使用独立 mini 插件
-      -- 'nvim-tree/nvim-web-devicons' -- 如果偏好使用 nvim-web-devicons
+      -- icon provider comes from the already-installed nvim-mini/mini.icons (ui.lua),
+      -- which shims nvim-web-devicons — no need for the full mini.nvim monorepo here.
     },
-    ft = { "markdown", "Avante" }, -- 懒加载，仅在 markdown 文件中加载
+    ft = { "markdown" }, -- 懒加载，仅在 markdown 文件中加载
     cmd = { "RenderMarkdown" }, -- 也可以通过命令触发加载
     keys = {
       { "<leader>mr", "<cmd>RenderMarkdown toggle<cr>",  desc = "Toggle Markdown Rendering" },
@@ -51,7 +50,7 @@ return {
 
       -- 日志级别和文件类型
       log_level = "info",
-      file_types = { "markdown", "Avante" },
+      file_types = { "markdown" },
 
       -- 反隐藏设置 - 在光标行隐藏插件添加的虚拟文本
       anti_conceal = {

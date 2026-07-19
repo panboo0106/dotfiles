@@ -16,7 +16,10 @@ return {
   },
   {
     "kawre/leetcode.nvim",
-    event = "VeryLazy",
+    -- Only eager-load when invoked as `nvim leetcode.nvim` (matches opts.arg below, per the
+    -- plugin's own README pattern) — otherwise stays unloaded until :Leet or similar is run.
+    lazy = "leetcode.nvim" ~= vim.fn.argv(0, -1),
+    cmd = "Leet",
     build = ":TSUpdate html",
     dependencies = {
       "nvim-lua/plenary.nvim",
@@ -237,6 +240,9 @@ return {
               "*.swp",
               "*.swo",
               "*~",
+
+              -- 大型依赖目录（前端仓库常见，展开代价高）
+              "node_modules",
             },
             -- Explorer 特定配置
             tree = true,

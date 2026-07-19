@@ -1,0 +1,126 @@
+# .clang-tidy configuration for SANGFOR C++ coding standards
+# Based on SFRD-PPQA-03-6.7 C++ Programming Checklist
+
+# 继承父配置（如果存在）
+InheritParentConfig: false
+
+# 检查规则列表
+Checks: >
+  - *,
+  -abseil-*,
+  -fuchsia-*,
+  -google-*,
+  -zircon-*,
+
+  # ============ 01. 构造与析构 ============
+  # 1.1 显式禁止编译器生成不需要的函数
+  -modernize-use-equals-delete,
+  -cppcoreguidelines-special-member-functions,
+
+  # 1.2 成员初始化
+  -cppcoreguidelines-pro-type-member-init,
+  -cppcoreguidelines-init-variables,
+
+  # 1.3 explicit使用
+  -cppcoreguidelines-pro-type-member-init,
+
+  # 1.6 虚析构函数
+  -modernize-use-override,
+  -modernize-use-override,  # 确保override关键字使用
+  -cppcoreguidelines-virtual-class-destructor,
+
+  # 1.10 拷贝构造与赋值
+  -cppcoreguidelines-pro-type-member-init,
+  -cppcoreguidelines-special-member-functions,
+  -cppcoreguidelines-c-copy-0,
+
+  # ============ 02. C++异常 ============
+  -cppcoreguidelines-pro-type-cstyle-cast,
+
+  # ============ 03. C++类 ============
+  # 3.1 非POD类型
+  -cppcoreguidelines-pro-type-cstyle-cast,
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+  -cppcoreguidelines-pro-type-reinterpret-cast,
+
+  # 3.2 new/delete
+  -modernize-use-nullptr,
+  -modernize-avoid-c-arrays,
+  -cppcoreguidelines-owning-memory,
+  -modernize-make-unique,
+  -modernize-make-shared,
+
+  # 3.3 临时对象
+  -performance-unnecessary-copy-initialization,
+  -performance-unnecessary-value-param,
+
+  # 3.4 基类与派生类转换
+  -cppcoreguidelines-pro-type-static-cast-downcast,
+
+  # ============ 05. 运算符重载 ============
+  -cppcoreguidelines-pro-type-new-delete,
+
+  # ============ 06. C++标准库 ============
+  # 6.1 auto_ptr
+  -modernize-use-auto,
+  -modernize-raw-string-literal,
+  -modernize-avoid-bind,
+  -modernize-loop-convert,
+
+  # ============ 其他推荐规则 ============
+  -readability-identifier-naming,
+  -readability-function-cognitive-complexity,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-prefer-member-initializer,
+  -misc-non-private-member-variables-in-classes,
+
+# 禁用的检查规则（根据团队需求）
+CheckOptions:
+  - key: readability-identifier-naming.ClassCase
+    value: CamelCase
+  - key: readability-identifier-naming.StructCase
+    value: CamelCase
+  - key: readability-identifier-naming.FunctionCase
+    value: camelBack
+  - key: readability-identifier-naming.VariableCase
+    value: camelBack
+  - key: readability-identifier-naming.ParameterCase
+    value: camelBack
+  - key: readability-identifier-naming.MemberCase
+    value: camelBack
+  - key: readability-identifier-naming.PrivateMemberPrefix
+    value: _
+  - key: readability-identifier-naming.ProtectedMemberPrefix
+    value: _
+  - key: readability-identifier-naming.ConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.EnumConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.GlobalConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.StaticConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.GlobalVariableCase
+    value: camelBack
+  - key: readability-identifier-naming.StaticVariableCase
+    value: camelBack
+  - key: readability-function-size.LineThreshold
+    value: '100'
+  - key: readability-function-size.StatementThreshold
+    value: '50'
+  - key: readability-function-cognitive-complexity.Threshold
+    value: '25'
+  - key: cppcoreguidelines-pro-type-member-init.UninitializedBaseMember
+    value: '0'
+
+# 将警告视为错误
+WarningsAsErrors: ''
+
+# 头文件过滤器
+HeaderFilterRegex: '.*'
+
+# 格式化样式
+FormatStyle: file
+
+# 系统头文件
+SystemHeaders: []

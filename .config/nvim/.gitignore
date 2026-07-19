@@ -7,3 +7,9 @@ foo.*
 *.log
 data
 node_modules/
+
+# dev artifacts (subagent-driven-development migration work — not config)
+docs/plans/sdd-work/
+
+# template leftovers (not part of personal config)
+.dockerignore

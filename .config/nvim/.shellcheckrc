@@ -1,0 +1,42 @@
+# .shellcheckrc configuration for SANGFOR Shell coding standards
+# Based on SFRD-PPQA-03-6.7 Shell Programming Checklist
+
+# ============ 排除目录 ============
+exclude-dir=vendor
+exclude-dir=node_modules
+exclude-dir=build
+exclude-dir=dist
+exclude-dir=.git
+
+# ============ 严重性级别 ============
+# severity=style  # 所有风格建议
+# severity=info    # 信息性消息
+# severity=warning # 警告
+severity=error     # 仅错误
+
+# ============ 检查外部脚本 ============
+external-sources=true
+
+# ============ 检查未引用变量 ============
+require-double-braces=true
+
+# ============ 忽略特定规则（根据团队需求调整）===========
+# ============ 可选忽略的规则 ============
+# ignore=SC2001  # echo "$(cmd)" instead of cmd - 如果你确实需要echo
+# ignore=SC2016  # 单引号内的表达式不会展开 - 如果你有意为之
+# ignore=SC2034  # 变量出现在未在左侧使用 - 如果是只读变量
+# ignore=SC2086  # 双引号包裹变量以防止globbing - 如果你确实需要glob
+
+# ============ 推荐启用的额外检查 ============
+# shell=Bash    # 指定Shell类型
+# check-sourced=true  # 检查sourced脚本
+
+# ============ 源路径 ============
+source-path=SCRIPTDIR
+
+# ============ 文件编码 ============
+encoding=utf-8
+
+# ============ 其他选项 ============
+# color=auto           # 自动颜色输出
+# wiki-link-count=5    # Wiki链接数量

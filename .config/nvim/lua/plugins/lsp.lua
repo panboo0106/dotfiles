@@ -19,6 +19,12 @@ return {
         "delve",
         "impl",
 
+        -- Debug adapters (previously only reachable via coding.lua's deleted nvim-dap block)
+        "debugpy",
+        "java-debug-adapter",
+        "java-test",
+        "jdtls",
+
         -- Python
         "ruff",
         "pyright", -- Python 类型检查 LSP
@@ -27,9 +33,9 @@ return {
         "black",
 
         -- JavaScript/TypeScript (新增)
+        -- typescript-language-server 已移除：ts_ls 永不启用，vtsls（vue/typescript extras）全面接管
         "eslint-lsp",
         "prettierd",
-        "typescript-language-server",
         "css-lsp",
         "vue-language-server",
 
@@ -120,41 +126,20 @@ return {
         },
 
         -- ============ JavaScript/TypeScript ============
-        eslint = {
-          settings = {
-            validate = "on",
-            packageManager = "npm",
-            format = true,
-            nodePath = "",
-            rules = {},
-            workingDirectory = { mode = "location" },
-            experimental = {
-              useFlatConfig = true,
-            },
-          },
-        },
-
-        ts_ls = {
-          settings = {
-            typescript = {
-              format = {
-                enable = false,
-              },
-            },
-          },
-        },
+        -- eslint: handled by extras.linting.eslint (registers LazyVim formatter, unlike the old inert `format=true`)
+        -- ts_ls: dead code removed — lang.vue → lang.typescript extra forces vtsls, ts_ls.enabled=false always
 
         -- ============ C/C++ ============
+        -- clangd: base config from extras.lang.clangd; only --header-insertion differs from its default (iwyu)
         clangd = {
-          keys = {
-            { "<leader>cR", "<cmd>ClangdReset<cr>", desc = "Clangd Reset" },
-          },
           cmd = {
             "clangd",
-            "--header-insertion=never",
-            "--completion-style=detailed",
             "--background-index",
             "--clang-tidy",
+            "--header-insertion=never",
+            "--completion-style=detailed",
+            "--function-arg-placeholders",
+            "--fallback-style=llvm",
           },
         },
 
@@ -168,7 +153,7 @@ return {
         },
 
         -- ============ Rust (managed by rustaceanvim) ============
-        rust_analyzer = false,
+        -- rust_analyzer disable now comes from extras.lang.rust
 
         -- ============ Lua ============
         lua_ls = {
@@ -190,43 +175,8 @@ return {
           },
         },
 
-        gopls = {
-          settings = {
-            gopls = {
-              gofumpt = true,
-              codelenses = {
-                gc_details = false,
-                generate = true,
-                regenerate_cgo = true,
-                run_govulncheck = true,
-                test = true,
-                tidy = true,
-                upgrade_dependency = true,
-                vendor = true,
-              },
-              hints = {
-                assignVariableTypes = true,
-                compositeLiteralFields = true,
-                compositeLiteralTypes = true,
-                constantValues = true,
-                functionTypeParameters = true,
-                parameterNames = true,
-                rangeVariableTypes = true,
-              },
-              analyses = {
-                nilness = true,
-                unusedparams = true,
-                unusedwrite = true,
-                useany = true,
-              },
-              usePlaceholders = true,
-              completeUnimported = true,
-              staticcheck = true,
-              directoryFilters = { "-.git", "-.vscode", "-.idea", "-.vscode-test", "-node_modules" },
-              semanticTokens = true,
-            },
-          },
-        },
+        -- gopls: config now comes entirely from extras.lang.go (identical settings + the
+        -- semanticTokensProvider workaround the hand-copied version was missing)
 
         -- ============ Python ============
         -- Pyright 配置（只负责类型检查，linting 交给 Ruff）
@@ -261,42 +211,24 @@ return {
           },
         },
 
-        -- Ruff 配置（代码质量、格式化 + 未使用函数检测）
-        ruff = {
-          -- 禁用一些功能，避免与 pyright 冲突
-          on_attach = function(client, bufnr)
-            -- 禁用 hover，避免与 pyright 冲突
-            if client.server_capabilities then
-              client.server_capabilities.hoverProvider = false
-            end
-          end,
-          -- 使用 ~/.config/nvim/ruff.toml 中的自定义规则
-          -- Ruff 通过规则检测未使用函数（如 PLR0913, F841 等）
-          settings = {
-            -- 组织导入（自动排序和删除未使用的导入）
-            organizeImports = true,
-            -- 修复所有可自动修复的问题
-            fixAll = true,
-            -- Ruff LSP 特定设置
-            logLevel = "error",
-            -- 代码行动配置
-            codeAction = {
-              disableRuleCommentWithExplanation = {
-                enable = true,
-              },
-              fixViolation = {
-                enable = true,
-              },
-            },
-          },
-        },
+        -- ruff server 配置完全由 extras.lang.python 提供（正确的 ruff server schema）。
+        -- 自定义规则在 ~/.config/ruff/ruff.toml，ruff server 自动读取，无需在此重复。
+        -- （原 ruff-lsp schema organizeImports/fixAll/codeAction 在 ruff server 上是 no-op，已删。）
 
         typos_lsp = {
           enabled = true,
-          init_options = {
-            config = vim.fn.expand("~/.config/nvim/typos.toml"),
-            diagnosticSeverity = "Info",
-          },
+          -- init_options 必须是 table（neovim 不会调用函数值的 init_options）；
+          -- 用 IIFE 在配置期求值，typos.toml 才会真正发给 server。
+          init_options = (function()
+            local typos_config = vim.fn.expand("~/.config/nvim/typos.toml")
+            if vim.fn.filereadable(typos_config) ~= 1 then
+              vim.notify("typos.toml not found, using default rules", vim.log.levels.WARN)
+            end
+            return {
+              config = typos_config,
+              diagnosticSeverity = "Info",
+            }
+          end)(),
         },
       },
 

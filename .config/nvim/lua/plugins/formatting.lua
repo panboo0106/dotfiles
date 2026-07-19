@@ -14,7 +14,7 @@ return {
       lua = { "stylua" },
 
       -- Go 语言（保持顺序，先导入整理后格式化）
-      go = { "goimports", "gofumpt", "goimports-reviser" },
+      go = { "goimports", "gofumpt" },
 
       -- Web 开发（添加备选格式化工具）
       javascript = { "prettierd", "prettier" },
@@ -33,8 +33,8 @@ return {
       json = { "prettierd", "prettier", "jq" },
       jsonc = { "prettierd", "prettier", "jq" },
       yaml = { "yamlfmt" },
-      markdown = { "prettierd", "prettier" },
-      ["markdown.mdx"] = { "prettierd", "prettier" },
+      markdown = { "prettierd", "prettier", "markdownlint-cli2", "markdown-toc" },
+      ["markdown.mdx"] = { "prettierd", "prettier", "markdownlint-cli2", "markdown-toc" },
       graphql = { "prettierd", "prettier" },
       handlebars = { "prettierd", "prettier" },
 
@@ -46,7 +46,7 @@ return {
       -- Python - 优化逻辑，保持您的条件判断
       python = function(bufnr)
         if require("conform").get_formatter_info("ruff_format", bufnr).available then
-          return { "ruff_imports", "ruff_format" }
+          return { "ruff_organize_imports", "ruff_format" }
         else
           return { "isort", "black" }
         end
@@ -61,38 +61,11 @@ return {
 
     -- 添加一些格式化工具的特定配置
     formatters = {
-      ["goimports-reviser"] = {
-        command = "goimports-reviser",
-        args = {
-          "-rm-unused",
-          "-set-alias",
-          "-format",
-          "$FILENAME",
-        },
-        stdin = false,
-      },
       shfmt = {
         args = { "-i", "2", "-ci" }, -- 使用 2 空格缩进
       },
       black = {
         args = { "--line-length", "88" },
-      },
-      ruff_imports = {
-        command = "ruff",
-        args = {
-          "check",
-          "--select=I",
-          "--fix",
-          "--stdin-filename",
-          "$FILENAME",
-          "-",
-        },
-        stdin = true,
-      },
-      ruff_format = {
-        command = "ruff",
-        args = { "format", "--config=" .. vim.fn.expand("~/.config/nvim/ruff.toml"), "--stdin-filename", "$FILENAME", "-" },
-        stdin = true,
       },
       yamlfmt = {
         command = "yamlfmt",

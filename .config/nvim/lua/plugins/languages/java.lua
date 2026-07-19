@@ -517,5 +517,21 @@ return {
       })
     end,
   },
+
+  -- neotest-java adapter: relocated from coding.lua (dropped as a side effect of the
+  -- extras-migration Task 2 neotest-base swap, restored here verbatim during final review)
+  {
+    "nvim-neotest/neotest",
+    optional = true,
+    dependencies = { "rcasia/neotest-java" },
+    opts = {
+      adapters = {
+        ["neotest-java"] = {
+          junit_jar = nil,
+          incremental_build = true,
+        },
+      },
+    },
+  },
 }
 

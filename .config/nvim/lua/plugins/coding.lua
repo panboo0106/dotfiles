@@ -1,6 +1,63 @@
 return {
   -- 禁用 LazyVim 默认的 nvim-cmp，使用 blink.cmp
   { "hrsh7th/nvim-cmp", enabled = false },
+  -- 禁用 LazyVim 默认的 mini.pairs，避免加载时的 Snacks.toggle() 错误
+  { "nvim-mini/mini.pairs", enabled = false },
+  -- 自定义 mini.pairs 配置（不依赖 Snacks.toggle）
+  {
+    "nvim-mini/mini.pairs",
+    event = "VeryLazy",
+    opts = {
+      modes = { insert = true, command = true, terminal = false },
+      -- skip autopair when next character is one of these
+      skip_next = [=[[%w%%%'%[%"%.%`%$]]=],
+      -- skip autopair when the cursor is inside these treesitter nodes
+      skip_ts = { "string" },
+      -- skip autopair when next character is closing pair
+      -- and there are more closing pairs than opening pairs
+      skip_unbalanced = true,
+      -- better deal with markdown code blocks
+      markdown = true,
+    },
+    config = function(_, opts)
+      local pairs = require("mini.pairs")
+      pairs.setup(opts)
+      -- Override open function for markdown code blocks (from LazyVim)
+      local open = pairs.open
+      pairs.open = function(pair, neigh_pattern)
+        if vim.fn.getcmdline() ~= "" then
+          return open(pair, neigh_pattern)
+        end
+        local o, c = pair:sub(1, 1), pair:sub(2, 2)
+        local line = vim.api.nvim_get_current_line()
+        local cursor = vim.api.nvim_win_get_cursor(0)
+        local next = line:sub(cursor[2] + 1, cursor[2] + 1)
+        local before = line:sub(1, cursor[2])
+        if opts.markdown and o == "`" and vim.bo.filetype == "markdown" and before:match("^%s*``") then
+          return "`\n```" .. vim.api.nvim_replace_termcodes("<up>", true, true, true)
+        end
+        if opts.skip_next and next ~= "" and next:match(opts.skip_next) then
+          return o
+        end
+        if opts.skip_ts and #opts.skip_ts > 0 then
+          local ok, captures = pcall(vim.treesitter.get_captures_at_pos, 0, cursor[1] - 1, math.max(cursor[2] - 1, 0))
+          for _, capture in ipairs(ok and captures or {}) do
+            if vim.tbl_contains(opts.skip_ts, capture.capture) then
+              return o
+            end
+          end
+        end
+        if opts.skip_unbalanced and next == c and c ~= o then
+          local _, count_open = line:gsub(vim.pesc(pair:sub(1, 1)), "")
+          local _, count_close = line:gsub(vim.pesc(pair:sub(2, 2)), "")
+          if count_close > count_open then
+            return o
+          end
+        end
+        return open(pair, neigh_pattern)
+      end
+    end,
+  },
   {
     "saghen/blink.cmp",
     version = "1.*",
@@ -53,694 +110,44 @@ return {
     },
   },
   {
-    "mfussenegger/nvim-dap",
-    recommended = true,
-    config = function()
-      -- load mason-nvim-dap here, after all adapters have been setup
-      if LazyVim.has("mason-nvim-dap") then
-        require("mason-nvim-dap").setup({})
-      end
-
-      vim.api.nvim_set_hl(0, "DapStoppedLine", { default = true, link = "Visual" })
-
-      for name, sign in pairs(LazyVim.config.icons.dap) do
-        sign = type(sign) == "table" and sign or { sign }
-        vim.fn.sign_define(
-          "Dap" .. name,
-          { text = sign[1], texthl = sign[2] or "DiagnosticInfo", linehl = sign[3], numhl = sign[3] }
-        )
-      end
-
-      -- setup dap config by VsCode launch.json file
-      local vscode = require("dap.ext.vscode")
-      local json = require("plenary.json")
-      vscode.json_decode = function(str)
-        return vim.json.decode(json.json_strip_comments(str))
-      end
-    end,
-    dependencies = {
-      -- Mason 确保调试器安装
-      {
-        "mason-org/mason.nvim",
-        opts = {
-          ensure_installed = {
-            "java-debug-adapter",
-            "java-test",
-            "delve", -- Go debugger
-            "debugpy", -- Python debugger
-            "jdtls", -- Java LSP
-          },
-        },
-      },
-
-      -- DAP UI（变量、堆栈、断点浮窗）
-      {
-        "rcarriga/nvim-dap-ui",
-        dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
-        keys = {
-          {
-            "<leader>du",
-            function()
-              require("dapui").toggle()
-            end,
-            desc = "DAP UI Toggle",
-          },
-          {
-            "<leader>de",
-            function()
-              require("dapui").eval()
-            end,
-            mode = { "n", "v" },
-            desc = "DAP Eval",
-          },
-        },
-        config = function()
-          local dap, dapui = require("dap"), require("dapui")
-          dapui.setup()
-          -- 开始/终止调试时自动打开/关闭 UI
-          dap.listeners.after.event_initialized["dapui_config"] = function()
-            dapui.open()
-          end
-          dap.listeners.before.event_terminated["dapui_config"] = function()
-            dapui.close()
-          end
-          dap.listeners.before.event_exited["dapui_config"] = function()
-            dapui.close()
-          end
-        end,
-      },
-
-      -- 调试时行内显示变量值
-      {
-        "theHamsta/nvim-dap-virtual-text",
-        dependencies = { "mfussenegger/nvim-dap", "nvim-treesitter/nvim-treesitter" },
-        opts = {
-          enabled = true,
-          enabled_commands = true,
-          highlight_changed_variables = true,
-          highlight_new_as_changed = false,
-          show_stop_reason = true,
-          commented = false,
-          virt_text_pos = "eol",
-          all_frames = false,
-          virt_lines = false,
-          virt_text_win_col = nil,
-        },
-      },
-
-      -- mason-nvim-dap：coding.lua 中已引用，补充安装
-      {
-        "jay-babu/mason-nvim-dap.nvim",
-        dependencies = { "mason-org/mason.nvim", "mfussenegger/nvim-dap" },
-        opts = {
-          ensure_installed = {},
-          automatic_installation = true,
-        },
-      },
-
-      -- Python 调试支持
-      {
-        "mfussenegger/nvim-dap-python",
-        ft = "python",
-        dependencies = {
-          "mfussenegger/nvim-dap",
-        },
-        keys = {
-          {
-            "<leader>dPt",
-            function()
-              require("dap-python").test_method()
-            end,
-            desc = "Debug Python Method",
-            ft = "python",
-          },
-          {
-            "<leader>dPc",
-            function()
-              require("dap-python").test_class()
-            end,
-            desc = "Debug Python Class",
-            ft = "python",
-          },
-          {
-            "<leader>dPs",
-            function()
-              require("dap-python").debug_selection()
-            end,
-            desc = "Debug Python Selection",
-            ft = "python",
-          },
-        },
-        config = function()
-          -- Try to find debugpy in multiple locations
-          local mason_debugpy = vim.fn.expand("$HOME") .. "/.local/share/nvim/mason/packages/debugpy/venv/bin/python"
-          local debugpy_cmd = vim.fn.executable("python3") == 1 and "python3" or "python"
-
-          -- Check if we can use mason's debugpy
-          if vim.fn.executable(mason_debugpy) == 1 then
-            debugpy_cmd = mason_debugpy
-          end
-
-          require("dap-python").setup(debugpy_cmd)
-
-          -- 添加额外的 Python 调试配置
-          local dap = require("dap")
-          dap.configurations.python = {
-            {
-              type = "python",
-              request = "launch",
-              name = "Launch file",
-              program = "${file}",
-              pythonPath = debugpy_cmd,
-              console = "integratedTerminal",
-            },
-            {
-              type = "python",
-              request = "launch",
-              name = "Launch file with arguments",
-              program = "${file}",
-              args = function()
-                local args_string = vim.fn.input("Arguments: ")
-                return vim.split(args_string, " +")
-              end,
-              pythonPath = debugpy_cmd,
-              console = "integratedTerminal",
-            },
-            {
-              type = "python",
-              request = "launch",
-              name = "Launch current module",
-              module = function()
-                return vim.fn.input("Module name: ")
-              end,
-              pythonPath = debugpy_cmd,
-              console = "integratedTerminal",
-            },
-            {
-              type = "python",
-              request = "attach",
-              name = "Attach remote",
-              connect = {
-                host = "localhost",
-                port = function()
-                  return tonumber(vim.fn.input("Port: ")) or 5678
-                end,
-              },
-              mode = "remote",
-              pythonPath = debugpy_cmd,
-            },
-            {
-              type = "python",
-              request = "attach",
-              name = "Attach local",
-              processId = function()
-                local process = require("dap.utils").pick_process()
-                return process
-              end,
-              pythonPath = debugpy_cmd,
-            },
-            {
-              type = "python",
-              request = "launch",
-              name = "Debug Django",
-              program = function()
-                return vim.fn.getcwd() .. "/manage.py"
-              end,
-              args = { "runserver", "--noreload" },
-              justMyCode = false,
-              pythonPath = debugpy_cmd,
-              console = "integratedTerminal",
-            },
-            {
-              type = "python",
-              request = "launch",
-              name = "Debug Flask",
-              module = "flask",
-              args = { "run", "--no-debugger", "--no-reload" },
-              justMyCode = false,
-              pythonPath = debugpy_cmd,
-              console = "integratedTerminal",
-            },
-            {
-              type = "python",
-              request = "launch",
-              name = "Pytest",
-              module = "pytest",
-              args = function()
-                return vim.fn.input("Pytest args: ")
-              end,
-              justMyCode = false,
-              pythonPath = debugpy_cmd,
-              console = "integratedTerminal",
-            },
-          }
-        end,
-      },
-
-      -- Go 调试支持
-      {
-        "leoluz/nvim-dap-go",
-        ft = "go",
-        dependencies = {
-          "mfussenegger/nvim-dap",
-        },
-        keys = {
-          {
-            "<leader>dGt",
-            function()
-              require("dap-go").debug_test()
-            end,
-            desc = "Debug Go Test",
-            ft = "go",
-          },
-          {
-            "<leader>dGl",
-            function()
-              require("dap-go").debug_last_test()
-            end,
-            desc = "Debug Last Go Test",
-            ft = "go",
-          },
-          {
-            "<leader>dGs",
-            function()
-              require("dap-go").debug_subtest()
-            end,
-            desc = "Debug Go Subtest",
-            ft = "go",
-          },
-        },
-        config = function()
-          require("dap-go").setup({
-            dap_configurations = {
-              {
-                type = "go",
-                name = "Debug",
-                request = "launch",
-                program = "${file}",
-              },
-              {
-                type = "go",
-                name = "Debug Package",
-                request = "launch",
-                program = "${workspaceFolder}",
-              },
-              {
-                type = "go",
-                name = "Attach Remote",
-                mode = "remote",
-                request = "attach",
-              },
-            },
-            delve = {
-              path = "dlv",
-              initialize_timeout_sec = 20,
-              port = "${port}",
-              args = {},
-              build_flags = "",
-              detached = vim.fn.has("win32") == 0,
-              cwd = nil,
-            },
-            tests = {
-              verbose = false,
-            },
-          })
-        end,
-      },
-
-    },
-
-    -- 通用调试按键映射
-    keys = {
-      {
-        "<leader>db",
-        function()
-          require("dap").toggle_breakpoint()
-        end,
-        desc = "Toggle Breakpoint",
-      },
-      {
-        "<leader>dB",
-        function()
-          require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: "))
-        end,
-        desc = "Conditional Breakpoint",
-      },
-      {
-        "<leader>dc",
-        function()
-          require("dap").continue()
-        end,
-        desc = "Continue",
-      },
-      {
-        "<leader>dC",
-        function()
-          require("dap").run_to_cursor()
-        end,
-        desc = "Run to Cursor",
-      },
-      {
-        "<leader>dg",
-        function()
-          require("dap").goto_()
-        end,
-        desc = "Go to Line (No Execute)",
-      },
-      {
-        "<leader>di",
-        function()
-          require("dap").step_into()
-        end,
-        desc = "Step Into",
-      },
-      {
-        "<leader>dj",
-        function()
-          require("dap").down()
-        end,
-        desc = "Down",
-      },
-      {
-        "<leader>dk",
-        function()
-          require("dap").up()
-        end,
-        desc = "Up",
-      },
-      {
-        "<leader>dl",
-        function()
-          require("dap").run_last()
-        end,
-        desc = "Run Last",
-      },
-      {
-        "<leader>do",
-        function()
-          require("dap").step_out()
-        end,
-        desc = "Step Out",
-      },
-      {
-        "<leader>dO",
-        function()
-          require("dap").step_over()
-        end,
-        desc = "Step Over",
-      },
-      {
-        "<leader>dp",
-        function()
-          require("dap").pause()
-        end,
-        desc = "Pause",
-      },
-      {
-        "<leader>dr",
-        function()
-          require("dap").repl.toggle()
-        end,
-        desc = "Toggle REPL",
-      },
-      {
-        "<leader>ds",
-        function()
-          require("dap").session()
-        end,
-        desc = "Session",
-      },
-      {
-        "<leader>dt",
-        function()
-          require("dap").terminate()
-        end,
-        desc = "Terminate",
-      },
-      {
-        "<leader>dw",
-        function()
-          require("dap.ui.widgets").hover()
-        end,
-        desc = "Widgets",
-      },
-    },
-  },
-  {
-    "L3MON4D3/LuaSnip",
-    lazy = true,
-    build = LazyVim.is_win() and nil
-      or "echo 'NOTE: jsregexp is optional, so not a big deal if it fails to build'; make install_jsregexp",
-    dependencies = {
-      {
-        "rafamadriz/friendly-snippets",
-        config = function()
-          require("luasnip.loaders.from_vscode").lazy_load()
-        end,
-      },
-    },
-    opts = function()
-      LazyVim.cmp.actions.snippet_forward = function()
-        if require("luasnip").jumpable(1) then
-          vim.schedule(function()
-            require("luasnip").jump(1)
-          end)
-          return true
-        end
-      end
-      LazyVim.cmp.actions.snippet_stop = function()
-        if require("luasnip").expand_or_jumpable() then
-          require("luasnip").unlink_current()
-          return true
-        end
-      end
-      return {
-        history = true,
-        delete_check_events = "TextChanged",
-      }
-    end,
-  },
-  {
     "nvim-neotest/neotest",
-    dependencies = {
-      "nvim-neotest/nvim-nio",
-      "nvim-lua/plenary.nvim",
-      "antoinemadec/FixCursorHold.nvim",
-      "nvim-treesitter/nvim-treesitter",
-
-      -- 语言适配器
-      "nvim-neotest/neotest-python",
-      "nvim-neotest/neotest-go",
-      "rcasia/neotest-java",
-      "mrcjkb/rustaceanvim", -- neotest-rust 由 rustaceanvim 内置提供
-    },
-
-    opts = {
-      -- 适配器配置 - 可以是适配器列表、适配器名称列表或配置表
-      adapters = {
-        -- Python 适配器
-        ["neotest-python"] = {
-          dap = { justMyCode = false },
-          args = { "--log-level", "DEBUG" },
-          runner = "pytest",
-          python = (function()
-            local py = vim.fn.exepath("python3")
-            return py ~= "" and py or vim.fn.exepath("python")
-          end)(),
-        },
-
-        -- Go 适配器
-        ["neotest-go"] = {
-          experimental = { test_table = true },
-          args = { "-count=1", "-timeout=60s", "-race", "-cover" },
-          recursive_run = true,
-        },
-
-        -- Java 适配器
-        ["neotest-java"] = {
-          junit_jar = nil,
-          incremental_build = true,
-        },
-
-        -- Rust 适配器（rustaceanvim 内置）
-        ["rustaceanvim.neotest"] = {},
-      },
-
-      -- 状态配置
-      status = {
-        virtual_text = true,
-        signs = true,
-      },
-
-      -- 输出配置
-      output = {
-        open_on_run = true,
-      },
-
-      -- Quickfix 配置
-      quickfix = {
-        open = function()
-          -- 如果有 trouble.nvim 则使用它，否则使用标准 quickfix
-          if pcall(require, "trouble") then
-            require("trouble").open({ mode = "quickfix", focus = false })
-          else
-            vim.cmd("copen")
-          end
-        end,
-      },
-    },
-
-    config = function(_, opts)
-      -- 创建 neotest 命名空间用于诊断
-      local neotest_ns = vim.api.nvim_create_namespace("neotest")
-      vim.diagnostic.config({
-        virtual_text = {
-          format = function(diagnostic)
-            -- 格式化诊断信息，替换换行和制表符为空格
-            local message = diagnostic.message:gsub("\n", " "):gsub("\t", " "):gsub("%s+", " "):gsub("^%s+", "")
-            return message
-          end,
-        },
-      }, neotest_ns)
-
-      -- Trouble.nvim 集成（如果可用）
-      if pcall(require, "trouble") then
-        opts.consumers = opts.consumers or {}
-        -- 测试完成后刷新和自动关闭 trouble
-        opts.consumers.trouble = function(client)
-          client.listeners.results = function(adapter_id, results, partial)
-            if partial then
-              return
-            end
-            local tree = assert(client:get_position(nil, { adapter = adapter_id }))
-            local failed = 0
-            for pos_id, result in pairs(results) do
-              if result.status == "failed" and tree:get_key(pos_id) then
-                failed = failed + 1
-              end
-            end
-            vim.schedule(function()
-              local trouble = require("trouble")
-              if trouble.is_open() then
-                trouble.refresh()
-                if failed == 0 then
-                  trouble.close()
-                end
-              end
-            end)
-            return {}
-          end
-        end
-      end
-
-      -- 处理适配器配置
-      if opts.adapters then
-        local adapters = {}
-        for name, config in pairs(opts.adapters or {}) do
-          if type(name) == "number" then
-            if type(config) == "string" then
-              config = require(config)
-            end
-            adapters[#adapters + 1] = config
-          elseif config ~= false then
-            local adapter = require(name)
-            if type(config) == "table" and not vim.tbl_isempty(config) then
-              local meta = getmetatable(adapter)
-              if adapter.setup then
-                adapter.setup(config)
-              elseif adapter.adapter then
-                adapter.adapter(config)
-                adapter = adapter.adapter
-              elseif meta and meta.__call then
-                adapter = adapter(config)
-              else
-                error("Adapter " .. name .. " does not support setup")
-              end
-            end
-            adapters[#adapters + 1] = adapter
-          end
-        end
-        opts.adapters = adapters
-      end
-
-      require("neotest").setup(opts)
-    end,
-
-    -- 键位映射
+    -- stylua: ignore
     keys = {
-      { "<leader>T", "", desc = "+test" },
-      {
-        "<leader>Tt",
-        function()
-          require("neotest").run.run(vim.fn.expand("%"))
-        end,
-        desc = "Run File (Neotest)",
-      },
-      {
-        "<leader>TT",
-        function()
-          require("neotest").run.run(vim.uv.cwd())
-        end,
-        desc = "Run All Test Files (Neotest)",
-      },
-      {
-        "<leader>Tr",
-        function()
-          require("neotest").run.run()
-        end,
-        desc = "Run Nearest (Neotest)",
-      },
-      {
-        "<leader>Tl",
-        function()
-          require("neotest").run.run_last()
-        end,
-        desc = "Run Last (Neotest)",
-      },
-      {
-        "<leader>Ts",
-        function()
-          require("neotest").summary.toggle()
-        end,
-        desc = "Toggle Summary (Neotest)",
-      },
-      {
-        "<leader>To",
-        function()
-          require("neotest").output.open({ enter = true, auto_close = true })
-        end,
-        desc = "Show Output (Neotest)",
-      },
-      {
-        "<leader>TO",
-        function()
-          require("neotest").output_panel.toggle()
-        end,
-        desc = "Toggle Output Panel (Neotest)",
-      },
-      {
-        "<leader>TS",
-        function()
-          require("neotest").run.stop()
-        end,
-        desc = "Stop (Neotest)",
-      },
-      {
-        "<leader>Tw",
-        function()
-          require("neotest").watch.toggle(vim.fn.expand("%"))
-        end,
-        desc = "Toggle Watch (Neotest)",
-      },
-
-      -- 调试支持（需要 nvim-dap）
-      {
-        "<leader>Td",
-        function()
-          require("neotest").run.run({ strategy = "dap" })
-        end,
-        desc = "Debug Nearest (Neotest)",
-      },
+      -- unbind all 11 of the extra's own lowercase <leader>t* defaults (collide with terminal
+      -- keys in keymaps.lua). lazy.nvim's `keys` merge dedups by EXACT lhs string, not by
+      -- prefix, so the group marker alone does not shadow its children — each lhs needs its
+      -- own `false` entry.
+      { "<leader>t",  false },
+      { "<leader>ta", false },
+      { "<leader>tt", false },
+      { "<leader>tT", false },
+      { "<leader>tr", false },
+      { "<leader>tl", false },
+      { "<leader>ts", false },
+      { "<leader>to", false },
+      { "<leader>tO", false },
+      { "<leader>tS", false },
+      { "<leader>tw", false },
+      { "<leader>T",  "", desc = "+test" },
+      { "<leader>Ta", function() require("neotest").run.attach() end, desc = "Attach to Test (Neotest)" },
+      { "<leader>Tt", function() require("neotest").run.run(vim.fn.expand("%")) end, desc = "Run File (Neotest)" },
+      { "<leader>TT", function() require("neotest").run.run(vim.uv.cwd()) end, desc = "Run All Test Files (Neotest)" },
+      { "<leader>Tr", function() require("neotest").run.run() end, desc = "Run Nearest (Neotest)" },
+      { "<leader>Tl", function() require("neotest").run.run_last() end, desc = "Run Last (Neotest)" },
+      { "<leader>Ts", function() require("neotest").summary.toggle() end, desc = "Toggle Summary (Neotest)" },
+      { "<leader>To", function() require("neotest").output.open({ enter = true, auto_close = true }) end, desc = "Show Output (Neotest)" },
+      { "<leader>TO", function() require("neotest").output_panel.toggle() end, desc = "Toggle Output Panel (Neotest)" },
+      { "<leader>TS", function() require("neotest").run.stop() end, desc = "Stop (Neotest)" },
+      { "<leader>Tw", function() require("neotest").watch.toggle(vim.fn.expand("%")) end, desc = "Toggle Watch (Neotest)" },
+    },
+  },
+  {
+    "mfussenegger/nvim-dap",
+    optional = true,
+    -- stylua: ignore
+    keys = {
+      { "<leader>td", false }, -- unbind extra's default (collides with terminal keys)
+      { "<leader>Td", function() require("neotest").run.run({ strategy = "dap" }) end, desc = "Debug Nearest (Neotest)" },
     },
   },
   {
@@ -807,7 +214,7 @@ return {
     keys = {
       { "<leader>TC", "<cmd>CoverageToggle<cr>", desc = "Coverage Toggle" },
       { "<leader>TV", "<cmd>CoverageSummary<cr>", desc = "Coverage Summary" },
-      { "<leader>TCl", "<cmd>CoverageLoad<cr>", desc = "Coverage Load" },
+      { "<leader>TL", "<cmd>CoverageLoad<cr>", desc = "Coverage Load" },
     },
     opts = {
       auto_reload = true,

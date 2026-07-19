@@ -71,8 +71,8 @@ end
 local keymap = vim.keymap.set
 local opts = { noremap = true, silent = true }
 
--- jk 退出 Insert 模式
-keymap("i", "jk", "<Esc>", opts)
+-- jj 退出 Insert 模式（与终端 nvim 保持一致）
+keymap("i", "jj", "<Esc>", opts)
 
 -- 更好的移动（保持光标居中）
 keymap("n", "<C-d>", "<C-d>zz", opts)

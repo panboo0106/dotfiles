@@ -5,11 +5,18 @@ return {
       "BufReadPre",
       "BufNewFile",
     },
-    config = function()
+    config = function(_, opts)
       local lint = require("lint")
+      local config_util = require("config.util")
       local mason_bin = vim.fn.stdpath("data") .. "/mason/bin/vulture"
       local has_vulture = vim.fn.exepath("vulture") ~= "" or vim.fn.executable(mason_bin) == 1
-      lint.linters_by_ft = {
+      -- Shallow merge (not tbl_deep_extend): linters_by_ft values are arrays of linter
+      -- names, and a deep merge would splice two different arrays together index-by-index
+      -- instead of letting one list win outright. opts.linters_by_ft comes from
+      -- extras.lang.go/extras.lang.markdown's nvim-lint fragments (previously silently
+      -- dropped by this function ignoring its opts param); the project's own table below
+      -- wins on any overlapping filetype.
+      lint.linters_by_ft = vim.tbl_extend("force", opts.linters_by_ft or {}, {
         python = has_vulture and { "vulture" } or {},
         go = { "golangcilint" },
         -- C/C++ (新增)
@@ -23,7 +30,7 @@ return {
         fish = { "fish" },
         -- Java (新增)
         java = { "checkstyle" },
-      }
+      })
 
       -- ============ Vulture 配置（Python 死代码检测，新增）============
       -- vulture 配置（检测未使用的函数、类、变量）
@@ -93,14 +100,11 @@ return {
           args = {
             "-c",
             function()
-              -- 查找项目配置
               local current_dir = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":h")
               local config_files = { "checkstyle.xml", ".checkstyle.xml", "google_checks.xml" }
-              for _, file in ipairs(config_files) do
-                local config = vim.fn.findfile(file, current_dir .. ";")
-                if config ~= "" then
-                  return config
-                end
+              local found = config_util.find_config_with_findfile(config_files, current_dir)
+              if found ~= "" then
+                return found
               end
               -- 使用 nvim 默认配置
               local default_config = vim.fn.stdpath("config") .. "/checkstyle.xml"
@@ -158,7 +162,7 @@ return {
         }
       end
 
-      -- golangci-lint 配置保持不变
+      -- golangci-lint 配置使用共享工具查找配置文件
       lint.linters.golangcilint = {
         cmd = vim.fn.exepath("golangci-lint") ~= "" and "golangci-lint"
           or vim.fn.stdpath("data") .. "/mason/bin/golangci-lint",
@@ -169,7 +173,7 @@ return {
           "--issues-exit-code=0",
           function()
             local current_dir = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":h")
-            local config_file = vim.fn.findfile(".golangci.yml", current_dir .. ";")
+            local config_file = config_util.find_config_with_findfile(".golangci.yml", current_dir)
             if config_file == "" then
               local nvim_config = vim.fn.stdpath("config") .. "/.golangci.yml"
               if vim.fn.filereadable(nvim_config) == 1 then
@@ -188,11 +192,24 @@ return {
         parser = require("lint.parser").from_errorformat("%f:%l:%c: %t%*[^:]: %m", { source = "golangci-lint" }),
       }
 
-      vim.api.nvim_create_autocmd({ "BufWritePost", "BufEnter", "InsertLeave" }, {
+      -- BufWritePost + InsertLeave + 300ms debounce to balance responsiveness and performance
+      -- Removed BufReadPost to avoid excessive linting on buffer switches
+      local function debounce(ms, fn)
+        local timer = vim.uv.new_timer()
+        return function(...)
+          local argv = { ... }
+          timer:start(ms, 0, function()
+            timer:stop()
+            vim.schedule_wrap(fn)(unpack(argv))
+          end)
+        end
+      end
+
+      vim.api.nvim_create_autocmd({ "BufWritePost", "InsertLeave" }, {
         group = lint_augroup,
-        callback = function()
+        callback = debounce(300, function()
           lint.try_lint()
-        end,
+        end),
       })
     end,
   },

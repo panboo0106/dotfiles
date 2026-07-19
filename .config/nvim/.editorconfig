@@ -1,0 +1,111 @@
+# EditorConfig for SANGFOR coding standards
+# https://editorconfig.org
+# 适用于: JavaScript, C++, Shell, Python, Go
+
+# ============ 所有文件的默认设置 ============
+root = true
+
+# ============ UTF-8编码 ============
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# ============ Markdown文件 ============
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off
+
+# ============ JavaScript / TypeScript ============
+[*.{js,jsx,ts,tsx,vue}]
+indent_style = space
+indent_size = 4
+tab_width = 4
+max_line_length = 120
+
+# ============ JSON / YAML ============
+[*.{json,yaml,yml}]
+indent_style = space
+indent_size = 2
+
+# ============ C / C++ / Objective-C ============
+[*.{c,cpp,h,hpp,cc,m,mm}]
+indent_style = space
+indent_size = 4
+tab_width = 4
+max_line_length = 120
+
+# ============ Shell / Bash ============
+[*.{sh,bash}]
+indent_style = space
+indent_size = 4
+tab_width = 4
+max_line_length = 120
+# Shell脚本特定
+binary_next_line = true
+switch_case_indent = true
+space_redirects = true
+
+# ============ Python ============
+[*.py]
+indent_style = space
+indent_size = 4
+tab_width = 4
+max_line_length = 120
+
+# ============ Go ============
+[*.go]
+indent_style = tab
+indent_size = 4
+tab_width = 4
+max_line_length = 120
+
+# ============ Makefile ============
+[Makefile]
+indent_style = tab
+indent_size = 4
+tab_width = 4
+
+# ============ HTML / CSS ============
+[*.{html,css,scss,less}]
+indent_style = space
+indent_size = 2
+
+# ============ XML ============
+[*.{xml,xsl,svg}]
+indent_style = space
+indent_size = 2
+
+# ============ Java ============
+[*.java]
+indent_style = space
+indent_size = 4
+tab_width = 4
+max_line_length = 120
+
+# ============ Ruby ============
+[*.rb]
+indent_style = space
+indent_size = 2
+
+# ============ PHP ============
+[*.php]
+indent_style = space
+indent_size = 4
+
+# ============ SQL ============
+[*.sql]
+indent_style = space
+indent_size = 2
+
+# ============ 配置文件 ============
+[*.{conf,ini,cfg}]
+indent_style = space
+indent_size = 4
+
+# ============ Dockerfile ============
+[Dockerfile]
+indent_style = space
+indent_size = 2
+max_line_length = 120

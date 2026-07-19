@@ -1,0 +1,313 @@
+# golangci-lint 开源最佳实践配置 (v2.8.0)
+# 完全符合开源社区最佳实践
+# 基于：
+# - https://golangci-lint.run/ （官方文档）
+# - https://olegk.dev/go-linters-configuration-the-right-version （Oleg Kovalov）
+# - https://github.com/golangci/golangci-lint （官方仓库）
+
+version: "2"
+
+run:
+  concurrency: 8
+  timeout: 5m
+  tests: true
+  modules-download-mode: readonly
+  # 跳过大型依赖目录和生成文件
+  skip-dirs:
+    - vendor
+    - third_party
+    - testdata
+    - examples
+    - Godeps
+    - builtin
+  skip-files:
+    - ".*\\.pb\\.go$"
+    - ".*\\.gen\\.go$"
+    - ".*_mock\\.go$"
+
+formatters:
+  enable:
+    - gofmt      # 标准格式化
+    - goimports  # import 管理
+    - gofumpt    # 更严格的格式化
+
+linters:
+  default: none
+
+  enable:
+    # ==================== 核心检查（必备）====================
+    - govet          # Go 官方 vet 工具
+    - ineffassign    # 检测无效赋值
+    - unused         # 检测未使用的代码
+
+    # ==================== 错误处理 ====================
+    - errcheck       # 检查未处理的错误
+    - errorlint      # Go 1.13+ 错误包装检查
+    - nilerr         # 检查返回 nil 错误的情况
+    - errname        # 检查错误命名规范
+
+    # ==================== 性能优化 ====================
+    - bodyclose      # HTTP 响应体关闭检查
+    - rowserrcheck   # SQL 行错误检查
+    - sqlclosecheck  # SQL 连接关闭检查
+    - prealloc       # 建议为切片/地图预分配
+
+    # ==================== 现代 Go 特性 ====================
+    - copyloopvar    # Go 1.22+ 循环变量拷贝检查
+    - durationcheck  # 检查 duration 相乘
+
+    # ==================== 代码风格和质量 ====================
+    - revive         # golint 的现代替代品
+    - staticcheck    # 静态分析
+    - goconst        # 检测可以用常量替换的字符串
+    - gocritic       # 综合代码改进建议
+    - whitespace     # 空白字符检查
+    - godot          # 注释句子末尾加句号
+    - misspell       # 拼写检查
+    - decorder       # 声明顺序检查（types → constants → variables → functions）
+    - funcorder      # 函数/方法顺序检查
+    - nakedret       # 检测裸返回
+
+    # ==================== 安全检查 ====================
+    # - gosec          # 安全问题检查（已禁用以提升性能，CI 时启用）
+
+    # ==================== 代码简化 ====================
+    - unconvert      # 检测不必要的类型转换
+    - unparam        # 检测未使用的参数
+    - wastedassign   # 检测浪费的赋值
+
+    # ==================== 命名和变量 ====================
+    - varnamelen     # 变量名长度检查
+
+    # ==================== 并发安全 ====================
+
+    # ==================== 测试相关 ====================
+    - testifylint    # testify 库最佳实践
+    - thelper        # 测试辅助函数检查
+    - tparallel      # t.Parallel() 检查
+    - testableexamples # 可测试的示例
+
+    # ==================== Context 相关 ====================
+    - contextcheck   # context 使用检查
+    - noctx          # HTTP 请求缺少 context
+
+    # ==================== 依赖管理 ====================
+    - depguard       # 依赖包限制检查
+    - gomoddirectives # go.mod 指令检查
+
+    # ==================== 代码复杂度 ====================
+    - gocyclo        # 圈复杂度检查
+    - funlen         # 函数长度检查
+    # - dupl           # 代码重复检查（已禁用以提升性能，CI 时启用）
+
+    # ==================== 其他质量检查 ====================
+    - dogsled        # 空白标识符检查
+    - copyloopvar  # Go 1.22+ 循环变量拷贝检查（替代 exportloopref）
+    - gochecknoinits # init 函数限制
+    - goprintffuncname # printf 函数命名规范
+    - lll            # 行长度限制
+    - nilnil         # 同时返回 nil, nil 检查
+    - nolintlint     # nolint 指令检查
+    - reassign       # 检查包变量重赋值
+    - promlinter     # Prometheus 指标命名
+
+    # ==================== 字符和编码检查 ====================
+    - asasalint      # 检查 []any 传递
+    - asciicheck     # ASCII 标识符检查
+    - bidichk        # 危险的 Unicode 字符序列
+
+    # ==================== 其他检查 ====================
+    - gomodguard     # Go 模块守卫
+    - musttag        # 强制标签
+    - tagliatelle    # 结构体标签命名
+    - usestdlibvars  # 检测可使用标准库变量的地方
+
+  exclusions:
+    presets:
+      - comments
+      - std-error-handling
+      - common-false-positives
+      - legacy
+
+    rules:
+      # 测试文件排除
+      - path: _test.go
+        linters:
+          # - gosec  # 已禁用
+          - errcheck
+          - funlen
+          # - dupl  # 已禁用
+          - varnamelen
+          - gocyclo
+
+      # 生成的代码排除
+      - path: .*.pb.go
+        linters:
+          - all
+
+      - path: .*.gen.go
+        linters:
+          - all
+
+      - path: .*_mock.go
+        linters:
+          - all
+
+      - path: vendor/
+        linters:
+          - all
+
+  settings:
+    # ==================== govet（Oleg 推荐）====================
+    govet:
+      enable:
+        - shadow
+      disable:
+        - fieldalignment
+
+    # ==================== gocritic（性能优化配置）====================
+    gocritic:
+      enabled-tags:
+        - diagnostic      # 诊断性问题
+        - performance     # 性能问题
+        # - experimental   # 实验性规则（已禁用以提升性能）
+        # - opinionated    # 主观建议（已禁用以提升性能）
+        # - style          # 风格问题（已禁用，已有 revive）
+      disabled-checks:
+        - hugeParam
+        - rangeExprCopy
+        - rangeValCopy
+
+    # ==================== errcheck（Oleg 推荐）====================
+    errcheck:
+      check-type-assertions: true
+      check-blank: true
+      exclude-functions:
+        - (net.Conn).Write
+        - (net.Conn).Read
+        - fmt.Print
+        - fmt.Println
+        - fmt.Printf
+        - (*bytes.Buffer).Write
+
+    # ==================== revive（最佳实践）====================
+    revive:
+      severity: warning
+      rules:
+        - name: var-naming
+          disabled: false
+          arguments:
+            - []
+            - []
+            - - upper-case-const: true
+
+        - name: exported
+          disabled: false
+
+        - name: error-strings
+          disabled: false
+
+        - name: error-naming
+          disabled: false
+
+        - name: receiver-naming
+          disabled: false
+
+        - name: argument-limit
+          arguments: [6]
+
+        - name: function-result-limit
+          arguments: [3]
+
+    # ==================== gosec ====================
+    gosec:
+      severity: medium
+      excludes:
+        - G104
+        - G307
+
+    # ==================== staticcheck ====================
+    staticcheck:
+      checks: ["all", "-SA1019"]
+
+    # ==================== threshold 配置 ====================
+    funlen:
+      lines: 120
+      statements: 80
+
+    gocyclo:
+      min-complexity: 20
+
+    dupl:
+      threshold: 150
+
+    nakedret:
+      max-func-lines: 1  # Oleg 推荐：禁止所有裸返回
+
+    lll:
+      line-length: 120
+
+    dogsled:
+      max-blank-identifiers: 2
+
+    # ==================== depguard（Oleg 推荐）====================
+    depguard:
+      rules:
+        main:
+          deny:
+            - pkg: io/ioutil
+              desc: 使用 'os' 或 'io' 包替代
+
+            - pkg: github.com/pkg/errors
+              desc: 使用 Go 1.13+ 的错误包装功能
+
+    # ==================== errorlint ====================
+    errorlint:
+      errorf: true
+
+    # ==================== nolintlint ====================
+    nolintlint:
+      require-specific: true
+      require-explanation: false  # 开源项目不强制要求解释
+      allow-unused: false
+
+    # ==================== tagliatelle（Oleg 推荐）====================
+    tagliatelle:
+      case:
+        rules:
+          json: snake
+          yaml: snake
+          xml: camel
+          bson: camel
+          avro: snake
+          mapstructure: kebab
+
+    # ==================== testifylint ====================
+    testifylint:
+      enable-all: true
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+severity:
+  default: error
+  rules:
+    - linters:
+        # - gosec  # 已禁用
+        - govet
+        - staticcheck
+        - errcheck
+        - unused
+        - ineffassign
+      severity: error
+
+    - linters:
+        - revive
+        - gocritic
+        - misspell
+        - godot
+        - varnamelen
+        - funlen
+        - gocyclo
+      severity: warning

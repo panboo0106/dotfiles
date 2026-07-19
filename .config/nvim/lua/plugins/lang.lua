@@ -5,5 +5,5 @@ return {
   { import = "plugins.languages.python" },
   { import = "plugins.languages.java" },
   { import = "plugins.languages.rust" },
-  { import = "plugins.languages.javascript" },
+  { import = "plugins.languages.go" },
 }

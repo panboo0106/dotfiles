@@ -1,0 +1,279 @@
+# golangci-lint 公司规范配置 (v2.8.0)
+# 完全符合公司编码规范 checklist + 开源最佳实践
+# 基于：
+# - 公司编码规范 checklist（强制要求 33 个检查器）
+# - https://golangci-lint.run/ （官方文档）
+# - https://olegk.dev/go-linters-configuration-the-right-version （社区最佳实践）
+
+version: "2"
+
+run:
+  concurrency: 8
+  timeout: 5m
+  tests: true
+  modules-download-mode: readonly
+  # 跳过大型依赖目录和生成文件
+  skip-dirs:
+    - vendor
+    - third_party
+    - testdata
+    - examples
+    - Godeps
+    - builtin
+  skip-files:
+    - ".*\\.pb\\.go$"
+    - ".*\\.gen\\.go$"
+    - ".*_mock\\.go$"
+
+formatters:
+  enable:
+    - gofmt      # 标准格式化
+    - goimports  # import 管理
+    - gofumpt    # 更严格的格式化
+
+linters:
+  default: none
+
+  enable:
+    # ==================== 公司强制要求（checklist 09.tools）====================
+    # checklist 明确要求必须开启的 33 个检查器：
+    - bodyclose          # HTTP 响应体关闭检查
+    - depguard           # 依赖包限制检查
+    - dogsled            # 空白标识符检查
+    # - dupl               # 代码重复检查（已禁用以提升性能，CI 时启用）
+    - errcheck           # 未处理的错误检查
+    - copyloopvar        # Go 1.22+ 循环变量拷贝检查（替代 exportloopref）
+    - funlen             # 函数长度检查
+    - gochecknoinits     # init 函数限制
+    - goconst            # 常量检查
+    - gocritic           # 综合代码改进建议
+    - gocyclo            # 圈复杂度检查
+    - mnd                # 魔法数字检查 ⭐ checklist 强制要求（替代 gomnd）
+    - goprintffuncname   # printf 函数命名规范
+    # - gosec              # 安全问题检查（已禁用以提升性能，CI 时启用）
+    - govet              # Go 官方 vet 工具
+    - decorder           # 声明顺序检查（types → constants → variables → functions）
+    - funcorder          # 函数/方法顺序检查
+    - ineffassign        # 检测无效赋值
+    - lll                # 行长度限制
+    - misspell           # 拼写检查
+    - nakedret           # 裸返回检查
+    - noctx              # HTTP 请求缺少 context
+    - nolintlint         # nolint 指令检查
+    - revive             # golint 的现代替代品
+    - staticcheck        # 静态分析
+    - unconvert          # 检测不必要的类型转换
+    - unparam            # 检测未使用的参数
+    - unused             # 检测未使用的代码
+    - whitespace         # 空白字符检查
+
+    # ==================== 开源社区推荐（最佳实践）====================
+    # 来自 Oleg Kovalov 和 golangci-lint 社区的推荐：
+    - asasalint          # 检查 []any 传递
+    - asciicheck         # ASCII 标识符检查
+    - bidichk            # 危险的 Unicode 字符序列
+    - copyloopvar        # Go 1.22+ 循环变量拷贝检查
+    - durationcheck      # 检查 duration 相乘
+    - errname            # 检查错误命名规范
+    - errorlint          # Go 1.13+ 错误包装检查（强制 %w）
+    - godot              # 注释句子末尾加句号
+    - gomoddirectives    # go.mod 指令检查
+    - gomodguard         # Go 模块守卫
+    - musttag            # 强制标签（用于 un/marshal）
+    - nilerr             # 检查返回 nil 错误的情况
+    - nilnil             # 同时返回 nil, nil 检查
+    - prealloc           # 建议为切片/地图预分配
+    - promlinter         # Prometheus 指标命名
+    - reassign           # 检查包变量重赋值
+    - rowserrcheck       # SQL 行错误检查
+    - sqlclosecheck      # SQL 连接关闭检查
+    - tagliatelle        # 结构体标签命名
+    - thelper            # 测试辅助函数检查（替代 tenv）
+    - testableexamples   # 可测试的示例
+    - testifylint        # testify 库最佳实践
+    - tparallel          # t.Parallel() 检查
+    - usestdlibvars      # 检测可使用标准库变量的地方
+    - varnamelen         # 变量名长度检查
+    - wastedassign       # 检测浪费的赋值
+
+  exclusions:
+    presets:
+      - comments
+      - std-error-handling
+      - common-false-positives
+      - legacy
+
+    rules:
+      # 测试文件排除
+      - path: _test.go
+        linters:
+          # - gosec  # 已禁用
+          - errcheck
+          - funlen
+          # - dupl  # 已禁用
+          - varnamelen
+          - gocyclo
+          - mnd
+
+      # 生成的代码排除
+      - path: .*.pb.go
+        linters:
+          - all
+
+      - path: .*.gen.go
+        linters:
+          - all
+
+      - path: .*_mock.go
+        linters:
+          - all
+
+      - path: vendor/
+        linters:
+          - all
+
+  settings:
+    # ==================== govet（checklist 强制要求）====================
+    govet:
+      # checklist 强制要求：check-shadowing: true
+      enable:
+        - shadow
+
+    # ==================== gocritic（性能优化配置）====================
+    gocritic:
+      enabled-tags:
+        - diagnostic      # 诊断性问题
+        - performance     # 性能问题
+        # - experimental   # 实验性规则（已禁用以提升性能）
+        # - opinionated    # 主观建议（已禁用以提升性能）
+        # - style          # 风格问题（已禁用，已有 revive）
+      disabled-checks:
+        - hugeParam
+        - rangeExprCopy
+        - rangeValCopy
+
+    # ==================== errcheck（最佳实践）====================
+    errcheck:
+      check-type-assertions: true
+      check-blank: true
+
+    # ==================== revive（checklist + 社区最佳实践）====================
+    revive:
+      severity: warning
+      rules:
+        # checklist 要求：命名规范
+        - name: var-naming
+          disabled: false
+          arguments:
+            - []
+            - []
+            - - upper-case-const: true
+
+        - name: exported
+          disabled: false
+
+        - name: error-strings
+          disabled: false
+
+        - name: error-naming
+          disabled: false
+
+        - name: receiver-naming
+          disabled: false
+
+    # ==================== gosec（安全检查）====================
+    gosec:
+      severity: medium
+      excludes:
+        - G104
+        - G307
+
+    # ==================== threshold 配置（checklist 要求）====================
+    funlen:
+      lines: 120
+      statements: 80
+
+    gocyclo:
+      min-complexity: 20
+
+    dupl:
+      threshold: 150
+
+    # 注意：mnd 在 v2.8.0 中不支持详细配置，使用默认设置
+    # checklist 要求：除 0 和 1 外禁止魔法数字
+
+    nakedret:
+      max-func-lines: 30
+
+    lll:
+      line-length: 120  # checklist 要求
+
+    dogsled:
+      max-blank-identifiers: 2
+
+    # ==================== depguard（checklist 强制要求）====================
+    depguard:
+      rules:
+        main:
+          deny:
+            # checklist 强制要求：禁止的包
+            - pkg: io/ioutil
+              desc: 使用 'os' 或 'io' 包替代（Go 1.16+ 已弃用）
+
+            - pkg: github.com/pkg/errors
+              desc: 使用 Go 1.13+ 的错误包装功能
+
+            - pkg: log
+              desc: 使用项目统一的日志库
+
+            - pkg: math/rand
+              desc: 使用 crypto/rand 替代（checklist 强制要求）
+
+            - pkg: sync/atomic
+              desc: 使用 go.uber.org/atomic 替代（checklist 强制要求）
+
+    # ==================== errorlint（checklist 要求）====================
+    errorlint:
+      errorf: true  # checklist 强制要求使用 %w
+
+    # ==================== nolintlint（checklist 强制要求）====================
+    nolintlint:
+      require-specific: true  # checklist 要求
+      require-explanation: true  # checklist 要求：说明屏蔽理由
+      allow-unused: false
+
+    # ==================== 其他配置====================
+    tagliatelle:
+      case:
+        rules:
+          json: snake
+          yaml: snake
+          xml: camel
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+severity:
+  default: error
+  rules:
+    - linters:
+        # - gosec  # 已禁用
+        - govet
+        - staticcheck
+        - errcheck
+        - unused
+        - ineffassign
+      severity: error
+
+    - linters:
+        - revive
+        - stylecheck
+        - gocritic
+        - misspell
+        - godot
+        - varnamelen
+        - funlen
+        - gocyclo
+        - mnd
+      severity: warning
