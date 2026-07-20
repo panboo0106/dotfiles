@@ -86,6 +86,9 @@ Pictures/
 Public/
 Library/*
 !Library/Rime/
+# RIME: track only hand-authored *.custom.yaml patches, not the rime-ice package/build/userdb
+Library/Rime/*
+!Library/Rime/*.custom.yaml
 Desktop/
 OrbStack/
 Google\ Drive/
