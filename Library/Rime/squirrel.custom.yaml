@@ -1,0 +1,7 @@
+# 鼠须管前端自定义配置
+# encoding: utf-8
+# 只记录相对 rime-ice 默认的个人改动，不跟踪整份 squirrel.yaml
+
+patch:
+  # purity_of_form_custom 皮肤：关闭行内预编辑（拼音不显示在键入位置）
+  "preset_color_schemes/purity_of_form_custom/inline_preedit": false
