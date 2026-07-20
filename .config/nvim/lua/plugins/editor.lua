@@ -356,22 +356,6 @@ return {
   },
 
   {
-    "NeogitOrg/neogit",
-    dependencies = { "nvim-lua/plenary.nvim", "sindrets/diffview.nvim" },
-    cmd = { "Neogit" },
-    keys = {
-      { "<leader>gn",  "<cmd>Neogit<cr>",        desc = "Neogit" },
-      { "<leader>gnc", "<cmd>Neogit commit<cr>",  desc = "Neogit Commit" },
-      { "<leader>gnb", "<cmd>Neogit branch<cr>",  desc = "Neogit Branch" },
-      { "<leader>gnl", "<cmd>Neogit log<cr>",     desc = "Neogit Log" },
-      { "<leader>gp",  "<cmd>Neogit pull<cr>",    desc = "Neogit Pull" },
-    },
-    opts = {
-      integrations = { diffview = true },
-    },
-  },
-
-  {
     "akinsho/git-conflict.nvim",
     event = "LazyFile",
     opts = {

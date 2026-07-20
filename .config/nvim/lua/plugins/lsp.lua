@@ -29,8 +29,8 @@ return {
         "ruff",
         "pyright", -- Python 类型检查 LSP
         "vulture", -- 死代码检测工具（可选）
-        "isort",
-        "black",
+        -- isort/black 已移除：conform 的 Python 分支只在 ruff 不可用时才回落到它们，
+        -- 而 ruff 就在上面必装，故永不触发（formatting.lua 的 fallback 保留作优雅降级）。
 
         -- JavaScript/TypeScript (新增)
         -- typescript-language-server 已移除：ts_ls 永不启用，vtsls（vue/typescript extras）全面接管

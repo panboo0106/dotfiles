@@ -19,11 +19,8 @@ return {
       lint.linters_by_ft = vim.tbl_extend("force", opts.linters_by_ft or {}, {
         python = has_vulture and { "vulture" } or {},
         go = { "golangcilint" },
-        -- C/C++ (新增)
-        cpp = { "clangtidy" },
-        c = { "clangtidy" },
-        objc = { "clangtidy" },
-        cuda = { "clangtidy" },
+        -- C/C++ 的 clang-tidy 诊断由 clangd 的 --clang-tidy 提供（带后台增量索引），
+        -- 不再走 nvim-lint 单独跑一遍，避免同一批诊断出双份。
         -- Shell
         sh = { "shellcheck" },
         bash = { "shellcheck" },
@@ -71,24 +68,6 @@ return {
       end
 
       local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
-
-      -- ============ clang-tidy 配置（C++ linter）============
-      if vim.fn.exepath("clang-tidy") ~= "" then
-        lint.linters.clangtidy = {
-          cmd = "clang-tidy",
-          name = "clang-tidy",
-          stdin = false,
-          append_fname = true,
-          args = {
-            "--config-file=" .. vim.fn.stdpath("config") .. "/.clang-tidy",
-          },
-          stream = "stdout",
-          ignore_exitcode = true,
-          parser = require("lint.parser").from_errorformat("%f:%l:%c: %t%*[^:]: %m", {
-            source = "clang-tidy",
-          }),
-        }
-      end
 
       -- ============ Checkstyle 配置（Java linter，新增）============
       if vim.fn.exepath("checkstyle") ~= "" then

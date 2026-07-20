@@ -334,17 +334,12 @@ return {
     event = "VeryLazy",
     dependencies = {
       "MunifTanjim/nui.nvim",
-      "rcarriga/nvim-notify",
+      -- nvim-notify 已移除：唯一用到它的 "notify" view（下方 Plugin Updates route）已改走 mini，
+      -- vim.notify 本身由 snacks notifier 接管（tools.lua），故不再需要这个依赖。
     },
     opts = {
       notify = {
         enabled = false,
-      },
-      views = {
-        notify = {
-          render = "simple",
-          replace = true,
-        },
       },
       lsp = {
         override = {
@@ -370,7 +365,7 @@ return {
             event = "msg_show",
             find = "Plugin Updates",
           },
-          view = "notify",
+          view = "mini",
         },
       },
       presets = {

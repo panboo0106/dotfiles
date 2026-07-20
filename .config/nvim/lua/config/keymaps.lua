@@ -38,7 +38,9 @@ end, { desc = "New Tab Terminal" })
 -- 右侧终端：切换
 map("n", "<leader>ta", function()
   Snacks.terminal.toggle(nil, {
-    id = "right",
+    -- 终端实例身份由 cmd+cwd+env+count 派生（`id` 不是合法字段，会被忽略）。
+    -- 三个具名终端用不同 count 区分，否则 right/float 因四要素全同而 toggle 到同一实例。
+    count = 1,
     win = {
       position = "right",
       width = 40,
@@ -70,7 +72,7 @@ map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit Terminal (Double Esc)" })
 -- 覆盖 LazyVim 默认 <C-/> 终端：relative=win，仅在代码区下方分割，不遮挡左树
 local _toggle_bottom_terminal = function()
   Snacks.terminal.toggle(nil, {
-    id = "bottom",
+    count = 3,
     cwd = LazyVim.root(),
     win = {
       relative = "win",
@@ -86,7 +88,7 @@ map({ "n", "t" }, "<c-_>", _toggle_bottom_terminal, { desc = "which_key_ignore" 
 -- 浮动终端（额外）
 map({ "n", "t" }, "<leader>tf", function()
   Snacks.terminal.toggle(nil, {
-    id = "float",
+    count = 2,
     win = {
       position = "float",
       border = "rounded",

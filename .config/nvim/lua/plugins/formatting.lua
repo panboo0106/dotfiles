@@ -16,27 +16,32 @@ return {
       -- Go 语言（保持顺序，先导入整理后格式化）
       go = { "goimports", "gofumpt" },
 
-      -- Web 开发（添加备选格式化工具）
-      javascript = { "prettierd", "prettier" },
-      typescript = { "prettierd", "prettier" },
-      javascriptreact = { "prettierd", "prettier" },
-      typescriptreact = { "prettierd", "prettier" },
-      vue = { "prettierd", "prettier" },
+      -- Web 开发（prettierd 主、prettier 兜底：stop_after_first 只跑第一个可用的，
+      -- 避免两者都装时重复格式化、保存延迟翻倍）
+      javascript = { "prettierd", "prettier", stop_after_first = true },
+      typescript = { "prettierd", "prettier", stop_after_first = true },
+      javascriptreact = { "prettierd", "prettier", stop_after_first = true },
+      typescriptreact = { "prettierd", "prettier", stop_after_first = true },
+      vue = { "prettierd", "prettier", stop_after_first = true },
 
       -- 样式文件
-      css = { "prettierd", "prettier" },
-      scss = { "prettierd", "prettier" },
-      less = { "prettierd", "prettier" },
+      css = { "prettierd", "prettier", stop_after_first = true },
+      scss = { "prettierd", "prettier", stop_after_first = true },
+      less = { "prettierd", "prettier", stop_after_first = true },
 
       -- 标记语言
-      html = { "prettierd", "prettier" },
-      json = { "prettierd", "prettier", "jq" },
-      jsonc = { "prettierd", "prettier", "jq" },
+      html = { "prettierd", "prettier", stop_after_first = true },
+      -- json/jsonc：stop_after_first 让 prettier 之后不再跑 jq——jq 无法解析带注释的
+      -- jsonc（tsconfig 等），否则每次保存必失败并弹 notify_on_error。
+      json = { "prettierd", "prettier", "jq", stop_after_first = true },
+      jsonc = { "prettierd", "prettier", "jq", stop_after_first = true },
       yaml = { "yamlfmt" },
+      -- markdown 保持串行：prettier 格式化 → markdownlint-cli2 修复 → markdown-toc 更新目录，
+      -- 三者各司其职，不能 stop_after_first。
       markdown = { "prettierd", "prettier", "markdownlint-cli2", "markdown-toc" },
       ["markdown.mdx"] = { "prettierd", "prettier", "markdownlint-cli2", "markdown-toc" },
-      graphql = { "prettierd", "prettier" },
-      handlebars = { "prettierd", "prettier" },
+      graphql = { "prettierd", "prettier", stop_after_first = true },
+      handlebars = { "prettierd", "prettier", stop_after_first = true },
 
       -- 系统编程语言
       rust = { "rustfmt" },

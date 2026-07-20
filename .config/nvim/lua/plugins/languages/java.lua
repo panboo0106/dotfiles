@@ -432,57 +432,16 @@ return {
                 icon = { color = "green", icon = "" },
               },
 
-              -- 代码生成（类似 IDEA Alt+Insert）
-              {
-                "<leader>jg",
-                group = "Generate",
-                icon = { color = "yellow", icon = "" },
-              },
-              {
-                "<leader>jgs",
-                "<cmd>lua require('jdtls').generate_constructor()<cr>",
-                desc = "Generate Constructor",
-                icon = { color = "yellow", icon = "" },
-              },
-              {
-                "<leader>jgg",
-                "<cmd>lua require('jdtls').generate_accessors()<cr>",
-                desc = "Generate Getters/Setters",
-                icon = { color = "yellow", icon = "" },
-              },
-              {
-                "<leader>jgt",
-                "<cmd>lua require('jdtls').generate_toString()<cr>",
-                desc = "Generate toString()",
-                icon = { color = "yellow", icon = "" },
-              },
-              {
-                "<leader>jge",
-                "<cmd>lua require('jdtls').generate_hashCodeEquals()<cr>",
-                desc = "Generate equals/hashCode",
-                icon = { color = "yellow", icon = "" },
-              },
+              -- 代码生成（constructor / getters / toString / equals&hashCode）与 Code Action 都走
+              -- 内置 LSP code action（<leader>ca，LazyVim 提供）→ source actions；跳转用内置 gd。
+              -- nvim-jdtls 不导出 generate_*/goto_definition/code_action，原映射按下即 nil，已删。
 
               -- 代码导航
-              {
-                "<leader>jd",
-                "<cmd>lua require('jdtls').goto_definition()<cr>",
-                desc = "Goto Definition (Java)",
-                icon = { color = "cyan", icon = "" },
-              },
               {
                 "<leader>js",
                 "<cmd>lua require('jdtls').super_implementation()<cr>",
                 desc = "Goto Super Implementation",
                 icon = { color = "cyan", icon = "" },
-              },
-
-              -- Code Action（类似 IDEA Alt+Enter）
-              {
-                "<leader>ca",
-                "<cmd>lua require('jdtls').code_action()<cr>",
-                desc = "Code Action (Java)",
-                icon = { color = "red", icon = "" },
               },
 
               -- 构建和更新
@@ -534,4 +493,3 @@ return {
     },
   },
 }
-

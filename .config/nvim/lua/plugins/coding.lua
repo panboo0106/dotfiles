@@ -1,9 +1,9 @@
 return {
   -- 禁用 LazyVim 默认的 nvim-cmp，使用 blink.cmp
   { "hrsh7th/nvim-cmp", enabled = false },
-  -- 禁用 LazyVim 默认的 mini.pairs，避免加载时的 Snacks.toggle() 错误
-  { "nvim-mini/mini.pairs", enabled = false },
-  -- 自定义 mini.pairs 配置（不依赖 Snacks.toggle）
+  -- 自定义 mini.pairs 配置：下面的 config 完整替换 LazyVim 默认（不依赖 Snacks.toggle）。
+  -- 注意：不能再加 `{ "nvim-mini/mini.pairs", enabled = false }` 片段——lazy 合并时
+  -- 那个 enabled=false 会因本片段不设 enabled 而胜出，导致整个插件被禁用（autopairs 失效）。
   {
     "nvim-mini/mini.pairs",
     event = "VeryLazy",
