@@ -3,5 +3,8 @@
 # 只记录相对 rime-ice 默认的个人改动，不跟踪整份 squirrel.yaml
 
 patch:
-  # purity_of_form_custom 皮肤：关闭行内预编辑（拼音不显示在键入位置）
-  "preset_color_schemes/purity_of_form_custom/inline_preedit": false
+  # purity_of_form_custom 皮肤：显式钉住行内预编辑（与 rime-ice 默认同值）
+  # 不能设 false：非嵌入模式下 kitty 拿不到 marked text，"IME is active" 的 guard
+  # 失效，退格会被 Squirrel 和终端各消费一次，多删一个已上屏字符
+  # 参见 kitty#9893（CLOSED，作者不 debug 第三方 IME）、rime/squirrel#1121（OPEN）
+  "preset_color_schemes/purity_of_form_custom/inline_preedit": true
