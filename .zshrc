@@ -144,3 +144,8 @@ export PATH="$HOME/.local/bin:$PATH"
 toggle_ghostty_theme() { ~/.config/ghostty/toggle-theme.sh }
 zle -N toggle_ghostty_theme
 bindkey '^[[15~' toggle_ghostty_theme
+
+# mise (polyglot version manager - node/python/go per-project pins)
+# Must stay last: later PATH prepends (e.g. ~/.local/bin, which contains a
+# uv-installed global python) would otherwise shadow mise's resolved paths.
+eval "$(mise activate zsh)"

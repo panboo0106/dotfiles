@@ -69,18 +69,20 @@ font-codepoint-map = U+E000-U+F8FF,U+F0000-U+FFFFF=JetBrainsMono Nerd Font Mono
 font-family = LXGW WenKai Mono
 
 # =============================================================================
-# Theme — currently LOCKED to dark (last set via toggle-theme.sh).
-# To follow macOS system light/dark automatically:
-#   theme = light:solarized-zen-light,dark:solarized-zen-dark
-# To force light: theme = solarized-zen-light
+# Theme — 跟随 macOS 系统外观自动切换(ghostty 原生,无需 toggle-theme.sh)。
+# 要锁定单一主题:theme = solarized-zen-dark  (或 solarized-zen-light)
 # =============================================================================
-theme = solarized-zen-dark
+theme = light:solarized-zen-light,dark:solarized-zen-dark
 
 # =============================================================================
 # Window
 # =============================================================================
 # macOS: use non-native fullscreen (kitty: macos_traditional_fullscreen yes)
 macos-non-native-fullscreen = true
+# alt+* 绑定(alt+1~0 切 tab / alt+hjkl resize)依赖此项。不设时取决于键盘布局
+# (US Standard/International 默认 true,其余 false)→ 换布局会静默失效。
+# 与 kitty.conf 的 macos_option_as_alt left 对齐;left 保留右 Option 打 Unicode。
+macos-option-as-alt = left
 # Transparent titlebar blends with terminal bg and shows tab bar
 macos-titlebar-style = tabs
 window-decoration = true
@@ -92,15 +94,29 @@ window-padding-y = 1
 window-width = 140
 window-height = 40
 
+# macOS 专属:退出时保存窗口状态,下次启动恢复现场。
+# 不等同 kitty 具名 session,但覆盖"重开接着干"这个最常用诉求。
+window-save-state = always
+
 # Do not confirm on close (kitty: confirm_os_window_close 0)
 confirm-close-surface = false
+
+# Quick Terminal(Guake 式下拉)——action 存在但默认不绑键。
+# global: = 系统级热键(ghostty 不在前台也能唤出),macOS 需辅助功能授权。
+# 用 ctrl+alt+t 而非 ctrl+grave:后者被 Rime 的方案切换键占用
+# (~/Library/Rime/default.yaml 的 switcher hotkeys: Control+grave),
+# 输入法在系统输入链优先级高于 App global hotkey,ghostty 收不到。
+keybind = global:ctrl+alt+t=toggle_quick_terminal
+quick-terminal-position = top
+quick-terminal-autohide = true
+quick-terminal-space-behavior = move
 
 # =============================================================================
 # Keybindings
 # kitty_mod = ctrl+shift
 # NOTE: kitty's original config had several conflicts, resolved here:
 #   - ctrl+shift+f  → scroll_page_down  (fullscreen moved to ctrl+shift+enter)
-#   - ctrl+shift+e  → open_config       (edit_scrollback has no equivalent)
+#   - ctrl+shift+e  → open_config       (edit_scrollback → 见 write_screen_file)
 #   - ctrl+shift+n  → jump_to_prompt forward  (backward added on ctrl+shift+alt+n)
 # =============================================================================
 
@@ -197,7 +213,7 @@ keybind = ctrl+shift+minus=decrease_font_size:2
 keybind = ctrl+shift+zero=reset_font_size
 
 # =============================================================================
-# Confirmed NOT available in Ghostty (no native equivalent):
+# NOT available — 基于 ghostty 1.3.1 核对(2026-07-29),升级后需复检:
 #   - tab_bar_style powerline / tab_powerline_style angled (native tab bar only)
 #   - active_tab_font_style bold / active_tab colors (native tab bar styling)
 #   - cursor_trail — no NATIVE option, but now ACTIVE via custom shader
@@ -207,8 +223,14 @@ keybind = ctrl+shift+zero=reset_font_size
 #   - text_composition_strategy / terminal_selectable_mark_characters
 #   - repaint_delay / input_delay / sync_to_monitor (not needed; ghostty is fast)
 #   - allow_remote_control socket (no IPC remote control) → save_session.sh unusable
-#   - notify_on_cmd_finish / filter_notification
-#   - session save/restore (no ghostty equivalent; use tmux/zellij if needed)
+#     (仍成立:`ghostty +new-window` 仅 Linux,macOS 不支持)
+#   - named session save/restore(仍无 kitty 式具名 session;但 window-save-state =
+#     always 可覆盖"退出/重开恢复现场",需要具名会话才上 tmux/zellij)
 #   - F5/F6 theme hot-switch via keybind (keybinds can't run shell scripts);
-#     use toggle-theme.sh + `kill -USR2`, or rely on system appearance auto-switch
+#     已由 theme = light:...,dark:... 跟随系统解决,toggle-theme.sh 可弃用
+#
+# 已过期、现已可用(勿再当限制):
+#   - notify_on_cmd_finish → notify-on-command-finish + -action(1.3.0+)
+#   - edit_scrollback     → write_screen_file(默认 cmd+shift+j 系列)
+#   - 远程 terminfo       → shell-integration-features = ssh-terminfo,ssh-env(1.2.0+)
 # =============================================================================
