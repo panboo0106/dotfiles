@@ -58,15 +58,13 @@ custom-shader-animation = always
 # =============================================================================
 # Fonts  (DO NOT CHANGE — per user request)
 # =============================================================================
-# Primary font — registered family name (PS prefix JetBrainsMonoNFM-).
-# Was "JetBrainsMono NFM" (Core Text PS shorthand); switched to the family
-# name to match Zed. Both resolve to JetBrainsMonoNFM-Regular.
-font-family = JetBrainsMono Nerd Font Mono
-# NF v2 PUA: U+E000-U+F8FF, NF v3 Plane 15: U+F0000-U+FFFFF
-font-codepoint-map = U+E000-U+F8FF,U+F0000-U+FFFFF=JetBrainsMono Nerd Font Mono
-# CJK fallback: safe to add now because font-codepoint-map pins NF icons to
-# JetBrainsMono, so LXGW no longer interferes with icon metrics.
-font-family = LXGW WenKai Mono
+# Primary font — Maple Mono NF CN (Nerd Font icons + Latin + built-in CJK).
+# One-font setup: 汉字 use Maple's own hei-style glyphs; no external CJK font.
+# Trade-off: CN glyphs run a bit large (by design).
+font-family = Maple Mono NF CN
+# NF v2 PUA: U+E000-U+F8FF, NF v3 Plane 15: U+F0000-U+FFFFF.
+# NF PUA icons are also in CN; pin keeps icon metrics explicit/stable.
+font-codepoint-map = U+E000-U+F8FF,U+F0000-U+FFFFF=Maple Mono NF CN
 
 # =============================================================================
 # Theme — 跟随 macOS 系统外观自动切换(ghostty 原生,无需 toggle-theme.sh)。
