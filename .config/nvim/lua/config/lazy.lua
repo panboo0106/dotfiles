@@ -22,19 +22,9 @@ require("lazy").setup({
         },
       },
     },
-    { import = "lazyvim.plugins.extras.lang.vue" },
-    { import = "lazyvim.plugins.extras.lang.typescript" },
-    { import = "lazyvim.plugins.extras.lang.json" },
-    { import = "lazyvim.plugins.extras.lang.git" },
-    { import = "lazyvim.plugins.extras.dap.core" },
-    { import = "lazyvim.plugins.extras.test.core" },
-    { import = "lazyvim.plugins.extras.coding.luasnip" },
-    { import = "lazyvim.plugins.extras.linting.eslint" },
-    { import = "lazyvim.plugins.extras.lang.clangd" },
-    { import = "lazyvim.plugins.extras.lang.go" },
-    { import = "lazyvim.plugins.extras.lang.python" },
-    { import = "lazyvim.plugins.extras.lang.rust" },
-    { import = "lazyvim.plugins.extras.lang.markdown" },
+    -- 语言/dap/test 等 extras 已迁移到 lazyvim.json 的 extras 数组（LazyVim v16 的权威源）：
+    -- lazyvim/plugins/xtras.lua 会读取 json 自动生成带优先级排序的 import，
+    -- :LazyExtras 界面也因此能正确显示和管理这些 extras（手写在这里会被标记 not managed）。
     -- lualine 配置在 lua/plugins/ui.lua 中自定义
     -- import/override with your plugins
     { import = "plugins" },
