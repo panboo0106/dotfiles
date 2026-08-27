@@ -77,7 +77,7 @@ theme = light:solarized-zen-light,dark:solarized-zen-dark
 # =============================================================================
 # macOS: use non-native fullscreen (kitty: macos_traditional_fullscreen yes)
 macos-non-native-fullscreen = true
-# alt+* 绑定(alt+1~0 切 tab / alt+hjkl resize)依赖此项。不设时取决于键盘布局
+# alt+* 绑定(alt+1~0 切 tab / ctrl+alt+hjkl resize)依赖此项。不设时取决于键盘布局
 # (US Standard/International 默认 true,其余 false)→ 换布局会静默失效。
 # 与 kitty.conf 的 macos_option_as_alt left 对齐;left 保留右 Option 打 Unicode。
 macos-option-as-alt = left
@@ -112,10 +112,15 @@ quick-terminal-space-behavior = move
 # =============================================================================
 # Keybindings
 # kitty_mod = ctrl+shift
-# NOTE: kitty's original config had several conflicts, resolved here:
-#   - ctrl+shift+f  → scroll_page_down  (fullscreen moved to ctrl+shift+enter)
-#   - ctrl+shift+e  → open_config       (edit_scrollback → 见 write_screen_file)
-#   - ctrl+shift+n  → jump_to_prompt forward  (backward added on ctrl+shift+alt+n)
+# 与 kitty (~/.config/kitty/keybindings.conf) 对齐;核实两边系统级原生默认后精简:
+#   - fullscreen: 两边原生默认已覆盖(kitty: ctrl+cmd+f 🍎;ghostty: super+ctrl+f /
+#     super+enter),不再自定义 ctrl+shift+enter
+#   - edit config: 两边原生默认已覆盖(kitty: cmd+, ;ghostty: super+,),
+#     ctrl+shift+e 让回 edit_scrollback 语义(= kitty 的 edit_scrollback)
+#   - ctrl+shift+f  → scroll_page_down (与 d 重复,凑齐 vim Ctrl-F/Ctrl-B,与 kitty 一致)
+#   - ctrl+shift+o  → 让给 kitty_mod+o 的 session 语义;透明度切换挪到 ctrl+shift+a
+#     (对应 kitty 原生 ctrl+shift+a>… 透明度前缀,a=alpha)
+#   - ctrl+shift+n  → jump_to_prompt forward  (backward on ctrl+alt+n, same tier as resize)
 # =============================================================================
 
 # --- Tab management ---
@@ -159,11 +164,12 @@ keybind = ctrl+shift+j=goto_split:down
 keybind = ctrl+shift+k=goto_split:up
 keybind = ctrl+shift+l=goto_split:right
 
-# Resize panes (alt+hjkl, vim-style)
-keybind = alt+h=resize_split:left,10
-keybind = alt+l=resize_split:right,10
-keybind = alt+k=resize_split:up,10
-keybind = alt+j=resize_split:down,10
+# Resize panes (ctrl+alt+hjkl, vim-style; matches kitty exactly so plain
+# alt+j/k stays free for LazyVim's <A-j>/<A-k> move-line in neovim)
+keybind = ctrl+alt+h=resize_split:left,10
+keybind = ctrl+alt+l=resize_split:right,10
+keybind = ctrl+alt+k=resize_split:up,10
+keybind = ctrl+alt+j=resize_split:down,10
 
 # --- Scrolling (vim-style) ---
 keybind = ctrl+shift+u=scroll_page_up
@@ -175,7 +181,7 @@ keybind = ctrl+shift+f=scroll_page_down
 keybind = ctrl+shift+up=scroll_page_lines:-1
 keybind = ctrl+shift+down=scroll_page_lines:1
 
-# Scroll to top/bottom (kitty: ctrl+shift+gg / ctrl+shift+g)
+# Scroll to top/bottom (kitty: kitty_mod+home / kitty_mod+end, same keys)
 keybind = ctrl+shift+home=scroll_to_top
 keybind = ctrl+shift+end=scroll_to_bottom
 
@@ -190,20 +196,19 @@ keybind = ctrl+shift+p=paste_from_clipboard
 
 # --- Utilities ---
 keybind = ctrl+shift+semicolon=clear_screen
-# Toggle transparency (kitty: dynamic_background_opacity). macOS only.
-keybind = ctrl+shift+o=toggle_background_opacity
+# Toggle transparency (kitty native default: ctrl+shift+a>… prefix). macOS only.
+keybind = ctrl+shift+a=toggle_background_opacity
 
 # --- Configuration ---
 keybind = ctrl+shift+r=reload_config
-# Open config file (kitty: edit_config_file)
-keybind = ctrl+shift+e=open_config
+# Edit scrollback (kitty: edit_scrollback). Open config relies on native super+,
+keybind = ctrl+shift+e=write_screen_file:open,plain
 
 # --- Window control ---
 # kitty: kitty_mod+m toggle_maximized. toggle_maximize works on macOS since 1.1.0
 # (fills the screen, stays windowed — not fullscreen).
 keybind = ctrl+shift+m=toggle_maximize
-# Fullscreen moved off ctrl+shift+f (was conflicting with scroll_page_down)
-keybind = ctrl+shift+enter=toggle_fullscreen
+# Fullscreen: rely on native super+ctrl+f / super+enter (no custom binding needed)
 
 # --- Font size ---
 keybind = ctrl+shift+equal=increase_font_size:2
