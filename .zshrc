@@ -8,8 +8,12 @@
 # ============================================
 
 # Basic PATH setup (~/.local/bin ahead of homebrew so uv's default python3,
-# fd, rg win; mise activate at the bottom still wins for node/go)
+# fd, rg win)
 export PATH=$HOME/.local/bin:$HOME/bin:/usr/local/bin:/opt/homebrew/bin:$PATH
+
+# Drop duplicate PATH entries; /etc/paths.d and login shells re-add the same
+# directories, so keep the first (highest-priority) occurrence of each.
+typeset -U path PATH
 
 # Starship prompt
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
@@ -26,7 +30,9 @@ export LANG=en_US.UTF-8
 # ============================================
 
 # OrbStack init lives in ~/.zprofile
-# Node/Go versions are managed by mise (activated at the bottom of this file)
+# mise is activated at the bottom but currently has no tools installed, so
+# node/go/python all resolve to Homebrew. Run `mise use -g node@22` (etc.) to
+# actually put a toolchain under mise's control.
 
 # Go bin directory (GOPATH bin, valid regardless of Go manager)
 export PATH="$HOME/go/bin:$PATH"
