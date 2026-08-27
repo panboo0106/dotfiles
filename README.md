@@ -4,13 +4,13 @@
 
 ## 环境概览
 
-- **Shell**: Zsh + Oh My Zsh + Starship
+- **Shell**: Zsh + Oh My Zsh + Starship（`~/.zshenv` 放 cargo env，`~/.zprofile` 放 OrbStack init，`~/.zshrc` 是主体）
 - **编辑器**: Neovim (LazyVim), Zed, VSCode
 - **终端**: Kitty (主终端), WezTerm, Alacritty
 - **输入法**: 鼠须管 (Squirrel) + 雾凇拼音
 - **现代 CLI**: bat, eza, delta, gh, lazygit
-- **语言**: Node.js (nvm), Go (g), Python (uv), Rust
-- **项目级版本管理**: mise（读 `.tool-versions`/`mise.toml`，`cd` 进项目自动切 node/python 版本；与 nvm/g/uv 并存，不冲突）
+- **语言**: Node.js / Go (mise), Python (uv), Rust (cargo)
+- **版本管理**: mise 管 Node/Go 的全局默认与项目版本（读 `.tool-versions`/`mise.toml`，`cd` 进项目自动切换）；Python 由 uv 管理，两者不冲突
 
 ---
 
@@ -122,38 +122,14 @@ git clone https://github.com/zsh-users/zsh-completions $ZSH_CUSTOM/plugins/zsh-c
 git clone https://github.com/agkozak/zsh-z $ZSH_CUSTOM/plugins/zsh-z
 ```
 
-### 第 5 步：安装 NVM + Node.js
-
-```bash
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
-
-# 重新加载 shell 后
-nvm install 22    # 主力版本（设为默认）
-nvm use 22
-nvm alias default 22
-nvm install 25    # 可选最新版
-```
-
-### 第 6 步：安装 Go 版本管理器 g
-
-```bash
-curl -sSL https://raw.githubusercontent.com/voidint/g/master/install.sh | bash
-
-# 重新加载 shell 后（国内镜像已在 .g/env 中配置）
-g install 1.24
-```
-
-### 第 7 步：安装 Python（uv）
-
-```bash
-# uv 已在第 3 步通过 brew 安装
-uv python install 3.14
-```
-
-### 第 8 步：安装 mise（项目级多语言版本管理）
+### 第 5 步：安装 mise（Node.js / Go 版本管理）
 
 ```bash
 brew install mise
+
+# 全局默认版本（mise 已取代 nvm / g）
+mise use -g node@22    # 主力版本，node@25 可选再装
+mise use -g go@1.24
 ```
 
 在 `~/.zshrc` **文件末尾**追加（必须是最后一行涉及 PATH 的语句——如果后面还有 `export PATH=...`，会把 `~/.local/bin` 挤到前面，导致同名二进制，比如 uv 装的全局 python，覆盖掉 mise 解析出的项目版本）：
@@ -172,14 +148,21 @@ mise settings add idiomatic_version_file_enable_tools python
 
 > 个别较老的 python-build-standalone 构建（如 3.12.8 的 2025-01 版本）没有 GitHub attestation 记录，`mise install` 会报 attestation 校验失败；较新的版本（如 3.14.6）通常没这问题。要跳过校验：`MISE_PYTHON_GITHUB_ATTESTATIONS=false mise install`，或在项目的 `mise.toml` 里加 `[settings]` 段 `python.github_attestations = false` 只对该项目关闭。
 
-### 第 9 步：安装 npm 全局包
+### 第 6 步：安装 Python（uv）
+
+```bash
+# uv 已在第 3 步通过 brew 安装
+uv python install 3.14
+```
+
+### 第 7 步：安装 npm 全局包
 
 ```bash
 npm install -g @anthropic-ai/claude-code
 npm install -g @mermaid-js/mermaid-cli
 ```
 
-### 第 10 步：安装 Go 工具
+### 第 8 步：安装 Go 工具
 
 ```bash
 go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
@@ -187,7 +170,7 @@ go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 
 > `fd` 和 `rg` 在 `~/.local/bin/` 是 Claude Code 自动管理的，无需手动安装。
 
-### 第 11 步：安装雾凇拼音
+### 第 9 步：安装雾凇拼音
 
 ```bash
 cd ~/Library/Rime
@@ -204,7 +187,7 @@ curl -fsSL https://raw.githubusercontent.com/rime/plum/master/rime-install | \
 ls ~/Library/Rime/build/*.bin 2>/dev/null | head -5
 ```
 
-### 第 12 步：启动 sing-box（代理工具）
+### 第 10 步：启动 sing-box（代理工具）
 
 bare 仓库已包含 `~/.config/sing-box/io.sing-box.plist`，加载 LaunchAgent：
 
@@ -352,8 +335,6 @@ brew install imagemagick
 - [鼠须管 GitHub](https://github.com/rime/squirrel)
 - [Oh My Zsh](https://github.com/ohmyzsh/ohmyzsh)
 - [Starship](https://starship.rs)
-- [g - Go Version Manager](https://github.com/voidint/g)
-- [nvm](https://github.com/nvm-sh/nvm)
 - [uv](https://github.com/astral-sh/uv)
 - [mise](https://mise.jdx.dev)
 

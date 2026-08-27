@@ -7,8 +7,9 @@
 # Environment Variables
 # ============================================
 
-# Basic PATH setup
-export PATH=$HOME/bin:/usr/local/bin:/opt/homebrew/bin:$HOME/.local/bin:$PATH
+# Basic PATH setup (~/.local/bin ahead of homebrew so uv's default python3,
+# fd, rg win; mise activate at the bottom still wins for node/go)
+export PATH=$HOME/.local/bin:$HOME/bin:/usr/local/bin:/opt/homebrew/bin:$PATH
 
 # Starship prompt
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
@@ -24,22 +25,13 @@ export LANG=en_US.UTF-8
 # Tool Initialization
 # ============================================
 
-# OrbStack
-source ~/.orbstack/shell/init.zsh 2>/dev/null || :
+# OrbStack init lives in ~/.zprofile
+# Node/Go versions are managed by mise (activated at the bottom of this file)
 
-# NVM (Node Version Manager)
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-
-# g (Go Version Manager)
-[ -s "${HOME}/.g/env" ] && \. "${HOME}/.g/env"
-
-# Go bin directory
+# Go bin directory (GOPATH bin, valid regardless of Go manager)
 export PATH="$HOME/go/bin:$PATH"
 
-# Cargo (Rust) - only if installed
-[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+# Cargo env is sourced in ~/.zshenv
 
 # Local bin - only if exists
 [ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
@@ -121,24 +113,15 @@ precmd () {
     print -Pn "\e]0;%m:%~\a"
 }
 
-# Unalias 'g' if it exists (conflict with go version manager)
-if [[ -n $(alias g 2>/dev/null) ]]; then
-    unalias g
-fi
-
 # ============================================
 # Private Configuration
 # ============================================
 
 # Load private configuration if it exists
 # [[ -f ~/.zshrc.private ]] && source ~/.zshrc.private
-export PATH="$HOME/.local/bin:$PATH"
 
 # Remove problematic rg alias from Claude Code
 unalias rg 2>/dev/null || true
-
-# Use local bin fd and rg
-export PATH="$HOME/.local/bin:$PATH"
 
 # Ghostty theme toggle (F5)
 toggle_ghostty_theme() { ~/.config/ghostty/toggle-theme.sh }
