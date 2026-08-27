@@ -171,8 +171,6 @@ return {
         parser = require("lint.parser").from_errorformat("%f:%l:%c: %t%*[^:]: %m", { source = "golangci-lint" }),
       }
 
-      -- BufWritePost + InsertLeave + 300ms debounce to balance responsiveness and performance
-      -- Removed BufReadPost to avoid excessive linting on buffer switches
       local function debounce(ms, fn)
         local timer = vim.uv.new_timer()
         return function(...)
@@ -184,7 +182,28 @@ return {
         end
       end
 
-      vim.api.nvim_create_autocmd({ "BufWritePost", "InsertLeave" }, {
+      -- 重量级 linter 只在保存时跑：golangci-lint 是全项目扫描（秒级）、checkstyle 每次触发
+      -- 都要冷启动一个 JVM。InsertLeave 只留给 shellcheck 这类毫秒级 linter。
+      local heavy_linters = { golangcilint = true, checkstyle = true }
+
+      local function light_linters()
+        local all = lint.linters_by_ft[vim.bo.filetype] or {}
+        return vim.tbl_filter(function(name)
+          return not heavy_linters[name]
+        end, all)
+      end
+
+      vim.api.nvim_create_autocmd("InsertLeave", {
+        group = lint_augroup,
+        callback = debounce(300, function()
+          local light = light_linters()
+          if #light > 0 then
+            lint.try_lint(light)
+          end
+        end),
+      })
+
+      vim.api.nvim_create_autocmd("BufWritePost", {
         group = lint_augroup,
         callback = debounce(300, function()
           lint.try_lint()

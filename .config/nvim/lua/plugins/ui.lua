@@ -318,6 +318,11 @@ return {
             b = { bg = c.bg2, fg = c.fg },
             c = { bg = c.bg1, fg = c.fg2 },
           },
+          terminal = {
+            a = { bg = c.cyan, fg = c.bg, gui = "bold" },
+            b = { bg = c.bg2, fg = c.fg },
+            c = { bg = c.bg1, fg = c.fg2 },
+          },
           inactive = {
             a = { bg = c.bg3, fg = c.fg3, gui = "bold" },
             b = { bg = c.bg2, fg = c.fg3 },
@@ -325,7 +330,9 @@ return {
           },
         }
       end
-      opts.options.theme = make_theme()
+      -- 传函数而非求值结果：lualine 在 ColorScheme / OptionSet background 时会重新调用它，
+      -- 使色块跟随 :ToggleSolarized 切换 light/dark palette。
+      opts.options.theme = make_theme
       require("lualine").setup(opts)
     end,
   },
@@ -398,10 +405,8 @@ return {
   {
     "Bekaboo/dropbar.nvim",
     event = "VeryLazy",
-    -- optional, but required for fuzzy finder support
-    dependencies = {
-      { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
-    },
+    -- 当前版 dropbar 的 lua 源码已无 telescope 引用（grep 验证过），不再挂
+    -- telescope-fzf-native 死依赖（还附带一次 make build）。
     config = function()
       local dropbar_api = require("dropbar.api")
       vim.keymap.set("n", "<Leader>;", dropbar_api.pick, { desc = "Pick symbols in winbar" })

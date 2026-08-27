@@ -181,6 +181,10 @@ return {
     priority = 1000,
     opts = {
       terminal = {
+        -- 关掉 snacks 默认的 term_normal（双击 Esc 回 normal）：它第一次按 Esc 就 return "<esc>"
+        -- 把 Esc 透传给子程序，在 Claude Code 里等于中断当前请求，之后才进 normal 模式。
+        -- 退出终端模式统一用内置 <C-\><C-n>。
+        keys = { term_normal = false },
         win = {
           style = "terminal", -- 使用内置终端样式
           border = "rounded", -- 圆角边框
@@ -384,13 +388,14 @@ return {
         callback = refresh_explorer,
         desc = "Refresh explorer on vim resume",
       })
-      -- CursorHold 兜底：AI 工具在 nvim terminal 内持续运行时无法自动触发上述事件
+      -- CursorHold 兜底：AI 工具在 nvim terminal 内持续运行时无法自动触发上述事件。
+      -- 间隔 30s：explorer_update 是全目录重扫 + git 缓存失效，大仓库跑太勤会周期性烧 CPU。
       local _last_hold = 0
       vim.api.nvim_create_autocmd("CursorHold", {
         group = group,
         callback = function()
           local now = vim.uv.now()
-          if now - _last_hold < 10000 then return end
+          if now - _last_hold < 30000 then return end
           _last_hold = now
           refresh_explorer()
         end,

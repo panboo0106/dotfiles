@@ -14,9 +14,8 @@ return {
           path = "/Users/panboozhu/leo-GoogleDrive/My Drive/Note/leo-notebook",
         },
       },
-      completion = {
-        min_chars = 2,
-      },
+      -- completion.min_chars 已删：那是 cmp 集成的参数，blink.cmp 下无效，
+      -- wikilink 补全由 markdown-oxide LSP 提供（见文件头注释）。
       ui = { enable = false }, -- 避免和 render-markdown/treesitter 渲染冲突
     },
   },

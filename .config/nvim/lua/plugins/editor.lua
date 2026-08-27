@@ -51,6 +51,8 @@ return {
       watch_gitdir = {
         follow_files = true,
       },
+      -- 之前只配了 opts 没开总开关，整块是死配置；按 opts 的调参意图补上启用
+      current_line_blame = true,
       current_line_blame_opts = {
         virt_text = true,
         virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
