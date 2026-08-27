@@ -9,7 +9,7 @@
 
 # Basic PATH setup (~/.local/bin ahead of homebrew so uv's default python3,
 # fd, rg win)
-export PATH=$HOME/.local/bin:$HOME/bin:/usr/local/bin:/opt/homebrew/bin:$PATH
+export PATH=$HOME/.local/bin:$HOME/bin:/usr/local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:$PATH
 
 # Drop duplicate PATH entries; /etc/paths.d and login shells re-add the same
 # directories, so keep the first (highest-priority) occurrence of each.
