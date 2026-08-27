@@ -334,13 +334,12 @@ return {
     event = "VeryLazy",
     dependencies = {
       "MunifTanjim/nui.nvim",
-      -- nvim-notify 已移除：唯一用到它的 "notify" view（下方 Plugin Updates route）已改走 mini，
-      -- vim.notify 本身由 snacks notifier 接管（tools.lua），故不再需要这个依赖。
+      -- nvim-notify 已移除：绘制由 snacks 承担（noice 的 notify view backend 即 snacks），不再需要。
+      -- vim.notify 由 noice 接管（notify.enabled 保持默认 true）：LazyVim 在装有 noice 时会撤销
+      -- snacks 对 vim.notify 的接管（LazyVim/plugins/init.lua 的 HACK），消息经 noice 路由后
+      -- 仍由 snacks 画在右上角，并进 noice history（<leader>snl 回看）。
     },
     opts = {
-      notify = {
-        enabled = false,
-      },
       lsp = {
         override = {
           ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
