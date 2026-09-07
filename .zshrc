@@ -25,6 +25,13 @@ export ZSH="$HOME/.config/oh-my-zsh"
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
+# Proxy (Sinbox mixed port 7890), auto-set on shell startup.
+# 临时关闭当前会话的代理:
+#   unset https_proxy http_proxy all_proxy
+export https_proxy=http://127.0.0.1:7890
+export http_proxy=http://127.0.0.1:7890
+export all_proxy=socks5://127.0.0.1:7890
+
 # ============================================
 # Tool Initialization
 # ============================================
