@@ -142,31 +142,27 @@ git clone https://github.com/zsh-users/zsh-completions $ZSH_CUSTOM/plugins/zsh-c
 git clone https://github.com/agkozak/zsh-z $ZSH_CUSTOM/plugins/zsh-z
 ```
 
-### 第 5 步：安装 mise（Node.js / Go 版本管理）
+### 第 5 步：恢复 mise 管理的 Node.js / Go
+
+仓库已包含 `~/.config/mise/config.toml`，当前选择 Node 24、Go 1.27。
+这些是版本范围，不固定补丁版本；具体配置以该文件为准。
 
 ```bash
 brew install mise
 
-# 全局默认版本（mise 已取代 nvm / g）
-mise use -g node@22    # 主力版本，node@25 可选再装
-mise use -g go@1.24
+# 第 2 步已恢复全局配置；从家目录安装，避免读入其他项目的版本设置
+cd "$HOME"
+mise install
+mise current
 ```
 
-在 `~/.zshrc` **文件末尾**追加（必须是最后一行涉及 PATH 的语句——如果后面还有 `export PATH=...`，会把 `~/.local/bin` 挤到前面，导致同名二进制，比如 uv 装的全局 python，覆盖掉 mise 解析出的项目版本）：
+[`mise install`](https://mise.jdx.dev/cli/install.html) 按已有配置安装工具，不需要再次执行 `mise use -g` 写入版本。
+仓库的 `~/.zshrc` 末尾已有 `eval "$(mise activate zsh)"`，不要重复追加。
+修改 PATH 时，保留这条初始化在其他 PATH 设置之后。安装完成后打开新终端。
 
-```bash
-eval "$(mise activate zsh)"
-```
-
-打开 python 的 idiomatic 版本文件支持（识别 `.python-version`；不开的话 mise 默认只认 `.tool-versions`/`mise.toml`）：
-
-```bash
-mise settings add idiomatic_version_file_enable_tools python
-```
-
-进项目目录跑一次 `mise install`，按 `.tool-versions`/`.python-version` 把对应版本装齐。
-
-> 个别较老的 python-build-standalone 构建（如 3.12.8 的 2025-01 版本）没有 GitHub attestation 记录，`mise install` 会报 attestation 校验失败；较新的版本（如 3.14.6）通常没这问题。要跳过校验：`MISE_PYTHON_GITHUB_ATTESTATIONS=false mise install`，或在项目的 `mise.toml` 里加 `[settings]` 段 `python.github_attestations = false` 只对该项目关闭。
+进入其他项目时，按项目的 `mise.toml` 或 `.tool-versions` 执行 `mise install`。
+Python 默认由 uv 管理。本恢复流程不在 mise 全局配置中添加 Python，也不启用 `.python-version` 自动读取；
+需要 mise 管 Python 的项目应单独配置。
 
 ### 第 6 步：安装 Python（uv）
 
@@ -248,6 +244,7 @@ dot-sync
 | 内容 | 维护位置 | 原则 |
 |------|----------|------|
 | Shell | `.zshenv`、`.zprofile`、`.zshrc` | 分别维护环境变量、登录初始化和交互配置 |
+| 运行时版本 | `.config/mise/config.toml` | 维护 Node/Go 全局版本范围；安装文件与缓存不入库 |
 | Git 与终端 | `.gitconfig`、`.config/delta/`、各终端配置目录 | 只纳入手工维护的配置 |
 | Neovim | `.config/nvim/` | 保留现有配置与锁文件；历史计划不在日常整理中删除 |
 | lazygit | `.config/lazygit/config.yml`、`Library/Application Support/lazygit/config.yml` | 目前保留两个配置入口；修改前核对实际使用的位置 |

@@ -37,9 +37,9 @@ export all_proxy=socks5://127.0.0.1:7890
 # ============================================
 
 # OrbStack init lives in ~/.zprofile
-# mise is activated at the bottom but currently has no tools installed, so
-# node/go/python all resolve to Homebrew. Run `mise use -g node@22` (etc.) to
-# actually put a toolchain under mise's control.
+# mise reads global Node/Go versions from ~/.config/mise/config.toml.
+# Keep its activation at the bottom, after the other PATH changes.
+# Python defaults are managed by uv.
 
 # Go bin directory (GOPATH bin, valid regardless of Go manager)
 export PATH="$HOME/go/bin:$PATH"
