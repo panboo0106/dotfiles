@@ -33,21 +33,41 @@ cat ~/.ssh/id_ed25519.pub  # 复制到 GitHub Settings > SSH Keys
 ### 第 2 步：克隆 Bare 仓库（恢复所有配置文件）
 
 ```bash
-git clone --bare git@github.com:panboo0106/dotfiles.git $HOME/.dotfiles
+git clone --bare git@github.com:panboo0106/dotfiles.git "$HOME/.dotfiles"
 
 # 临时函数
 dotfiles() { git --git-dir="$HOME/.dotfiles" --work-tree="$HOME" "$@"; }
 
-# checkout 前备份或删除可能冲突的文件（如 ~/.zshrc）
-mkdir -p ~/.dotfiles-backup
-dotfiles checkout 2>&1 | grep -E "\s+\." | awk {'print $1'} | xargs -I{} mv {} ~/.dotfiles-backup/{}
+# bare clone 需要配置远端跟踪分支，供 fetch、状态比较和 push 使用
+dotfiles config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
+dotfiles fetch origin
+dotfiles branch --set-upstream-to=origin/main main
+dotfiles remote set-head origin -a
 
-# checkout 配置文件
-dotfiles checkout
-
-# 隐藏 untracked 文件提示
+# 隐藏家目录中未跟踪文件的提示
 dotfiles config --local status.showUntrackedFiles no
+
+# 在家目录检出；如果提示文件冲突，先按下文逐个备份
+cd "$HOME"
+dotfiles checkout
 ```
+
+如果 checkout 报告冲突，先检查列出的文件。不要解析错误输出来自动移动文件，也不要使用强制检出。
+下面以 `.config/kitty/kitty.conf` 和带空格的 lazygit 配置路径为例。只执行与实际冲突对应的 `mkdir` 和 `mv` 行：
+
+```bash
+# 每次生成独立备份目录，保留原目录层级
+dot_backup=$(mktemp -d "$HOME/.dotfiles-backup.XXXXXX")
+mkdir -p "$dot_backup/.config/kitty"
+mv -i "$HOME/.config/kitty/kitty.conf" "$dot_backup/.config/kitty/kitty.conf"
+mkdir -p "$dot_backup/Library/Application Support/lazygit"
+mv -i "$HOME/Library/Application Support/lazygit/config.yml" "$dot_backup/Library/Application Support/lazygit/config.yml"
+printf '备份位置：%s\n' "$dot_backup"
+
+# 全部冲突处理完后重试；保留备份，直到确认恢复成功
+dotfiles checkout
+```
+
 
 ### 第 3 步：安装 Brew 软件包
 
@@ -122,31 +142,27 @@ git clone https://github.com/zsh-users/zsh-completions $ZSH_CUSTOM/plugins/zsh-c
 git clone https://github.com/agkozak/zsh-z $ZSH_CUSTOM/plugins/zsh-z
 ```
 
-### 第 5 步：安装 mise（Node.js / Go 版本管理）
+### 第 5 步：恢复 mise 管理的 Node.js / Go
+
+仓库已包含 `~/.config/mise/config.toml`，当前选择 Node 24、Go 1.27。
+这些是版本范围，不固定补丁版本；具体配置以该文件为准。
 
 ```bash
 brew install mise
 
-# 全局默认版本（mise 已取代 nvm / g）
-mise use -g node@22    # 主力版本，node@25 可选再装
-mise use -g go@1.24
+# 第 2 步已恢复全局配置；从家目录安装，避免读入其他项目的版本设置
+cd "$HOME"
+mise install
+mise current
 ```
 
-在 `~/.zshrc` **文件末尾**追加（必须是最后一行涉及 PATH 的语句——如果后面还有 `export PATH=...`，会把 `~/.local/bin` 挤到前面，导致同名二进制，比如 uv 装的全局 python，覆盖掉 mise 解析出的项目版本）：
+[`mise install`](https://mise.jdx.dev/cli/install.html) 按已有配置安装工具，不需要再次执行 `mise use -g` 写入版本。
+仓库的 `~/.zshrc` 末尾已有 `eval "$(mise activate zsh)"`，不要重复追加。
+修改 PATH 时，保留这条初始化在其他 PATH 设置之后。安装完成后打开新终端。
 
-```bash
-eval "$(mise activate zsh)"
-```
-
-打开 python 的 idiomatic 版本文件支持（识别 `.python-version`；不开的话 mise 默认只认 `.tool-versions`/`mise.toml`）：
-
-```bash
-mise settings add idiomatic_version_file_enable_tools python
-```
-
-进项目目录跑一次 `mise install`，按 `.tool-versions`/`.python-version` 把对应版本装齐。
-
-> 个别较老的 python-build-standalone 构建（如 3.12.8 的 2025-01 版本）没有 GitHub attestation 记录，`mise install` 会报 attestation 校验失败；较新的版本（如 3.14.6）通常没这问题。要跳过校验：`MISE_PYTHON_GITHUB_ATTESTATIONS=false mise install`，或在项目的 `mise.toml` 里加 `[settings]` 段 `python.github_attestations = false` 只对该项目关闭。
+进入其他项目时，按项目的 `mise.toml` 或 `.tool-versions` 执行 `mise install`。
+Python 默认由 uv 管理。本恢复流程不在 mise 全局配置中添加 Python，也不启用 `.python-version` 自动读取；
+需要 mise 管 Python 的项目应单独配置。
 
 ### 第 6 步：安装 Python（uv）
 
@@ -189,13 +205,11 @@ ls ~/Library/Rime/build/*.bin 2>/dev/null | head -5
 
 ### 第 10 步：启动 sing-box（代理工具）
 
-bare 仓库已包含 `~/.config/sing-box/io.sing-box.plist`，加载 LaunchAgent：
+仓库包含 `~/.config/sing-box/homebrew.mxcl.sing-box.plist`，供核对 Homebrew 服务参数。代理运行配置不在仓库中；先单独恢复 `/opt/homebrew/etc/sing-box/config.json`，再启动服务：
 
 ```bash
-# brew 安装 sing-box 时会自动注册 plist，若需手动加载：
+# 由 Homebrew 管理服务注册与启动
 brew services start sing-box
-# 或
-launchctl load ~/Library/LaunchAgents/io.sing-box.plist
 ```
 
 ---
@@ -212,11 +226,57 @@ dot-add ~/.config/some/config.toml
 # 提交
 dot-commit "add some config"
 
-# 一键同步（add -u + commit + push）
+# 检查差异，再明确选择要同步的内容
+dot diff
+dot add -p ~/.zshrc
+dot diff --cached
+
+# 仅提交已暂存内容并推送；没有已暂存改动时仍尝试推送
 dot-sync
 ```
 
 以上函数已定义在 `~/.zshrc` 中，`dot` 是 `dotfiles` 的别名。
+`dot-sync` 不会自动暂存文件。提交失败时不会推送，推送失败时返回失败状态。
+`dot-add` 会暂存指定文件的全部改动；需要选择部分改动时使用 `dot add -p`。
+
+### 配置文件归属
+
+| 内容 | 维护位置 | 原则 |
+|------|----------|------|
+| Shell | `.zshenv`、`.zprofile`、`.zshrc` | 分别维护环境变量、登录初始化和交互配置 |
+| 运行时版本 | `.config/mise/config.toml` | 维护 Node/Go 全局版本范围；安装文件与缓存不入库 |
+| Git 与终端 | `.gitconfig`、`.config/delta/`、各终端配置目录 | 只纳入手工维护的配置 |
+| Neovim | `.config/nvim/` | 保留现有配置与锁文件；历史计划不在日常整理中删除 |
+| lazygit | `.config/lazygit/config.yml`、`Library/Application Support/lazygit/config.yml` | 目前保留两个配置入口；修改前核对实际使用的位置 |
+| 鼠须管 | `Library/Rime/*.custom.yaml` | 只维护自定义补丁，排除词库安装产物与用户数据库 |
+| 私有配置 | `.zshrc.private.template` | 只跟踪模板；`.zshrc.private` 保持忽略，按需手动配置加载 |
+
+`.worktrees/`、`.agent-work/` 和 `.dotfiles-backup*/` 不纳入版本管理。
+隐藏未跟踪文件只影响状态显示。添加文件时仍应使用明确路径，避免对整个家目录执行 `dot add .`。
+
+### 仓库检查与保守维护
+
+```bash
+dot count-objects -vH
+dot fsck --full
+
+# 远端默认分支改变后，更新本地远端信息
+dot fetch origin
+dot remote set-head origin -a
+```
+
+不可达对象可能是恢复历史，不能只因不可达就删除。需要压缩时，先在仓库副本中测量；
+`git repack -a -d --keep-unreachable` 可重新打包并保留不可达对象。
+操作前后应核对对象清单、引用、reflog 和索引。不要使用 `prune` 或过期 reflog 来完成日常压缩。
+
+### 检查 Shell 语法
+
+在仓库根目录运行：
+
+```bash
+zsh -n .zshrc
+zsh -n .zprofile
+```
 
 ---
 

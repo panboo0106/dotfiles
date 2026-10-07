@@ -10,7 +10,6 @@
 .bashrc
 .cshrc
 .tcshrc
-.zprofile
 .zsh_history
 .zsh_sessions/
 .zcompdump*
@@ -58,6 +57,9 @@
 # Dotfiles Repo
 # =============================================================================
 .dotfiles/
+.dotfiles-backup*/
+.worktrees/
+.agent-work/
 
 # =============================================================================
 # Config Directories (managed separately or auto-generated)

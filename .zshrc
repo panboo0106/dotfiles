@@ -37,9 +37,9 @@ export all_proxy=socks5://127.0.0.1:7890
 # ============================================
 
 # OrbStack init lives in ~/.zprofile
-# mise is activated at the bottom but currently has no tools installed, so
-# node/go/python all resolve to Homebrew. Run `mise use -g node@22` (etc.) to
-# actually put a toolchain under mise's control.
+# mise reads global Node/Go versions from ~/.config/mise/config.toml.
+# Keep its activation at the bottom, after the other PATH changes.
+# Python defaults are managed by uv.
 
 # Go bin directory (GOPATH bin, valid regardless of Go manager)
 export PATH="$HOME/go/bin:$PATH"
@@ -110,11 +110,19 @@ dot-commit() {
 }
 
 dot-sync() {
-  dotfiles add -u && dotfiles commit -m "sync: $(date +%Y-%m-%d)" && dotfiles push
+  # Commit only explicitly staged changes. A clean index can still need a push.
+  local diff_status=0
+  dotfiles diff --cached --quiet || diff_status=$?
+  case "$diff_status" in
+    0) ;;
+    1) dotfiles commit -m "sync: $(date +%Y-%m-%d)" || return $? ;;
+    *) return "$diff_status" ;;
+  esac
+  dotfiles push
 }
 
 dot-list() {
-  git --git-dir=$HOME/.dotfiles --work-tree=$HOME ls-files
+  dotfiles ls-files
 }
 
 # ============================================
