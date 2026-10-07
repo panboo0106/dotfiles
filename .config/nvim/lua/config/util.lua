@@ -24,4 +24,10 @@ function M.find_config_with_findfile(files, start_path)
   return ""
 end
 
+function M.supports_kitty_images()
+  return vim.fn.has("win32") ~= 1 and (
+    vim.env.KITTY_WINDOW_ID ~= nil or vim.env.TERM == "xterm-kitty" or vim.env.TERM_PROGRAM == "ghostty"
+  )
+end
+
 return M

@@ -37,7 +37,7 @@ return {
     end,
   },
 
-  -- dap-python: relocated from coding.lua, all 8 original launch configs preserved verbatim
+  -- Keep debugpy independent from the interpreter used by the project.
   {
     "mfussenegger/nvim-dap",
     optional = true,
@@ -72,6 +72,7 @@ return {
             debugpy_cmd = mason_debugpy
           end
           require("dap-python").setup(debugpy_cmd)
+          require("dap-python").resolve_python = require("config.python").resolve
 
           local dap = require("dap")
           dap.configurations.python = {
@@ -80,7 +81,7 @@ return {
               request = "launch",
               name = "Launch file",
               program = "${file}",
-              pythonPath = debugpy_cmd,
+              pythonPath = function() return require("config.python").resolve() end,
               console = "integratedTerminal",
             },
             {
@@ -92,7 +93,7 @@ return {
                 local args_string = vim.fn.input("Arguments: ")
                 return vim.split(args_string, " +")
               end,
-              pythonPath = debugpy_cmd,
+              pythonPath = function() return require("config.python").resolve() end,
               console = "integratedTerminal",
             },
             {
@@ -102,7 +103,7 @@ return {
               module = function()
                 return vim.fn.input("Module name: ")
               end,
-              pythonPath = debugpy_cmd,
+              pythonPath = function() return require("config.python").resolve() end,
               console = "integratedTerminal",
             },
             {
@@ -116,7 +117,7 @@ return {
                 end,
               },
               mode = "remote",
-              pythonPath = debugpy_cmd,
+              pythonPath = function() return require("config.python").resolve() end,
             },
             {
               type = "python",
@@ -125,7 +126,7 @@ return {
               processId = function()
                 return require("dap.utils").pick_process()
               end,
-              pythonPath = debugpy_cmd,
+              pythonPath = function() return require("config.python").resolve() end,
             },
             {
               type = "python",
@@ -136,7 +137,7 @@ return {
               end,
               args = { "runserver", "--noreload" },
               justMyCode = false,
-              pythonPath = debugpy_cmd,
+              pythonPath = function() return require("config.python").resolve() end,
               console = "integratedTerminal",
             },
             {
@@ -146,7 +147,7 @@ return {
               module = "flask",
               args = { "run", "--no-debugger", "--no-reload" },
               justMyCode = false,
-              pythonPath = debugpy_cmd,
+              pythonPath = function() return require("config.python").resolve() end,
               console = "integratedTerminal",
             },
             {
@@ -158,7 +159,7 @@ return {
                 return vim.fn.input("Pytest args: ")
               end,
               justMyCode = false,
-              pythonPath = debugpy_cmd,
+              pythonPath = function() return require("config.python").resolve() end,
               console = "integratedTerminal",
             },
           }
@@ -177,10 +178,9 @@ return {
           dap = { justMyCode = false },
           args = { "--log-level", "DEBUG" },
           runner = "pytest",
-          python = (function()
-            local py = vim.fn.exepath("python3")
-            return py ~= "" and py or vim.fn.exepath("python")
-          end)(),
+          python = function(root)
+            return { require("config.python").resolve(root) }
+          end,
         },
       },
     },

@@ -140,7 +140,7 @@ check_python() {
 
                 # Ruff 检查
                 if command -v ruff >/dev/null 2>&1; then
-                    if ! ruff check --config="$HOME/.config/nvim/ruff_company.toml" "$file" 2>/dev/null; then
+                    if ! ruff check --config="$HOME/.config/ruff/ruff.toml" "$file" 2>/dev/null; then
                         echo -e "${RED}❌ Ruff 检查失败: $file${NC}"
                         echo "请运行: make py-lint"
                         return 1
@@ -149,7 +149,7 @@ check_python() {
 
                 # Ruff 格式检查
                 if command -v ruff >/dev/null 2>&1; then
-                    if ! ruff format --check --config="$HOME/.config/nvim/ruff_company.toml" "$file" >/dev/null 2>&1; then
+                    if ! ruff format --check --config="$HOME/.config/ruff/ruff.toml" "$file" >/dev/null 2>&1; then
                         echo -e "${YELLOW}⚠️  $file 需要格式化${NC}"
                         echo "请运行: make py-format"
                         # 不阻止提交，只警告

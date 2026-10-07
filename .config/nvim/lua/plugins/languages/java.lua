@@ -54,7 +54,7 @@ return {
         local root_dir = find_java_project_root()
 
         -- 工作空间目录
-        local project_name = vim.fn.fnamemodify(root_dir, ":p:h:t")
+        local project_name = vim.fn.fnamemodify(root_dir, ":t") .. "-" .. vim.fn.sha256(vim.fs.normalize(root_dir)):sub(1, 12)
         local workspace_dir = home .. "/.cache/jdtls/workspace/" .. project_name
 
         -- JDTLS配置路径
@@ -390,6 +390,7 @@ return {
           -- 按键映射和其他附加功能
           on_attach = function(client, bufnr)
             require("which-key").add({
+              buffer = bufnr,
               { "<leader>j", group = "Java", icon = "☕" },
 
               -- 代码重构（类似 IDEA Alt+Enter / Ctrl+Shift+R）
@@ -457,7 +458,7 @@ return {
                 desc = "Full Compile",
                 icon = { color = "orange", icon = "" },
               },
-            }, { buffer = bufnr })
+            })
             -- DAP配置（如果安装了nvim-dap）
             if pcall(require, "dap") then
               require("jdtls").setup_dap({ hotcodereplace = "auto" })

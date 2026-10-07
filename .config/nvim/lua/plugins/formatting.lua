@@ -1,3 +1,9 @@
+local function markdown_formatters(bufnr)
+  local conform = require("conform")
+  local prettier = conform.get_formatter_info("prettierd", bufnr).available and "prettierd" or "prettier"
+  return { prettier, "markdownlint-cli2", "markdown-toc" }
+end
+
 return {
   "stevearc/conform.nvim",
   optional = true,
@@ -38,8 +44,8 @@ return {
       yaml = { "yamlfmt" },
       -- markdown 保持串行：prettier 格式化 → markdownlint-cli2 修复 → markdown-toc 更新目录，
       -- 三者各司其职，不能 stop_after_first。
-      markdown = { "prettierd", "prettier", "markdownlint-cli2", "markdown-toc" },
-      ["markdown.mdx"] = { "prettierd", "prettier", "markdownlint-cli2", "markdown-toc" },
+      markdown = markdown_formatters,
+      ["markdown.mdx"] = markdown_formatters,
       graphql = { "prettierd", "prettier", stop_after_first = true },
       handlebars = { "prettierd", "prettier", stop_after_first = true },
 
@@ -70,7 +76,7 @@ return {
         args = { "-i", "2", "-ci" }, -- 使用 2 空格缩进
       },
       black = {
-        args = { "--line-length", "88" },
+        prepend_args = { "--line-length", "88" },
       },
       yamlfmt = {
         command = "yamlfmt",

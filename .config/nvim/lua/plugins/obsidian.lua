@@ -11,7 +11,13 @@ return {
       workspaces = {
         {
           name = "leo-notebook",
-          path = "/Users/panboozhu/leo-GoogleDrive/My Drive/Note/leo-notebook",
+          path = function()
+            local path = vim.env.NOTEBOOK_PATH
+            if path and path ~= "" then
+              return vim.fs.normalize(vim.fn.expand(path))
+            end
+            return vim.fn.expand("~/Library/CloudStorage/GoogleDrive-leo.minorui@gmail.com/My Drive/Note/leo-notebook")
+          end,
         },
       },
       -- completion.min_chars 已删：那是 cmp 集成的参数，blink.cmp 下无效，

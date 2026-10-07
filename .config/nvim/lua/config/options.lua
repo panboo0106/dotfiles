@@ -25,7 +25,13 @@ if #extra_paths > 0 then
 end
 vim.filetype.add({
   pattern = {
-    [".*/templates/.*%.yaml"] = "helm",
+    [".*/templates/.*%.yaml"] = function(path)
+      local root = vim.fs.root(path, "Chart.yaml")
+      if root and vim.fs.normalize(path):find(vim.fs.normalize(root) .. "/templates/", 1, true) == 1 then
+        return "helm"
+      end
+      return "yaml"
+    end,
   },
 })
 -- 启用保存时自动格式化

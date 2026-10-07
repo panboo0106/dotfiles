@@ -181,11 +181,8 @@ return {
         -- ============ Python ============
         -- Pyright 配置（只负责类型检查，linting 交给 Ruff）
         pyright = {
-          on_new_config = function(new_config, new_root_dir)
-            local venv = new_root_dir .. "/.venv"
-            if vim.fn.isdirectory(venv) == 1 then
-              new_config.settings.python.pythonPath = venv .. "/bin/python"
-            end
+          before_init = function(_, config)
+            config.settings.python.pythonPath = require("config.python").resolve(config.root_dir)
           end,
           settings = {
             pyright = {
