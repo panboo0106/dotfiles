@@ -37,9 +37,10 @@ export all_proxy=socks5://127.0.0.1:7890
 # ============================================
 
 # OrbStack init lives in ~/.zprofile
-# mise reads global Node/Go versions from ~/.config/mise/config.toml.
-# Keep its activation at the bottom, after the other PATH changes.
-# Python defaults are managed by uv.
+# Toolchains: node/go via mise, python via uv (default install in
+# ~/.local/bin, shadows Homebrew's copies, which only feed
+# ansible/yamllint/gts). Run `mise use -g node@24` (etc.) to pin a toolchain
+# under mise.
 
 # Go bin directory (GOPATH bin, valid regardless of Go manager)
 export PATH="$HOME/go/bin:$PATH"
@@ -77,7 +78,7 @@ eval "$(starship init zsh)"
 # ============================================
 
 # bat as cat replacement
-alias cat='bat'
+alias cat='bat -p'
 compdef bat=cat
 
 # eza as ls replacement
