@@ -110,11 +110,19 @@ dot-commit() {
 }
 
 dot-sync() {
-  dotfiles add -u && dotfiles commit -m "sync: $(date +%Y-%m-%d)" && dotfiles push
+  # Commit only explicitly staged changes. A clean index can still need a push.
+  local diff_status=0
+  dotfiles diff --cached --quiet || diff_status=$?
+  case "$diff_status" in
+    0) ;;
+    1) dotfiles commit -m "sync: $(date +%Y-%m-%d)" || return $? ;;
+    *) return "$diff_status" ;;
+  esac
+  dotfiles push
 }
 
 dot-list() {
-  git --git-dir=$HOME/.dotfiles --work-tree=$HOME ls-files
+  dotfiles ls-files
 }
 
 # ============================================

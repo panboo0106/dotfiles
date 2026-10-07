@@ -33,21 +33,41 @@ cat ~/.ssh/id_ed25519.pub  # 复制到 GitHub Settings > SSH Keys
 ### 第 2 步：克隆 Bare 仓库（恢复所有配置文件）
 
 ```bash
-git clone --bare git@github.com:panboo0106/dotfiles.git $HOME/.dotfiles
+git clone --bare git@github.com:panboo0106/dotfiles.git "$HOME/.dotfiles"
 
 # 临时函数
 dotfiles() { git --git-dir="$HOME/.dotfiles" --work-tree="$HOME" "$@"; }
 
-# checkout 前备份或删除可能冲突的文件（如 ~/.zshrc）
-mkdir -p ~/.dotfiles-backup
-dotfiles checkout 2>&1 | grep -E "\s+\." | awk {'print $1'} | xargs -I{} mv {} ~/.dotfiles-backup/{}
+# bare clone 需要配置远端跟踪分支，供 fetch、状态比较和 push 使用
+dotfiles config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
+dotfiles fetch origin
+dotfiles branch --set-upstream-to=origin/main main
+dotfiles remote set-head origin -a
 
-# checkout 配置文件
-dotfiles checkout
-
-# 隐藏 untracked 文件提示
+# 隐藏家目录中未跟踪文件的提示
 dotfiles config --local status.showUntrackedFiles no
+
+# 在家目录检出；如果提示文件冲突，先按下文逐个备份
+cd "$HOME"
+dotfiles checkout
 ```
+
+如果 checkout 报告冲突，先检查列出的文件。不要解析错误输出来自动移动文件，也不要使用强制检出。
+下面以 `.config/kitty/kitty.conf` 和带空格的 lazygit 配置路径为例。只执行与实际冲突对应的 `mkdir` 和 `mv` 行：
+
+```bash
+# 每次生成独立备份目录，保留原目录层级
+dot_backup=$(mktemp -d "$HOME/.dotfiles-backup.XXXXXX")
+mkdir -p "$dot_backup/.config/kitty"
+mv -i "$HOME/.config/kitty/kitty.conf" "$dot_backup/.config/kitty/kitty.conf"
+mkdir -p "$dot_backup/Library/Application Support/lazygit"
+mv -i "$HOME/Library/Application Support/lazygit/config.yml" "$dot_backup/Library/Application Support/lazygit/config.yml"
+printf '备份位置：%s\n' "$dot_backup"
+
+# 全部冲突处理完后重试；保留备份，直到确认恢复成功
+dotfiles checkout
+```
+
 
 ### 第 3 步：安装 Brew 软件包
 
@@ -189,13 +209,11 @@ ls ~/Library/Rime/build/*.bin 2>/dev/null | head -5
 
 ### 第 10 步：启动 sing-box（代理工具）
 
-bare 仓库已包含 `~/.config/sing-box/io.sing-box.plist`，加载 LaunchAgent：
+仓库包含 `~/.config/sing-box/homebrew.mxcl.sing-box.plist`，供核对 Homebrew 服务参数。代理运行配置不在仓库中；先单独恢复 `/opt/homebrew/etc/sing-box/config.json`，再启动服务：
 
 ```bash
-# brew 安装 sing-box 时会自动注册 plist，若需手动加载：
+# 由 Homebrew 管理服务注册与启动
 brew services start sing-box
-# 或
-launchctl load ~/Library/LaunchAgents/io.sing-box.plist
 ```
 
 ---
@@ -212,11 +230,56 @@ dot-add ~/.config/some/config.toml
 # 提交
 dot-commit "add some config"
 
-# 一键同步（add -u + commit + push）
+# 检查差异，再明确选择要同步的内容
+dot diff
+dot add -p ~/.zshrc
+dot diff --cached
+
+# 仅提交已暂存内容并推送；没有已暂存改动时仍尝试推送
 dot-sync
 ```
 
 以上函数已定义在 `~/.zshrc` 中，`dot` 是 `dotfiles` 的别名。
+`dot-sync` 不会自动暂存文件。提交失败时不会推送，推送失败时返回失败状态。
+`dot-add` 会暂存指定文件的全部改动；需要选择部分改动时使用 `dot add -p`。
+
+### 配置文件归属
+
+| 内容 | 维护位置 | 原则 |
+|------|----------|------|
+| Shell | `.zshenv`、`.zprofile`、`.zshrc` | 分别维护环境变量、登录初始化和交互配置 |
+| Git 与终端 | `.gitconfig`、`.config/delta/`、各终端配置目录 | 只纳入手工维护的配置 |
+| Neovim | `.config/nvim/` | 保留现有配置与锁文件；历史计划不在日常整理中删除 |
+| lazygit | `.config/lazygit/config.yml`、`Library/Application Support/lazygit/config.yml` | 目前保留两个配置入口；修改前核对实际使用的位置 |
+| 鼠须管 | `Library/Rime/*.custom.yaml` | 只维护自定义补丁，排除词库安装产物与用户数据库 |
+| 私有配置 | `.zshrc.private.template` | 只跟踪模板；`.zshrc.private` 保持忽略，按需手动配置加载 |
+
+`.worktrees/`、`.agent-work/` 和 `.dotfiles-backup*/` 不纳入版本管理。
+隐藏未跟踪文件只影响状态显示。添加文件时仍应使用明确路径，避免对整个家目录执行 `dot add .`。
+
+### 仓库检查与保守维护
+
+```bash
+dot count-objects -vH
+dot fsck --full
+
+# 远端默认分支改变后，更新本地远端信息
+dot fetch origin
+dot remote set-head origin -a
+```
+
+不可达对象可能是恢复历史，不能只因不可达就删除。需要压缩时，先在仓库副本中测量；
+`git repack -a -d --keep-unreachable` 可重新打包并保留不可达对象。
+操作前后应核对对象清单、引用、reflog 和索引。不要使用 `prune` 或过期 reflog 来完成日常压缩。
+
+### 检查 Shell 语法
+
+在仓库根目录运行：
+
+```bash
+zsh -n .zshrc
+zsh -n .zprofile
+```
 
 ---
 
