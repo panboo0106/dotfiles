@@ -416,7 +416,7 @@ return {
   },
   {
     "mikavilpas/yazi.nvim",
-    event = "VeryLazy",
+    cmd = "Yazi",
     dependencies = { "folke/snacks.nvim", lazy = true },
     keys = {
       { "<leader>-", "<cmd>Yazi<cr>", mode = { "n", "v" }, desc = "Open Yazi" },

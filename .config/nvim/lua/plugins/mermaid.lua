@@ -12,6 +12,9 @@ return {
   {
     "3rd/diagram.nvim",
     enabled = not vim.g.vscode,
+    cond = function()
+      return require("config.util").supports_kitty_images()
+    end,
     dependencies = { "3rd/image.nvim" },
     ft = { "markdown" },
     config = function()
@@ -53,9 +56,9 @@ return {
               nodes = nodes + 1
             end
           end
-          if nodes > NODE_LIMIT then
+          if nodes > NODE_LIMIT or not require("config.util").supports_kitty_images() then
             vim.cmd("MermaidPreview")
-            vim.notify("大图(" .. nodes .. "节点) → 浏览器预览", vim.log.levels.INFO)
+            vim.notify("[mermaid] 浏览器预览 (" .. nodes .. "节点)", vim.log.levels.INFO)
           else
             vim.notify("小图(" .. nodes .. "节点) → Kitty 内嵌", vim.log.levels.INFO)
           end
@@ -75,12 +78,36 @@ return {
       vim.filetype.add({ extension = { mmd = "mermaid" } })
 
       local group = vim.api.nvim_create_augroup("mermaid_render", { clear = true })
-      local current_images = {}
+      local current_images, image_paths, jobs, generations, outputs = {}, {}, {}, {}, {}
+
+      local function clear_image(bufnr)
+        if current_images[bufnr] then
+          local ok = pcall(function()
+            current_images[bufnr]:clear()
+          end)
+          if not ok then
+            return false
+          end
+          current_images[bufnr] = nil
+        end
+        if image_paths[bufnr] then
+          vim.fn.delete(image_paths[bufnr])
+          image_paths[bufnr] = nil
+        end
+        return true
+      end
+
+      local function cancel_render(bufnr)
+        generations[bufnr] = (generations[bufnr] or 0) + 1
+        if jobs[bufnr] then
+          vim.fn.jobstop(jobs[bufnr])
+          jobs[bufnr] = nil
+        end
+      end
 
       local function count_nodes(bufnr)
-        local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
         local count = 0
-        for _, line in ipairs(lines) do
+        for _, line in ipairs(vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)) do
           if line:match("%[.+%]") or line:match("{.+}") or line:match("%((.-)%)") then
             count = count + 1
           end
@@ -90,39 +117,59 @@ return {
 
       local function render_mmd(bufnr, force)
         bufnr = bufnr or vim.api.nvim_get_current_buf()
+        cancel_render(bufnr)
+        if not require("config.util").supports_kitty_images() then
+          return
+        end
         local src = vim.api.nvim_buf_get_name(bufnr)
-        if src == "" then return end
-
+        if src == "" then
+          return
+        end
         if not force and count_nodes(bufnr) > NODE_LIMIT then
+          clear_image(bufnr)
           vim.notify("[mermaid] 大图 → 用 <leader>kmo 在浏览器查看", vim.log.levels.INFO)
           return
         end
 
-        local out = string.format("/tmp/mermaid_%d_%d.png", bufnr, os.time())
-        local cmd = string.format(
-          "PUPPETEER_EXECUTABLE_PATH='%s' mmdc -i '%s' -o '%s' -s 2 --puppeteerConfigFile '%s'",
-          chrome, src, out, puppeteer_cfg
-        )
-
-        vim.fn.jobstart(cmd, {
+        local generation = generations[bufnr]
+        local out = vim.fn.tempname() .. ".png"
+        outputs[out] = true
+        local job = vim.fn.jobstart({
+          "mmdc",
+          "-i",
+          src,
+          "-o",
+          out,
+          "-s",
+          "2",
+          "--puppeteerConfigFile",
+          puppeteer_cfg,
+        }, {
+          env = { PUPPETEER_EXECUTABLE_PATH = chrome },
           on_exit = function(_, code)
-            if code ~= 0 then
-              vim.notify("[mermaid] render failed (exit " .. code .. ")", vim.log.levels.WARN)
-              return
-            end
             vim.schedule(function()
-              local ok, image = pcall(require, "image")
-              if not ok then return end
-
-              if current_images[bufnr] then
-                pcall(function() current_images[bufnr]:clear() end)
-                current_images[bufnr] = nil
+              outputs[out] = nil
+              if generations[bufnr] ~= generation or not vim.api.nvim_buf_is_valid(bufnr) then
+                vim.fn.delete(out)
+                return
               end
-
+              jobs[bufnr] = nil
+              if code ~= 0 then
+                vim.fn.delete(out)
+                vim.notify("[mermaid] render failed (exit " .. code .. ")", vim.log.levels.WARN)
+                return
+              end
               local win = vim.fn.bufwinid(bufnr)
-              if win == -1 then return end
-
-              local img = image.from_file(out, {
+              local ok, image = pcall(require, "image")
+              if not ok or win == -1 then
+                vim.fn.delete(out)
+                return
+              end
+              if not clear_image(bufnr) then
+                vim.fn.delete(out)
+                return
+              end
+              local created, img = pcall(image.from_file, out, {
                 buffer = bufnr,
                 window = win,
                 col = 0,
@@ -132,29 +179,58 @@ return {
                 max_width_window_percentage = 75,
                 max_height_window_percentage = 65,
               })
-              if img then
-                img:render()
-                current_images[bufnr] = img
+              if created and img then
+                current_images[bufnr], image_paths[bufnr] = img, out
+                if not pcall(function()
+                  img:render()
+                end) then
+                  clear_image(bufnr)
+                end
+              else
+                vim.fn.delete(out)
               end
             end)
           end,
         })
+        if job > 0 then
+          jobs[bufnr] = job
+        else
+          outputs[out] = nil
+          vim.fn.delete(out)
+          vim.notify("[mermaid] mmdc could not start", vim.log.levels.WARN)
+        end
       end
 
       vim.api.nvim_create_autocmd({ "BufWinEnter", "BufWritePost" }, {
         group = group,
         pattern = "*.mmd",
-        callback = function(ev) render_mmd(ev.buf, false) end,
+        callback = function(ev)
+          render_mmd(ev.buf, false)
+        end,
       })
 
-      vim.api.nvim_create_autocmd("BufLeave", {
+      vim.api.nvim_create_autocmd({ "BufLeave", "BufWipeout" }, {
         group = group,
-        pattern = "*.mmd",
         callback = function(ev)
-          local bufnr = ev.buf
-          if current_images[bufnr] then
-            pcall(function() current_images[bufnr]:clear() end)
-            current_images[bufnr] = nil
+          if generations[ev.buf] then
+            cancel_render(ev.buf)
+            clear_image(ev.buf)
+            if ev.event == "BufWipeout" then generations[ev.buf] = nil end
+          end
+        end,
+      })
+
+      vim.api.nvim_create_autocmd("VimLeavePre", {
+        group = group,
+        callback = function()
+          for buf in pairs(jobs) do
+            cancel_render(buf)
+          end
+          for buf in pairs(current_images) do
+            clear_image(buf)
+          end
+          for out in pairs(outputs) do
+            vim.fn.delete(out)
           end
         end,
       })
@@ -170,12 +246,12 @@ return {
         local bufnr = vim.api.nvim_get_current_buf()
         if vim.bo[bufnr].filetype ~= "mermaid" then return end
         local src = vim.api.nvim_buf_get_name(bufnr)
-        local out = src:gsub("%.mmd$", ".svg")
-        local cmd = string.format(
-          "PUPPETEER_EXECUTABLE_PATH='%s' mmdc -i '%s' -o '%s' --puppeteerConfigFile '%s'",
-          chrome, src, out, puppeteer_cfg
-        )
-        vim.fn.jobstart(cmd, {
+        if src == "" then return end
+        local out = src:match("%.mmd$") and src:gsub("%.mmd$", ".svg") or (src .. ".svg")
+        vim.fn.jobstart({
+          "mmdc", "-i", src, "-o", out, "--puppeteerConfigFile", puppeteer_cfg,
+        }, {
+          env = { PUPPETEER_EXECUTABLE_PATH = chrome },
           on_exit = function(_, code)
             if code == 0 then
               vim.notify("[mermaid] SVG 已导出: " .. out, vim.log.levels.INFO)

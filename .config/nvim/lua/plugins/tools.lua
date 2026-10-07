@@ -132,12 +132,7 @@ return {
       "leafo/magick",
     },
     cond = function()
-      return vim.fn.has("win32") ~= 1
-        and (
-          vim.env.KITTY_WINDOW_ID ~= nil
-          or vim.env.TERM == "xterm-kitty"
-          or vim.env.TERM_PROGRAM == "ghostty"
-        )
+      return require("config.util").supports_kitty_images()
     end,
     opts = {
       -- image.nvim config
@@ -357,8 +352,12 @@ return {
     },
     init = function()
       local group = vim.api.nvim_create_augroup("SnacksExplorerGitRefresh", { clear = true })
+      local refresh_pending = false
       local function refresh_explorer()
+        if refresh_pending then return end
+        refresh_pending = true
         vim.defer_fn(function()
+          refresh_pending = false
           local pickers = Snacks.picker.get({ source = "explorer", tab = false })
           for _, picker in ipairs(pickers) do
             if picker and not picker.closed then
@@ -413,6 +412,7 @@ return {
       -- refer to the configuration section below
       spec = {
         { "<leader>h",  group = "Harpoon",  icon = { icon = "󰖙",  color = "orange" } },
+        { "<leader>R", group = "Upload / Download", icon = { icon = "", color = "yellow" } },
         { "<leader>k",  group = "kitools",  icon = { icon = "",  color = "cyan"   } },
         { "<leader>kh", group = "HTTP",     icon = { icon = "󰖟",  color = "blue"   } },
         { "<leader>kd", group = "Database", icon = { icon = "󰄞",  color = "yellow" } },
@@ -435,42 +435,14 @@ return {
     "coffebar/transfer.nvim",
     lazy = true,
     cmd = { "TransferInit", "DiffRemote", "TransferUpload", "TransferDownload", "TransferDirDiff", "TransferRepeat" },
-    config = function()
-      require("transfer").setup({})
-      require("which-key").add({
-        { "<leader>R", group = "Upload / Download", icon = { icon = "", color = "yellow" } },
-        {
-          "<leader>Rd",
-          "<cmd>TransferDownload<cr>",
-          desc = "Download from remote server (scp)",
-          icon = { color = "green", icon = "󰇚" },
-        },
-        {
-          "<leader>Rf",
-          "<cmd>DiffRemote<cr>",
-          desc = "Diff file with remote server (scp)",
-          icon = { color = "green", icon = "" },
-        },
-        {
-          "<leader>Ri",
-          "<cmd>TransferInit<cr>",
-          desc = "Init/Edit Deployment config",
-          icon = { color = "green", icon = "" },
-        },
-        {
-          "<leader>Rr",
-          "<cmd>TransferRepeat<cr>",
-          desc = "Repeat transfer command",
-          icon = { color = "green", icon = "" },
-        },
-        {
-          "<leader>Ru",
-          "<cmd>TransferUpload<cr>",
-          desc = "Upload to remote server (scp)",
-          icon = { color = "green", icon = "󰕒" },
-        },
-      })
-    end,
+    keys = {
+      { "<leader>Rd", "<cmd>TransferDownload<cr>", desc = "Download from remote server (scp)" },
+      { "<leader>Rf", "<cmd>DiffRemote<cr>", desc = "Diff file with remote server (scp)" },
+      { "<leader>Ri", "<cmd>TransferInit<cr>", desc = "Init/Edit Deployment config" },
+      { "<leader>Rr", "<cmd>TransferRepeat<cr>", desc = "Repeat transfer command" },
+      { "<leader>Ru", "<cmd>TransferUpload<cr>", desc = "Upload to remote server (scp)" },
+    },
+    opts = {},
   },
   {
     "nvimdev/template.nvim",

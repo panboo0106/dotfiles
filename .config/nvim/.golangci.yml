@@ -12,20 +12,19 @@ run:
   timeout: 5m
   tests: true
   modules-download-mode: readonly
-  # 跳过大型依赖目录和生成文件
-  skip-dirs:
-    - vendor
-    - third_party
-    - testdata
-    - examples
-    - Godeps
-    - builtin
-  skip-files:
-    - ".*\\.pb\\.go$"
-    - ".*\\.gen\\.go$"
-    - ".*_mock\\.go$"
 
 formatters:
+  exclusions:
+    paths:
+      - vendor
+      - third_party
+      - testdata
+      - examples
+      - Godeps
+      - builtin
+      - ".*\\.pb\\.go$"
+      - ".*\\.gen\\.go$"
+      - ".*_mock\\.go$"
   enable:
     - gofmt      # 标准格式化
     - goimports  # import 管理
@@ -97,6 +96,16 @@ linters:
     - wastedassign       # 检测浪费的赋值
 
   exclusions:
+    paths:
+      - vendor
+      - third_party
+      - testdata
+      - examples
+      - Godeps
+      - builtin
+      - ".*\\.pb\\.go$"
+      - ".*\\.gen\\.go$"
+      - ".*_mock\\.go$"
     presets:
       - comments
       - std-error-handling

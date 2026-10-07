@@ -151,7 +151,7 @@ return {
       { "<leader>gdl", "<cmd>DiffviewFileHistory --follow %<cr>", desc = "File log (follow)" },
 
       -- 合并冲突解决
-      { "<leader>gco", "<cmd>DiffviewOpen --merge<cr>", desc = "Open merge view" },
+      { "<leader>gco", "<cmd>DiffviewOpen<cr>", desc = "Open merge view" },
     },
     opts = {
       -- Diffview 配置选项
@@ -264,54 +264,59 @@ return {
         },
         diff3 = {},
         diff4 = {},
-        file_panel = {
-          ["j"] = "<cmd>DiffviewNextEntry<cr>",
-          ["<down>"] = "<cmd>DiffviewNextEntry<cr>",
-          ["k"] = "<cmd>DiffviewPrevEntry<cr>",
-          ["<up>"] = "<cmd>DiffviewPrevEntry<cr>",
-          ["<cr>"] = "<cmd>DiffviewSelectEntry<cr>",
-          ["o"] = "<cmd>DiffviewSelectEntry<cr>",
-          ["<2-LeftMouse>"] = "<cmd>DiffviewSelectEntry<cr>",
-          ["-"] = "<cmd>DiffviewToggleStage<cr>",
-          ["S"] = "<cmd>DiffviewStageAll<cr>",
-          ["U"] = "<cmd>DiffviewUnstageAll<cr>",
-          ["X"] = "<cmd>DiffviewRestoreEntry<cr>",
-          ["L"] = "<cmd>DiffviewOpenCommitLog<cr>",
-          ["<c-b>"] = "<cmd>DiffviewScrollDown<cr>",
-          ["<c-f>"] = "<cmd>DiffviewScrollUp<cr>",
-          ["<tab>"] = "<cmd>DiffviewToggleFiles<cr>",
-          ["gf"] = "<cmd>DiffviewGotoFile<cr>",
-          ["<C-w>gf"] = "<cmd>DiffviewGotoFile split<cr>",
-          ["i"] = "<cmd>DiffviewFocusFiles<cr>",
-          ["R"] = "<cmd>DiffviewRefresh<cr>",
-        },
-        file_history_panel = {
-          ["g!"] = "<cmd>DiffviewOptions<cr>",
-          ["<C-A-d>"] = "<cmd>DiffviewOpenDiff<cr>",
-          ["y"] = "<cmd>DiffviewCopyHash<cr>",
-          ["L"] = "<cmd>DiffviewOpenCommitLog<cr>",
-          ["zR"] = "<cmd>DiffviewExpandAllFolds<cr>",
-          ["zM"] = "<cmd>DiffviewCollapseAllFolds<cr>",
-          ["j"] = "<cmd>DiffviewNextEntry<cr>",
-          ["<down>"] = "<cmd>DiffviewNextEntry<cr>",
-          ["k"] = "<cmd>DiffviewPrevEntry<cr>",
-          ["<up>"] = "<cmd>DiffviewPrevEntry<cr>",
-          ["<cr>"] = "<cmd>DiffviewSelectEntry<cr>",
-          ["o"] = "<cmd>DiffviewSelectEntry<cr>",
-          ["<2-LeftMouse>"] = "<cmd>DiffviewSelectEntry<cr>",
-          ["<tab>"] = "<cmd>DiffviewToggleFiles<cr>",
-          ["gf"] = "<cmd>DiffviewGotoFile<cr>",
-          ["<C-w>gf"] = "<cmd>DiffviewGotoFile split<cr>",
-          ["<C-w><C-f>"] = "<cmd>DiffviewGotoFile tabnew<cr>",
-        },
-        option_panel = {
-          ["<tab>"] = "<cmd>DiffviewSelectEntry<cr>",
-          ["q"] = "<cmd>DiffviewClose<cr>",
-        },
       },
     },
     config = function(_, opts)
       local actions = require("diffview.actions")
+      local panels = {
+        file_panel = {
+          ["j"] = actions.next_entry,
+          ["<down>"] = actions.next_entry,
+          ["k"] = actions.prev_entry,
+          ["<up>"] = actions.prev_entry,
+          ["<cr>"] = actions.select_entry,
+          ["o"] = actions.select_entry,
+          ["<2-LeftMouse>"] = actions.select_entry,
+          ["-"] = actions.toggle_stage_entry,
+          ["S"] = actions.stage_all,
+          ["U"] = actions.unstage_all,
+          ["X"] = actions.restore_entry,
+          ["L"] = actions.open_commit_log,
+          ["<c-b>"] = actions.scroll_view(-0.25),
+          ["<c-f>"] = actions.scroll_view(0.25),
+          ["<tab>"] = "<cmd>DiffviewToggleFiles<cr>",
+          ["gf"] = actions.goto_file_edit,
+          ["<C-w>gf"] = actions.goto_file_split,
+          ["i"] = "<cmd>DiffviewFocusFiles<cr>",
+          ["R"] = "<cmd>DiffviewRefresh<cr>",
+        },
+        file_history_panel = {
+          ["g!"] = actions.options,
+          ["<C-A-d>"] = actions.open_in_diffview,
+          ["y"] = actions.copy_hash,
+          ["L"] = actions.open_commit_log,
+          ["zR"] = actions.open_all_folds,
+          ["zM"] = actions.close_all_folds,
+          ["j"] = actions.next_entry,
+          ["<down>"] = actions.next_entry,
+          ["k"] = actions.prev_entry,
+          ["<up>"] = actions.prev_entry,
+          ["<cr>"] = actions.select_entry,
+          ["o"] = actions.select_entry,
+          ["<2-LeftMouse>"] = actions.select_entry,
+          ["<tab>"] = "<cmd>DiffviewToggleFiles<cr>",
+          ["gf"] = actions.goto_file_edit,
+          ["<C-w>gf"] = actions.goto_file_split,
+          ["<C-w><C-f>"] = actions.goto_file_tab,
+        },
+        option_panel = {
+          ["<tab>"] = actions.select_entry,
+          ["q"] = "<cmd>DiffviewClose<cr>",
+        },
+      }
+      for name, maps in pairs(panels) do
+        opts.keymaps[name] = maps
+      end
       local vk = opts.keymaps.view
       vk["gf"]         = actions.goto_file_edit
       vk["<C-w>gf"]   = actions.goto_file_split

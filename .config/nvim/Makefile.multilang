@@ -146,7 +146,7 @@ sh-verify: sh-format sh-lint
 py-lint:
 	@echo "🔍 运行 Ruff 检查..."
 	@if command -v ruff >/dev/null 2>&1; then \
-		ruff check --config=$(HOME)/.config/nvim/ruff_company.toml .; \
+		ruff check --config="$(HOME)/.config/ruff/ruff.toml" .; \
 	else \
 		echo "⚠️  Ruff 未安装，请运行: pip install ruff"; \
 	fi
@@ -161,7 +161,7 @@ py-lint:
 py-format:
 	@echo "🎨 使用 Ruff 格式化 Python..."
 	@if command -v ruff >/dev/null 2>&1; then \
-		ruff format --config=$(HOME)/.config/nvim/ruff_company.toml .; \
+		ruff format --config="$(HOME)/.config/ruff/ruff.toml" .; \
 	else \
 		echo "⚠️  Ruff 未安装，请运行: pip install ruff"; \
 	fi

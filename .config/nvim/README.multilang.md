@@ -222,10 +222,10 @@ find . -name "*.sh" -exec shellcheck {} \;
 
 ```bash
 # Ruff 检查
-ruff check --config=~/.config/nvim/ruff_company.toml .
+ruff check --config="$HOME/.config/ruff/ruff.toml" .
 
 # Ruff 格式化
-ruff format --config=~/.config/nvim/ruff_company.toml .
+ruff format --config="$HOME/.config/ruff/ruff.toml" .
 
 # Pylint 检查
 pylint --rcfile=~/.config/nvim/.pylintrc .

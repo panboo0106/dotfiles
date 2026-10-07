@@ -141,44 +141,37 @@ return {
         }
       end
 
-      -- golangci-lint 配置使用共享工具查找配置文件
-      lint.linters.golangcilint = {
-        cmd = vim.fn.exepath("golangci-lint") ~= "" and "golangci-lint"
-          or vim.fn.stdpath("data") .. "/mason/bin/golangci-lint",
-        append_fname = false,
-        args = {
-          "run",
-          "--output.text.path=stdout",
-          "--issues-exit-code=0",
-          function()
-            local current_dir = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":h")
-            local config_file = config_util.find_config_with_findfile(".golangci.yml", current_dir)
-            if config_file == "" then
-              local nvim_config = vim.fn.stdpath("config") .. "/.golangci.yml"
-              if vim.fn.filereadable(nvim_config) == 1 then
-                config_file = nvim_config
-              end
-            end
-            return config_file ~= "" and ("--config=" .. config_file) or nil
-          end,
-          function()
-            return vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":h")
-          end,
-        },
-        stream = "stdout",
-        ignore_exitcode = true,
-        name = "golangcilint",
-        parser = require("lint.parser").from_errorformat("%f:%l:%c: %t%*[^:]: %m", { source = "golangci-lint" }),
-      }
+      -- Resolve Go's version-aware builtin only when Go lint is requested.
+      lint.linters.golangcilint = function()
+        local golangci = vim.deepcopy(require("lint.linters.golangcilint"))
+        table.insert(golangci.args, function()
+          local current_dir = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":h")
+          local config = config_util.find_config_with_findfile({ ".golangci.yml", ".golangci.yaml" }, current_dir)
+          if config == "" then
+            config = vim.fn.stdpath("config") .. "/.golangci.yml"
+          end
+          if vim.fn.filereadable(config) == 1 then
+            return "--config=" .. config
+          end
+        end)
+        return golangci
+      end
 
       local function debounce(ms, fn)
-        local timer = vim.uv.new_timer()
-        return function(...)
-          local argv = { ... }
-          timer:start(ms, 0, function()
-            timer:stop()
-            vim.schedule_wrap(fn)(unpack(argv))
-          end)
+        local pending = {}
+        return function(ev)
+          local bufnr = ev.buf
+          local request = {}
+          pending[bufnr] = request
+          vim.defer_fn(function()
+            if pending[bufnr] ~= request then
+              return
+            end
+            pending[bufnr] = nil
+            if vim.api.nvim_buf_is_valid(bufnr) and vim.api.nvim_buf_is_loaded(bufnr) and vim.bo[bufnr].buftype == "" then
+              vim.api.nvim_buf_call(bufnr, fn)
+            end
+          end, ms)
         end
       end
 
