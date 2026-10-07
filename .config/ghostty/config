@@ -99,13 +99,14 @@ window-save-state = always
 # Do not confirm on close (kitty: confirm_os_window_close 0)
 confirm-close-surface = false
 
-# Quick Terminal(Guake 式下拉)——action 存在但默认不绑键。
+# Quick Terminal（居中浮窗）——action 存在但默认不绑键。
 # global: = 系统级热键(ghostty 不在前台也能唤出),macOS 需辅助功能授权。
 # 用 ctrl+alt+t 而非 ctrl+grave:后者被 Rime 的方案切换键占用
 # (~/Library/Rime/default.yaml 的 switcher hotkeys: Control+grave),
 # 输入法在系统输入链优先级高于 App global hotkey,ghostty 收不到。
 keybind = global:ctrl+alt+t=toggle_quick_terminal
-quick-terminal-position = top
+quick-terminal-position = center
+quick-terminal-size = 85%,90%
 quick-terminal-autohide = true
 quick-terminal-space-behavior = move
 

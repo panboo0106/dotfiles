@@ -1,0 +1,9 @@
+gui:
+  showCommandLog: false
+
+git:
+  diffRenderers:
+    - name: delta 双列
+      command: delta --config /Users/leo/.config/delta/config --paging=never
+    - name: 原始 diff
+      type: rawGit
