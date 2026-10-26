@@ -27,3 +27,5 @@ br = branch
 lg = log --oneline --graph --all
 [init]
 	defaultBranch = main
+[fetch]
+	prune = true
