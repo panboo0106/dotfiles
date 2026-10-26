@@ -5,25 +5,15 @@
 
 # ============================================
 # Environment Variables
+# Interactive-session values only (prompt, oh-my-zsh, proxy toggle).
+# PATH & locale needed by ALL zsh processes live in ~/.zshenv.
 # ============================================
-
-# Basic PATH setup (~/.local/bin ahead of homebrew so uv's default python3,
-# fd, rg win)
-export PATH=$HOME/.local/bin:$HOME/bin:/usr/local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:$PATH
-
-# Drop duplicate PATH entries; /etc/paths.d and login shells re-add the same
-# directories, so keep the first (highest-priority) occurrence of each.
-typeset -U path PATH
 
 # Starship prompt
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 
 # Oh-My-Zsh
 export ZSH="$HOME/.config/oh-my-zsh"
-
-# Locale settings
-export LC_ALL=en_US.UTF-8
-export LANG=en_US.UTF-8
 
 # Proxy (Sinbox mixed port 7890), auto-set on shell startup.
 # 临时关闭当前会话的代理:
@@ -42,15 +32,8 @@ export all_proxy=socks5://127.0.0.1:7890
 # ansible/yamllint/gts). Run `mise use -g node@24` (etc.) to pin a toolchain
 # under mise.
 
-# Go bin directory (GOPATH bin, valid regardless of Go manager)
-export PATH="$HOME/go/bin:$PATH"
-
-# Cargo env is sourced in ~/.zshenv
-
-# Local bin - only if exists
-[ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
-
-# Additional PATH entries
+# PATH setup (base, ~/go/bin, ~/.local/bin/env) and cargo env live in
+# ~/.zshenv so non-interactive shells see them too.
 
 # ============================================
 # Oh-My-Zsh Configuration
