@@ -1,3 +1,10 @@
-[tools]
-go = "1.27"
-node = "24"
+# mise behavior settings — tracked in dotfiles, shared across machines.
+# Global toolchain pins live in conf.d/10-tools.toml (per-machine, gitignored);
+# write_targets routes future `mise use -g` writes there so the tracked file
+# stays settings-only.
+[settings]
+idiomatic_version_file_enable_tools = ["python"]
+not_found_auto_install = false
+
+[settings.write_targets]
+tools = "~/.config/mise/conf.d/10-tools.toml"

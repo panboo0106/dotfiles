@@ -74,6 +74,7 @@
 .config/zed/*.minimal
 .config/coding/
 .config/fontconfig/
+.config/mise/conf.d/
 .config/mole/
 .config/obsidian/
 
