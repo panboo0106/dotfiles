@@ -11,3 +11,8 @@
 # the real, un-versioned notebook. With `:-`, an inherited value wins and the
 # real vault stays the default only when nobody asked for anything else.
 export NOTEBOOK_PATH="${NOTEBOOK_PATH:-$HOME/Library/CloudStorage/GoogleDrive-leo.minorui@gmail.com/My Drive/Note/leo-notebook}"
+
+# glab CLI — relocate global config to ~/.config (default is
+# ~/Library/Application Support/glab-cli). Must stay in .zshenv: non-interactive
+# shells (scripts, tool subprocesses) never read .zshrc.
+export GLAB_CONFIG_DIR="$HOME/.config/glab-cli"
